@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Wallet extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'deposit_balance',
+        'roi_balance',
+        'referral_balance',
+        'bonus_balance'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}

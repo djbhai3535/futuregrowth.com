@@ -1,0 +1,99 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+
+Route::get('/', function () {
+    $faqs = \App\Models\Faq::where('is_active', true)->orderBy('sort_order')->get();
+    $stats = [
+        'users' => max(15, \App\Models\User::count()),
+        'deposits' => max(2500, \App\Models\Deposit::where('status', 'approved')->sum('amount')),
+        'levels' => 10,
+        'multiplier' => setting('enable_return_multiplier', 1) ? (setting('investment_return_multiplier', 3) * 100) : 300,
+    ];
+    return view('welcome', compact('faqs', 'stats'));
+})->name('home');
+
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:6,1');
+
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/about', [\App\Http\Controllers\PageController::class, 'about'])->name('about');
+Route::get('/terms', [\App\Http\Controllers\PageController::class, 'terms'])->name('terms');
+Route::get('/privacy', [\App\Http\Controllers\PageController::class, 'privacy'])->name('privacy');
+Route::get('/risk', [\App\Http\Controllers\PageController::class, 'risk'])->name('risk');
+Route::get('/contact', [\App\Http\Controllers\PageController::class, 'contact'])->name('contact');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/team', [DashboardController::class, 'team'])->name('dashboard.team');
+    Route::get('/dashboard/history', [DashboardController::class, 'history'])->name('dashboard.history');
+    
+    Route::get('/dashboard/deposits', [\App\Http\Controllers\DepositController::class, 'create'])->name('dashboard.deposits');
+    Route::post('/dashboard/deposits', [\App\Http\Controllers\DepositController::class, 'store'])->name('dashboard.deposits.store');
+    Route::post('/dashboard/deposits/nowpayments', [\App\Http\Controllers\NOWPaymentsController::class, 'initiatePayment'])->name('dashboard.deposits.nowpayments');
+    
+    Route::get('/dashboard/withdrawals', [\App\Http\Controllers\WithdrawalController::class, 'create'])->name('dashboard.withdrawals');
+    Route::post('/dashboard/withdrawals', [\App\Http\Controllers\WithdrawalController::class, 'store'])->name('dashboard.withdrawals.store');
+    
+    Route::get('/dashboard/investments', [\App\Http\Controllers\InvestmentController::class, 'index'])->name('dashboard.investments');
+    Route::post('/dashboard/investments', [\App\Http\Controllers\InvestmentController::class, 'store'])->name('dashboard.investments.store');
+    
+    // Profile & Settings
+    Route::get('/dashboard/profile', [\App\Http\Controllers\ProfileController::class, 'profile'])->name('dashboard.profile');
+    Route::post('/dashboard/profile', [\App\Http\Controllers\ProfileController::class, 'updateProfile'])->name('dashboard.profile.update');
+    Route::get('/dashboard/settings', [\App\Http\Controllers\ProfileController::class, 'settings'])->name('dashboard.settings');
+    Route::post('/dashboard/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('dashboard.password.update');
+
+    // Support Tickets
+    Route::post('/dashboard/tickets', [\App\Http\Controllers\DashboardController::class, 'storeTicket'])->name('dashboard.tickets.store');
+});
+
+use App\Http\Middleware\AdminMiddleware;
+
+Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/settings', [\App\Http\Controllers\AdminController::class, 'settings'])->name('settings');
+    Route::post('/settings', [\App\Http\Controllers\AdminController::class, 'updateSettings'])->name('settings.update');
+
+    Route::get('/deposits', [\App\Http\Controllers\AdminController::class, 'deposits'])->name('deposits');
+    Route::post('/deposits/{id}/approve', [\App\Http\Controllers\AdminController::class, 'approveDeposit'])->name('deposits.approve');
+    Route::post('/deposits/{id}/reject', [\App\Http\Controllers\AdminController::class, 'rejectDeposit'])->name('deposits.reject');
+    
+    Route::get('/withdrawals', [\App\Http\Controllers\AdminController::class, 'withdrawals'])->name('withdrawals');
+    Route::post('/withdrawals/{id}/approve', [\App\Http\Controllers\AdminController::class, 'approveWithdrawal'])->name('withdrawals.approve');
+    Route::post('/withdrawals/{id}/reject', [\App\Http\Controllers\AdminController::class, 'rejectWithdrawal'])->name('withdrawals.reject');
+    
+    Route::get('/users', [\App\Http\Controllers\AdminController::class, 'users'])->name('users');
+    Route::post('/users/{id}/toggle-status', [\App\Http\Controllers\AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
+    Route::post('/users/{id}/reset-password', [\App\Http\Controllers\AdminController::class, 'resetUserPassword'])->name('users.reset-password');
+    Route::get('/plans', [\App\Http\Controllers\AdminController::class, 'plans'])->name('plans');
+    Route::post('/plans', [\App\Http\Controllers\AdminController::class, 'storePlan'])->name('plans.store');
+    Route::post('/plans/{id}/update', [\App\Http\Controllers\AdminController::class, 'updatePlan'])->name('plans.update');
+    Route::post('/plans/{id}/destroy', [\App\Http\Controllers\AdminController::class, 'destroyPlan'])->name('plans.destroy');
+    Route::post('/plans/{id}/toggle', [\App\Http\Controllers\AdminController::class, 'togglePlan'])->name('plans.toggle');
+    
+    // Admin Support Tickets
+    Route::get('/tickets', [\App\Http\Controllers\AdminController::class, 'tickets'])->name('tickets');
+    Route::post('/tickets/{id}/reply', [\App\Http\Controllers\AdminController::class, 'replyTicket'])->name('tickets.reply');
+    Route::post('/tickets/{id}/close', [\App\Http\Controllers\AdminController::class, 'closeTicket'])->name('tickets.close');
+
+    // Admin FAQs
+    Route::get('/faqs', [\App\Http\Controllers\AdminController::class, 'faqs'])->name('faqs');
+    Route::post('/faqs', [\App\Http\Controllers\AdminController::class, 'storeFaq'])->name('faqs.store');
+    Route::post('/faqs/{id}/update', [\App\Http\Controllers\AdminController::class, 'updateFaq'])->name('faqs.update');
+    Route::post('/faqs/{id}/destroy', [\App\Http\Controllers\AdminController::class, 'destroyFaq'])->name('faqs.destroy');
+
+    // Admin Documents
+    Route::get('/documents', [\App\Http\Controllers\AdminController::class, 'documents'])->name('documents');
+    Route::post('/documents', [\App\Http\Controllers\AdminController::class, 'storeDocument'])->name('documents.store');
+    Route::post('/documents/{id}/update', [\App\Http\Controllers\AdminController::class, 'updateDocument'])->name('documents.update');
+    Route::post('/documents/{id}/destroy', [\App\Http\Controllers\AdminController::class, 'destroyDocument'])->name('documents.destroy');
+});
+
+Route::post('/payment/nowpayments/webhook', [\App\Http\Controllers\NOWPaymentsController::class, 'ipnCallback'])->name('nowpayments.webhook');

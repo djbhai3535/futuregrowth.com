@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Admin Preview</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        :root { --primary-color: #3b82f6; --bg-dark: #09090b; --card-bg: rgba(24, 24, 27, 0.6); --glass-border: rgba(255, 255, 255, 0.08); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: #f8fafc; }
+        .glass-card { background-color: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 1.25rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .glass-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); }
+        .neon-glow-primary { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        .neon-glow-success { box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        .navbar-premium { background: rgba(9, 9, 11, 0.8) !important; backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); }
+        .custom-hover:hover { background: rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-premium sticky-top mb-4">
+        <div class="container">
+            <a class="navbar-brand fs-4" href="#"><i class="bi bi-shield-check text-warning"></i> <span class="fw-bold">ADMIN</span><span class="fw-light">PANEL</span></a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link active text-warning fw-bold" href="#">Dashboard</a></li></ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-down">
+            <div><h2 class="fw-bold mb-1 text-warning">Command Center</h2><p class="text-muted small">Platform overview and real-time statistics.</p></div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="glass-card p-4 position-relative border-info border-opacity-25 neon-glow-primary overflow-hidden">
+                    <i class="bi bi-people position-absolute top-0 end-0 m-3 display-4 text-info opacity-25"></i>
+                    <p class="text-info text-uppercase fw-bold small mb-1">Total Users</p>
+                    <h2 class="text-white fw-bold mb-0"><span class="countup" data-val="1024">0</span></h2>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="glass-card p-4 position-relative border-success border-opacity-25 neon-glow-success overflow-hidden">
+                    <i class="bi bi-graph-up-arrow position-absolute top-0 end-0 m-3 display-4 text-success opacity-25"></i>
+                    <p class="text-success text-uppercase fw-bold small mb-1">Active Investments</p>
+                    <h2 class="text-white fw-bold mb-0">$<span class="countup" data-val="45000">0</span></h2>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="glass-card p-4 position-relative border-warning border-opacity-25 overflow-hidden">
+                    <i class="bi bi-arrow-down-circle position-absolute top-0 end-0 m-3 display-4 text-warning opacity-25"></i>
+                    <p class="text-warning text-uppercase fw-bold small mb-1">Pending Deposits</p>
+                    <h2 class="text-white fw-bold mb-0"><span class="countup" data-val="4">0</span></h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8" data-aos="fade-right">
+                <div class="glass-card p-4 h-100">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-bar-chart-fill text-primary me-2"></i> Financial Growth Matrix</h5>
+                    <div style="height: 300px;"><canvas id="growthChart"></canvas></div>
+                </div>
+            </div>
+            <div class="col-lg-4" data-aos="fade-left">
+                <div class="glass-card p-4 h-100">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-lightning-charge-fill text-warning me-2"></i> Quick Actions</h5>
+                    <a href="#" class="btn btn-outline-info w-100 py-3 mb-3 text-start custom-hover"><div><i class="bi bi-people fs-4 d-block mb-1"></i> <span class="fw-bold">Manage Users</span></div></a>
+                    <a href="#" class="btn btn-outline-success w-100 py-3 mb-3 text-start custom-hover"><div><i class="bi bi-box fs-4 d-block mb-1"></i> <span class="fw-bold">Investment Plans</span></div></a>
+                    <a href="#" class="btn btn-outline-warning w-100 py-3 text-start custom-hover"><div><i class="bi bi-gear fs-4 d-block mb-1"></i> <span class="fw-bold">Platform Settings</span></div></a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.0/countUp.min.js"></script>
+    <script>
+        AOS.init({duration: 800, once: true});
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.countup').forEach(el => { new countUp.CountUp(el, parseFloat(el.getAttribute('data-val')), {duration: 2}).start(); });
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            const bgGradient = ctx.createLinearGradient(0, 0, 0, 300);
+            bgGradient.addColorStop(0, 'rgba(16, 185, 129, 0.5)'); bgGradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+            new Chart(ctx, { type: 'line', data: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], datasets: [{ label: 'Deposits ($)', data: [1200, 1900, 1500, 2200, 1800, 2800, 3100], borderColor: '#10b981', backgroundColor: bgGradient, borderWidth: 3, fill: true }] }, options: { responsive: true, maintainAspectRatio: false } });
+        });
+    </script>
+</body>
+</html>

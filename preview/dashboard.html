@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Premium Crypto Invest</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --bg-dark: #09090b; 
+            --card-bg: rgba(24, 24, 27, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            background-image: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%), radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* Glass Cards */
+        .glass-card { background-color: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 1.25rem; transition: all 0.3s ease; }
+        .neon-glow-primary { box-shadow: 0 0 30px rgba(59, 130, 246, 0.15); }
+        .neon-glow-success { box-shadow: 0 0 30px rgba(16, 185, 129, 0.15); }
+        .btn-premium { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; border-radius: 0.75rem; font-weight: 600; padding: 0.5rem 1rem; color: #fff; }
+
+        /* Topnav */
+        .navbar-premium { background: rgba(9, 9, 11, 0.8) !important; backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); }
+
+        /* Promo Banner */
+        .promo-banner { overflow: hidden; white-space: nowrap; background: linear-gradient(90deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1)); border-bottom: 1px solid rgba(59,130,246,0.2); padding: 8px 0; border-radius: 12px; }
+        .marquee-content { display: inline-block; animation: marquee 25s linear infinite; font-weight: 500; font-size: 0.9rem; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .marquee-item { display: inline-block; margin-right: 50px; }
+        
+        /* Premium Progress */
+        .progress-premium { height: 14px; background: rgba(0,0,0,0.3); border-radius: 10px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5); }
+        .progress-bar-premium { background: linear-gradient(90deg, #3b82f6, #10b981); border-radius: 10px; box-shadow: 0 0 10px rgba(16,185,129,0.5); }
+        
+        .wallet-card-sm { transition: all 0.3s; }
+        .wallet-card-sm:hover { transform: translateY(-3px); background: rgba(255,255,255,0.1) !important; }
+
+        /* Support FAB */
+        .support-fab {
+            position: fixed; bottom: 20px; right: 20px;
+            width: 60px; height: 60px; border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+            cursor: pointer; z-index: 1040; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: pulse-fab 2s infinite; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .support-fab:hover { transform: scale(1.1) translateY(-5px); box-shadow: 0 15px 35px rgba(139, 92, 246, 0.6); }
+        @keyframes pulse-fab { 0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); } }
+
+        /* WhatsApp Button */
+        .btn-whatsapp { background-color: #25D366; color: white; transition: all 0.3s ease; border: none; }
+        .btn-whatsapp:hover { background-color: #128C7E; color: white; transform: translateY(-2px); }
+        .whatsapp-glow { box-shadow: 0 0 15px rgba(37, 211, 102, 0.4); }
+
+        /* Mobile Nav */
+        .mobile-bottom-nav { display: none; }
+        @media (max-width: 991px) {
+            .mobile-bottom-nav {
+                display: flex; justify-content: space-around; align-items: center;
+                position: fixed; bottom: 0; left: 0; right: 0;
+                background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(15px);
+                border-top: 1px solid var(--glass-border); padding: 10px 5px; z-index: 1030;
+                box-shadow: 0 -5px 25px rgba(0,0,0,0.5);
+            }
+            .mobile-nav-item {
+                display: flex; flex-direction: column; align-items: center;
+                color: #94a3b8; text-decoration: none; font-size: 0.75rem; transition: all 0.3s;
+            }
+            .mobile-nav-item i { font-size: 1.25rem; margin-bottom: 2px; }
+            .mobile-nav-item.active { color: var(--primary-color); }
+            .mobile-nav-item.active i { filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5)); }
+            .navbar-nav { display: none; } /* Hide desktop nav items on mobile */
+            body { padding-bottom: 70px; }
+            .support-fab { bottom: 80px; right: 15px; } /* Lift FAB above bottom nav */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-premium sticky-top py-2">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fs-5" href="#">
+                <i class="bi bi-layers-fill text-primary"></i> <span class="fw-bold">CRYPTO</span><span class="fw-light">INVEST</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto fw-bold">
+                    <li class="nav-item"><a class="nav-link active text-primary" href="dashboard.html"><i class="bi bi-grid-1x2-fill me-1"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="investments.html"><i class="bi bi-graph-up-arrow me-1"></i> Investments</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="team.html"><i class="bi bi-people-fill me-1"></i> My Team</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#" data-bs-toggle="modal" data-bs-target="#helpCenterModal"><i class="bi bi-question-circle me-1"></i> Help Center</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-whatsapp rounded-pill btn-sm px-3 fw-bold whatsapp-glow d-none d-lg-inline-block mt-1" href="https://chat.whatsapp.com/sample" target="_blank">
+                            <i class="bi bi-whatsapp"></i> Community
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <div class="dropdown">
+                            <a class="nav-link text-white dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle fs-5 me-1 text-primary"></i> User_123
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border-secondary">
+                                <li><a class="dropdown-item" href="deposit.html"><i class="bi bi-arrow-down-circle text-success me-2"></i> Deposit</a></li>
+                                <li><a class="dropdown-item" href="withdrawal.html"><i class="bi bi-arrow-up-circle text-warning me-2"></i> Withdraw</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="login.html"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-bottom-nav d-lg-none">
+        <a href="dashboard.html" class="mobile-nav-item active">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>Home</span>
+        </a>
+        <a href="investments.html" class="mobile-nav-item">
+            <i class="bi bi-graph-up-arrow"></i>
+            <span>Invest</span>
+        </a>
+        <a href="team.html" class="mobile-nav-item">
+            <i class="bi bi-people-fill"></i>
+            <span>Team</span>
+        </a>
+        <a href="https://chat.whatsapp.com/sample" target="_blank" class="mobile-nav-item text-success">
+            <i class="bi bi-whatsapp"></i>
+            <span>Community</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-bs-toggle="modal" data-bs-target="#profileModal">
+            <i class="bi bi-person-circle"></i>
+            <span>Profile</span>
+        </a>
+    </div>
+
+    <!-- Mobile Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" data-bs-theme="dark">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content glass-card border-0">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title fw-bold text-white">Profile Menu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="list-group list-group-flush rounded-bottom">
+                        <a href="deposit.html" class="list-group-item list-group-item-action bg-transparent text-white border-secondary"><i class="bi bi-arrow-down-circle text-success me-2"></i> Deposit</a>
+                        <a href="withdrawal.html" class="list-group-item list-group-item-action bg-transparent text-white border-secondary"><i class="bi bi-arrow-up-circle text-warning me-2"></i> Withdraw</a>
+                        <a href="login.html" class="list-group-item list-group-item-action bg-transparent text-danger fw-bold border-0 w-100 text-start"><i class="bi bi-power me-2"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid px-4 py-4">
+        
+        <!-- Promotional Banner -->
+        <div class="promo-banner mb-4 text-white" data-aos="fade-down">
+            <div class="marquee-content">
+                <span class="marquee-item"><i class="bi bi-gift text-warning me-1"></i> Free $10 Signup Bonus Available!</span>
+                <span class="marquee-item"><i class="bi bi-rocket-takeoff text-primary me-1"></i> Build Your Team & Earn up to 10 Levels of Rewards!</span>
+                <span class="marquee-item"><i class="bi bi-graph-up-arrow text-success me-1"></i> Daily ROI Distributed Automatically Every 24 Hours.</span>
+                <span class="marquee-item"><i class="bi bi-whatsapp text-success me-1"></i> Join our Official WhatsApp Community today!</span>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-right">
+            <h2 class="fw-bold mb-0">Dashboard Overview</h2>
+            <div class="d-flex align-items-center gap-2">
+                <a href="https://chat.whatsapp.com/sample" target="_blank" class="btn btn-whatsapp rounded-pill px-4 fw-bold whatsapp-glow d-none d-md-inline-block">
+                    <i class="bi bi-whatsapp me-2"></i> Join Community
+                </a>
+                <a href="investments.html" class="btn btn-premium px-4"><i class="bi bi-rocket-takeoff me-2"></i> Invest Now</a>
+            </div>
+        </div>
+
+        <!-- 4 Stat Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="glass-card p-4 h-100 position-relative neon-glow-primary border-primary border-opacity-25">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-25">
+                        <i class="bi bi-wallet2 display-4 text-primary"></i>
+                    </div>
+                    <p class="text-muted small text-uppercase fw-bold mb-1">Total Balance</p>
+                    <h2 class="fw-bold text-white mb-0">$<span class="countup" data-val="2540.50">0</span></h2>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="glass-card p-4 h-100 position-relative neon-glow-success border-success border-opacity-25">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-25">
+                        <i class="bi bi-graph-up-arrow display-4 text-success"></i>
+                    </div>
+                    <p class="text-muted small text-uppercase fw-bold mb-1">Active Investments</p>
+                    <h2 class="fw-bold text-white mb-0">$<span class="countup" data-val="1000.00">0</span></h2>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="glass-card p-4 h-100 position-relative border-info border-opacity-25">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-25">
+                        <i class="bi bi-people-fill display-4 text-info"></i>
+                    </div>
+                    <p class="text-muted small text-uppercase fw-bold mb-1">Direct Referrals</p>
+                    <h2 class="fw-bold text-white mb-0"><span class="countup" data-val="12">0</span></h2>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="glass-card p-4 h-100 position-relative border-warning border-opacity-25">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-25">
+                        <i class="bi bi-cash-stack display-4 text-warning"></i>
+                    </div>
+                    <p class="text-muted small text-uppercase fw-bold mb-1">Total Earnings</p>
+                    <h2 class="fw-bold text-white mb-0">$<span class="countup" data-val="450.25">0</span></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Analytics -->
+        <div class="row g-4 mb-4" data-aos="fade-up">
+            <div class="col-lg-8">
+                <div class="glass-card p-4 h-100 border-primary border-opacity-25">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-bar-chart-fill text-primary me-2"></i> Investment Analytics</h5>
+                        <select class="form-select form-select-sm bg-dark text-white border-secondary" style="width: auto;">
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                        </select>
+                    </div>
+                    <div style="height: 250px;">
+                        <canvas id="userAnalyticsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-pie-chart-fill text-info me-2"></i> Portfolio Status</h5>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between text-muted small mb-1"><span>Total Investments</span> <span class="text-white fw-bold">2</span></div>
+                        <div class="progress" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 100%"></div></div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between text-muted small mb-1"><span>Active Investments</span> <span class="text-white fw-bold">1</span></div>
+                        <div class="progress" style="height: 6px;"><div class="progress-bar bg-success" style="width: 100%"></div></div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between text-muted small mb-1"><span>Completed (3X Max)</span> <span class="text-white fw-bold">1</span></div>
+                        <div class="progress" style="height: 6px;"><div class="progress-bar bg-warning" style="width: 50%"></div></div>
+                    </div>
+                    <div class="p-3 mt-3 rounded bg-dark border border-success border-opacity-25">
+                        <p class="text-success small fw-bold mb-1"><i class="bi bi-graph-up-arrow me-1"></i> Total ROI Earned</p>
+                        <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="120.00">0</span></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <!-- Wallets Breakdown -->
+            <div class="col-lg-8" data-aos="fade-right">
+                <div class="glass-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-safe2 text-primary me-2"></i> My Wallets</h5>
+                        <div>
+                            <a href="deposit.html" class="btn btn-sm btn-outline-success me-2 fw-bold"><i class="bi bi-arrow-down-circle"></i> Deposit</a>
+                            <a href="withdrawal.html" class="btn btn-sm btn-outline-light fw-bold"><i class="bi bi-arrow-up-circle"></i> Withdraw</a>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="wallet-card-sm p-3 rounded" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="text-muted small mb-1">Deposit Wallet</p>
+                                        <h4 class="mb-0 fw-bold">$2090.25</h4>
+                                    </div>
+                                    <i class="bi bi-box-arrow-in-down fs-1 text-muted opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="wallet-card-sm p-3 rounded" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="text-success small mb-1">ROI Wallet</p>
+                                        <h4 class="text-success mb-0 fw-bold">$120.00</h4>
+                                    </div>
+                                    <i class="bi bi-graph-up fs-1 text-success opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="wallet-card-sm p-3 rounded" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="text-primary small mb-1">Referral Wallet</p>
+                                        <h4 class="text-primary mb-0 fw-bold">$330.25</h4>
+                                    </div>
+                                    <i class="bi bi-people fs-1 text-primary opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="wallet-card-sm p-3 rounded" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2);">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="text-warning small mb-1">Bonus Wallet (Locked)</p>
+                                        <h4 class="text-warning mb-0 fw-bold">$10.00</h4>
+                                    </div>
+                                    <i class="bi bi-lock fs-1 text-warning opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3X Progress -->
+            <div class="col-lg-4" data-aos="fade-left">
+                <div class="glass-card p-4 h-100 position-relative border-primary border-opacity-25 neon-glow-primary">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-rocket-takeoff text-primary me-2"></i> Investment Progress (3X)</h5>
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between small fw-bold mb-2">
+                            <span class="text-white">Pro Tier ($1,000)</span>
+                            <span class="text-primary">12.0% Complete</span>
+                        </div>
+                        <div class="progress progress-premium mb-1">
+                            <div class="progress-bar-premium" style="width: 12%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">Earned: $120.00</small>
+                            <small class="text-muted">Limit: $3,000</small>
+                        </div>
+                    </div>
+                    
+                    <a href="investments.html" class="btn btn-outline-primary w-100 btn-sm mt-2 fw-bold">View Active Plans</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <!-- Referral System -->
+            <div class="col-lg-4" data-aos="fade-up">
+                <div class="glass-card p-4 h-100">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-share-fill text-info me-2"></i> Referral Program</h5>
+                    <p class="text-muted small mb-3">Share your link to earn up to 10 levels of commissions instantly!</p>
+                    
+                    <div class="input-group mb-3 shadow-sm">
+                        <span class="input-group-text bg-dark border-secondary text-primary"><i class="bi bi-link-45deg"></i></span>
+                        <input type="text" class="form-control bg-dark border-secondary text-white" value="https://cryptoinvest.com/reg?ref=USER123" readonly>
+                    </div>
+                    
+                    <div class="d-flex gap-2 mb-3">
+                        <button class="btn btn-outline-light flex-grow-1"><i class="bi bi-copy"></i> Copy</button>
+                        <button class="btn btn-outline-info flex-grow-1 fw-bold"><i class="bi bi-share"></i> Share</button>
+                    </div>
+                    <a href="#" class="btn btn-premium w-100 mb-4 fw-bold"><i class="bi bi-person-plus-fill"></i> Invite Friends Now</a>
+                    
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-dark border border-secondary text-center">
+                                <small class="text-muted d-block">Direct Referrals</small>
+                                <strong class="text-white">12</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-dark border border-secondary text-center">
+                                <small class="text-muted d-block">Total Team Size</small>
+                                <strong class="text-white">45</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-dark border border-secondary text-center">
+                                <small class="text-muted d-block">Direct Earnings</small>
+                                <strong class="text-success">$330.25</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-dark border border-secondary text-center">
+                                <small class="text-muted d-block">Team Volume</small>
+                                <strong class="text-info">$5,200.00</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+                <div class="glass-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-secondary me-2"></i> Recent Activity</h5>
+                        <a href="history.html" class="btn btn-sm btn-outline-secondary">View All</a>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Wallet</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1"><i class="bi bi-graph-up me-1"></i> ROI</span></td>
+                                    <td class="fw-bold text-white">$25.00</td>
+                                    <td class="text-muted small">Roi Balance</td>
+                                    <td><span class="text-success small fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Completed</span></td>
+                                    <td class="text-muted small">Today, 10:00</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-people me-1"></i> Commission</span></td>
+                                    <td class="fw-bold text-white">$50.00</td>
+                                    <td class="text-muted small">Referral Balance</td>
+                                    <td><span class="text-success small fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Completed</span></td>
+                                    <td class="text-muted small">Yesterday, 14:30</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1"><i class="bi bi-arrow-up me-1"></i> Withdrawal</span></td>
+                                    <td class="fw-bold text-white">$150.00</td>
+                                    <td class="text-muted small">Deposit Balance</td>
+                                    <td><span class="text-warning small fw-bold"><i class="bi bi-clock-fill me-1"></i> Pending</span></td>
+                                    <td class="text-muted small">Jun 10, 09:15</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support FAB & Modal -->
+    <div class="support-fab" data-bs-toggle="modal" data-bs-target="#helpCenterModal">
+        <i class="bi bi-headset"></i>
+    </div>
+
+    <!-- Help Center Modal -->
+    <div class="modal fade" id="helpCenterModal" tabindex="-1" data-bs-theme="dark">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content glass-card border-0">
+                <div class="modal-header border-secondary border-opacity-25">
+                    <h5 class="modal-title fw-bold text-white"><i class="bi bi-robot text-primary me-2"></i> Help Center</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <ul class="nav nav-pills mb-4 nav-fill" id="helpTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active bg-transparent border border-secondary text-white fw-bold custom-hover" id="faq-tab" data-bs-toggle="pill" data-bs-target="#faq" type="button" role="tab"><i class="bi bi-question-circle text-info me-2"></i> FAQ</button>
+                        </li>
+                        <li class="nav-item mx-2" role="presentation">
+                            <button class="nav-link bg-transparent border border-secondary text-white fw-bold custom-hover" id="ticket-tab" data-bs-toggle="pill" data-bs-target="#ticket" type="button" role="tab"><i class="bi bi-envelope text-warning me-2"></i> Open Ticket</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link bg-transparent border border-secondary text-white fw-bold custom-hover" id="guide-tab" data-bs-toggle="pill" data-bs-target="#guide" type="button" role="tab"><i class="bi bi-book text-success me-2"></i> Guide</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="helpTabContent">
+                        <!-- FAQ Tab -->
+                        <div class="tab-pane fade show active" id="faq" role="tabpanel">
+                            <div class="accordion accordion-flush" id="faqAccordion">
+                                <div class="accordion-item bg-transparent border-secondary mb-2 rounded">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed bg-dark text-white rounded" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                            How does the 3X Max Return work?
+                                        </button>
+                                    </h2>
+                                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body text-muted small bg-black bg-opacity-50">
+                                            Once your total earnings (ROI + Commissions + Bonuses) reach 3 times your active investment amount, your account will stop generating daily ROI until you make a new deposit.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item bg-transparent border-secondary mb-2 rounded">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed bg-dark text-white rounded" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                            When can I withdraw my funds?
+                                        </button>
+                                    </h2>
+                                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body text-muted small bg-black bg-opacity-50">
+                                            Withdrawals are processed 24/7. However, each wallet has a different minimum withdrawal requirement. Please check the Withdraw page for exact limits.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ticket Tab -->
+                        <div class="tab-pane fade" id="ticket" role="tabpanel">
+                            <form action="#" method="POST" class="mb-4">
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small text-uppercase fw-bold">Subject</label>
+                                    <select name="subject" class="form-select bg-dark border-secondary text-white" required>
+                                        <option value="Deposit Issue">Deposit Issue</option>
+                                        <option value="Withdrawal Issue">Withdrawal Issue</option>
+                                        <option value="Investment / ROI Issue">Investment / ROI Issue</option>
+                                        <option value="Referral / Team Issue">Referral / Team Issue</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small text-uppercase fw-bold">Message</label>
+                                    <textarea name="message" rows="3" class="form-control bg-dark border-secondary text-white" required placeholder="Describe your issue..."></textarea>
+                                </div>
+                                <button type="button" class="btn btn-premium w-100 fw-bold" onclick="alert('Ticket submitted successfully!')">Submit Ticket</button>
+                            </form>
+                            
+                            <hr class="border-secondary my-4">
+                            <h6 class="fw-bold text-white mb-3"><i class="bi bi-clock-history text-info me-2"></i> My Previous Tickets</h6>
+                            <div class="list-group list-group-flush rounded bg-transparent">
+                                <div class="list-group-item bg-dark border-secondary text-white mb-2 rounded">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold text-info small">Deposit Issue</span>
+                                        <span class="badge bg-success">Answered</span>
+                                    </div>
+                                    <p class="small text-muted mb-2"><strong>You:</strong> My USDT deposit hasn't reflected yet.</p>
+                                    <div class="p-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded small text-white">
+                                        <strong class="text-success">Support:</strong> We have verified your transaction on the blockchain. The funds have been credited to your account.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guide Tab -->
+                        <div class="tab-pane fade" id="guide" role="tabpanel">
+                            <div class="position-relative p-4 border border-secondary border-opacity-25 rounded bg-dark mb-4">
+                                <h6 class="fw-bold text-primary mb-3">Step 1: Deposit Funds</h6>
+                                <p class="text-muted small mb-0">Go to the Deposit page, select your preferred crypto (USDT, BTC, ETH), and send the exact amount to the provided wallet address. Funds will appear in your Deposit Wallet automatically after blockchain confirmation.</p>
+                            </div>
+                            <div class="position-relative p-4 border border-secondary border-opacity-25 rounded bg-dark mb-4">
+                                <h6 class="fw-bold text-success mb-3">Step 2: Choose Investment Plan</h6>
+                                <p class="text-muted small mb-0">Navigate to the Investments page and choose a plan that suits your goals. Your daily ROI will begin accumulating exactly 24 hours after plan activation.</p>
+                            </div>
+                            <div class="position-relative p-4 border border-secondary border-opacity-25 rounded bg-dark">
+                                <h6 class="fw-bold text-warning mb-3">Step 3: Build Your Team</h6>
+                                <p class="text-muted small mb-0">Share your unique referral link to earn up to 10 levels deep. Direct referral bonuses are credited instantly and can be withdrawn immediately.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-top border-secondary border-opacity-50 text-center">
+                        <p class="text-muted small mb-3">Still need help? Speak directly with our support team.</p>
+                        <a href="https://chat.whatsapp.com/sample" target="_blank" class="btn btn-whatsapp rounded-pill px-5 fw-bold whatsapp-glow w-100">
+                            <i class="bi bi-whatsapp me-2"></i> Chat on WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.0/countUp.min.js"></script>
+    <script>
+        AOS.init({ duration: 800 });
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.countup').forEach(el => {
+                new countUp.CountUp(el, parseFloat(el.getAttribute('data-val')), { duration: 2.5 }).start();
+            });
+
+            // Investment Analytics Chart
+            const ctx = document.getElementById('userAnalyticsChart');
+            if(ctx) {
+                const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
+                gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+                gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+                
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
+                        datasets: [{
+                            label: 'Earnings ($)',
+                            data: [10, 25, 45, 80, 120, 150, 195],
+                            borderColor: '#3b82f6',
+                            backgroundColor: gradient,
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#1e293b',
+                            pointBorderColor: '#3b82f6',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                            x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+                        },
+                        interaction: { intersect: false, mode: 'index' }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

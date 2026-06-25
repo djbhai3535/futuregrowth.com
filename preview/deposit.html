@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Deposit - Preview</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>body { background-color: #0f172a; color: #f8fafc; } .glass-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }</style>
+</head>
+<body class="py-5">
+    <div class="container">
+        <a href="dashboard.html" class="btn btn-outline-secondary mb-4">Back to Dashboard</a>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="glass-card p-4">
+                    <h3 class="fw-bold mb-4">Make a Deposit</h3>
+                    <div class="alert border-info bg-info bg-opacity-10 text-info mb-4">Only send USDT (TRC20) to this address.</div>
+                    <div class="mb-4 text-center p-4 border border-secondary rounded">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&color=fff&bgcolor=1e293b" class="img-fluid rounded mb-3">
+                        <input type="text" class="form-control bg-dark border-secondary text-white text-center font-monospace mb-2" value="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" readonly>
+                    </div>
+                    <form action="history.html">
+                        <div class="mb-3"><label class="form-label text-muted small fw-bold">Amount (USD)</label><input type="number" class="form-control bg-transparent text-white" value="100"></div>
+                        <div class="mb-4"><label class="form-label text-muted small fw-bold">Transaction Hash (TXID)</label><input type="text" class="form-control bg-transparent text-white" placeholder="64-character hash"></div>
+                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold">Submit For Approval</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

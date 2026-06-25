@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Premium Crypto Invest</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --bg-dark: #09090b; 
+            --card-bg: rgba(24, 24, 27, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            background-image: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%), radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .glass-card { background-color: var(--card-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 1.25rem; transition: all 0.3s ease; }
+        .text-gradient { background: linear-gradient(135deg, #60a5fa, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-premium { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; border-radius: 0.75rem; font-weight: 600; padding: 0.75rem 1.5rem; color: #fff; transition: all 0.3s ease; }
+        .btn-premium:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4); color: #fff; }
+        .neon-glow-primary { box-shadow: 0 0 30px rgba(59, 130, 246, 0.15); }
+        .promo-banner { overflow: hidden; white-space: nowrap; background: linear-gradient(90deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1)); border: 1px solid rgba(59,130,246,0.2); padding: 10px 0; border-radius: 12px; }
+        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .marquee-item { display: inline-block; margin-right: 50px; font-weight: 600; font-size: 0.9rem; }
+        
+        .promo-card { transition: transform 0.3s ease; }
+        .promo-card:hover { transform: translateX(5px); }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <!-- Top Nav Mock -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <a href="index.html" class="text-decoration-none fs-4 text-white">
+                <i class="bi bi-layers-fill text-primary"></i> <span class="fw-bold">CRYPTO</span><span class="fw-light">INVEST</span>
+            </a>
+            <a href="index.html" class="btn btn-outline-light rounded-pill"><i class="bi bi-house me-1"></i> Home</a>
+        </div>
+
+        <!-- Promotional Marquee -->
+        <div class="promo-banner mb-4 text-white" data-aos="fade-down">
+            <div class="marquee-content">
+                <span class="marquee-item"><i class="bi bi-gift text-warning me-1"></i> Free $10 Signup Bonus!</span>
+                <span class="marquee-item"><i class="bi bi-rocket-takeoff text-primary me-1"></i> Build Your Team & Earn up to 10 Levels of Rewards!</span>
+                <span class="marquee-item"><i class="bi bi-graph-up-arrow text-success me-1"></i> 3X Return on all Investment Plans!</span>
+                <span class="marquee-item"><i class="bi bi-whatsapp text-success me-1"></i> Join our WhatsApp Community!</span>
+            </div>
+        </div>
+
+        <div class="row align-items-center" style="min-height: 70vh;">
+            <!-- Promotional Left Column -->
+            <div class="col-lg-6 d-none d-lg-block" data-aos="fade-right">
+                <div class="pe-5">
+                    <h1 class="fw-bold mb-4">Start Your <span class="text-gradient">Financial Journey</span> Today</h1>
+                    <p class="text-muted fs-5 mb-5">Create your free account in seconds and unlock exclusive benefits tailored for early adopters.</p>
+                    
+                    <div class="d-flex flex-column gap-3">
+                        <div class="glass-card p-3 promo-card d-flex align-items-center border-warning border-opacity-25 neon-glow-primary">
+                            <div class="bg-warning bg-opacity-10 p-3 rounded-circle me-3"><i class="bi bi-gift-fill text-warning fs-4"></i></div>
+                            <div>
+                                <h5 class="fw-bold text-white mb-1">Claim Your $10 Bonus</h5>
+                                <p class="text-muted small mb-0">Available for the first 1000 users who register.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-3 promo-card d-flex align-items-center border-success border-opacity-25">
+                            <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3"><i class="bi bi-cash-coin text-success fs-4"></i></div>
+                            <div>
+                                <h5 class="fw-bold text-white mb-1">Instant Daily ROI</h5>
+                                <p class="text-muted small mb-0">Profits distributed directly to your wallet every 24 hours.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-3 promo-card d-flex align-items-center border-info border-opacity-25">
+                            <div class="bg-info bg-opacity-10 p-3 rounded-circle me-3"><i class="bi bi-diagram-3-fill text-info fs-4"></i></div>
+                            <div>
+                                <h5 class="fw-bold text-white mb-1">10-Level Team Rewards</h5>
+                                <p class="text-muted small mb-0">Earn up to 20% direct commission instantly on referrals.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Registration Form Column -->
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="glass-card p-4 p-md-5 border-success border-opacity-50 position-relative">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                        <i class="bi bi-person-plus display-1 text-success"></i>
+                    </div>
+                    
+                    <div class="text-center mb-4 position-relative">
+                        <h3 class="fw-bold text-white">Create Account</h3>
+                        <p class="text-muted">Join the most secure USDT investment platform</p>
+                    </div>
+
+                    <form action="dashboard.html">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Full Name</label>
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text bg-dark border-secondary text-primary"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control bg-dark border-secondary text-white" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Username</label>
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text bg-dark border-secondary text-primary"><i class="bi bi-at"></i></span>
+                                    <input type="text" class="form-control bg-dark border-secondary text-white" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Email Address</label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-dark border-secondary text-primary"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control bg-dark border-secondary text-white" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Phone Number</label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-dark border-secondary text-primary"><i class="bi bi-telephone"></i></span>
+                                <input type="text" class="form-control bg-dark border-secondary text-white" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Password</label>
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text bg-dark border-secondary text-primary"><i class="bi bi-lock"></i></span>
+                                    <input type="password" class="form-control bg-dark border-secondary text-white" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted small text-uppercase fw-bold">Confirm</label>
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text bg-dark border-secondary text-primary"><i class="bi bi-shield-lock"></i></span>
+                                    <input type="password" class="form-control bg-dark border-secondary text-white" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Referral Code (Optional)</label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-dark border-secondary text-info"><i class="bi bi-link-45deg"></i></span>
+                                <input type="text" class="form-control bg-dark border-secondary text-info fw-bold" placeholder="Enter code if you have one">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-premium w-100 mb-3 py-3 fs-5 btn-pulse shadow-lg">Create Account <i class="bi bi-arrow-right ms-2"></i></button>
+                        
+                        <div class="text-center mt-3">
+                            <span class="text-muted small">Already have an account?</span> 
+                            <a href="login.html" class="text-primary fw-bold text-decoration-none fs-6 ms-1">Sign In Here</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init({ duration: 800 });</script>
+</body>
+</html>
