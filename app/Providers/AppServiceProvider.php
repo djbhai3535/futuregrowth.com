@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
                 $smtpUser = setting('smtp_username');
                 $smtpPass = setting('smtp_password');
 
-                if ($smtpHost && $smtpUser && $smtpPass && $smtpUser !== 'your-email@gmail.com') {
+                if ($smtpHost && $smtpUser && $smtpPass) {
                     config([
                         'mail.default' => 'smtp',
                         'mail.mailers.smtp.host' => $smtpHost,
