@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
             'min_deposit' => ['value' => '25', 'type' => 'integer'],
             'max_deposit' => ['value' => '50000', 'type' => 'integer'],
             'withdrawal_fee_percent' => ['value' => '5', 'type' => 'integer'],
-            'signup_bonus_amount' => ['value' => '7', 'type' => 'integer'],
+            'signup_bonus' => ['value' => '7', 'type' => 'integer'],
             'max_bonus_users' => ['value' => '1000', 'type' => 'integer'],
             'direct_reward_percent' => ['value' => '20', 'type' => 'integer'],
             'referral_level_1' => ['value' => '5', 'type' => 'integer'],

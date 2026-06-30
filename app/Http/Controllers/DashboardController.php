@@ -77,8 +77,118 @@ class DashboardController extends Controller
     public function team()
     {
         $user = Auth::user();
+        
+        $levelsData = [];
+        $currentLevelUserIds = [$user->id];
+        $allDownlineUserIds = [];
+
+        for ($i = 1; $i <= 10; $i++) {
+            $levelUsers = \App\Models\User::whereIn('referred_by', $currentLevelUserIds)->get();
+            
+            if ($levelUsers->isEmpty()) {
+                $levelsData[$i] = [
+                    'level' => $i,
+                    'percent' => $i === 1 ? setting('direct_reward_percent', 20) : setting('referral_level_' . $i, 1),
+                    'is_direct' => $i === 1,
+                    'total_users' => 0,
+                    'active_users' => 0,
+                    'inactive_users' => 0,
+                    'total_investment' => 0.00,
+                    'referral_earnings' => 0.00,
+                    'pending_earnings' => 0.00,
+                    'paid_earnings' => 0.00,
+                ];
+                $currentLevelUserIds = [];
+                continue;
+            }
+
+            $levelUserIds = $levelUsers->pluck('id')->toArray();
+            $allDownlineUserIds = array_merge($allDownlineUserIds, $levelUserIds);
+            
+            $activeUserIds = \App\Models\Investment::whereIn('user_id', $levelUserIds)
+                ->where('status', 'active')
+                ->pluck('user_id')
+                ->unique()
+                ->toArray();
+                
+            $totalUsers = count($levelUserIds);
+            $activeCount = count($activeUserIds);
+            $inactiveCount = $totalUsers - $activeCount;
+            
+            $totalInvestment = \App\Models\Investment::whereIn('user_id', $levelUserIds)
+                ->where('status', 'active')
+                ->sum('amount');
+                
+            $referralEarnings = \App\Models\Transaction::where('user_id', $user->id)
+                ->where('type', 'commission')
+                ->whereIn('reference_id', $levelUserIds)
+                ->sum('amount');
+                
+            $levelsData[$i] = [
+                'level' => $i,
+                'percent' => $i === 1 ? setting('direct_reward_percent', 20) : setting('referral_level_' . $i, 1),
+                'is_direct' => $i === 1,
+                'total_users' => $totalUsers,
+                'active_users' => $activeCount,
+                'inactive_users' => $inactiveCount,
+                'total_investment' => $totalInvestment,
+                'referral_earnings' => $referralEarnings,
+                'pending_earnings' => 0.00,
+                'paid_earnings' => $referralEarnings,
+            ];
+            
+            $currentLevelUserIds = $levelUserIds;
+        }
+
+        // Summary Stats
+        $teamSize = count($allDownlineUserIds);
+        $directReferralsCount = $levelsData[1]['total_users'];
+        
+        $teamVolume = 0;
+        $todayEarnings = 0;
+        $weeklyEarnings = 0;
+        $monthlyEarnings = 0;
+        $lifetimeEarnings = 0;
+
+        if ($teamSize > 0) {
+            $teamVolume = \App\Models\Investment::whereIn('user_id', $allDownlineUserIds)
+                ->where('status', 'active')
+                ->sum('amount');
+                
+            $lifetimeEarnings = \App\Models\Transaction::where('user_id', $user->id)
+                ->where('type', 'commission')
+                ->sum('amount');
+                
+            $todayEarnings = \App\Models\Transaction::where('user_id', $user->id)
+                ->where('type', 'commission')
+                ->where('created_at', '>=', now()->startOfDay())
+                ->sum('amount');
+                
+            $weeklyEarnings = \App\Models\Transaction::where('user_id', $user->id)
+                ->where('type', 'commission')
+                ->where('created_at', '>=', now()->subDays(7))
+                ->sum('amount');
+                
+            $monthlyEarnings = \App\Models\Transaction::where('user_id', $user->id)
+                ->where('type', 'commission')
+                ->where('created_at', '>=', now()->subDays(30))
+                ->sum('amount');
+        }
+
+        // List direct referrals for detail section
         $referrals = $user->referrals()->with('wallet')->get();
-        return view('dashboard.team', compact('referrals'));
+
+        return view('dashboard.team', compact(
+            'levelsData',
+            'teamSize',
+            'directReferralsCount',
+            'teamVolume',
+            'todayEarnings',
+            'weeklyEarnings',
+            'monthlyEarnings',
+            'lifetimeEarnings',
+            'referrals'
+        ));
     }
 
     public function history()

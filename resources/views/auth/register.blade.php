@@ -14,7 +14,7 @@
 <!-- Promotional Marquee -->
 <div class="promo-banner mb-4 text-white" data-aos="fade-down">
     <div class="marquee-content">
-        <span class="marquee-item"><i class="bi bi-gift text-warning me-1"></i> {{ setting('promo_banner_1', 'Free $10 Signup Bonus Available!') }}</span>
+        <span class="marquee-item"><i class="bi bi-gift text-warning me-1"></i> {{ setting('promo_banner_1', 'Free $' . setting('signup_bonus', 7) . ' Signup Bonus Available!') }}</span>
         <span class="marquee-item"><i class="bi bi-rocket-takeoff text-primary me-1"></i> {{ setting('promo_banner_2', 'Build Your Team & Earn up to 10 Levels of Rewards!') }}</span>
         <span class="marquee-item"><i class="bi bi-graph-up-arrow text-success me-1"></i> {{ setting('promo_banner_3', '3X Return on all Investment Plans!') }}</span>
         <span class="marquee-item"><i class="bi bi-whatsapp text-success me-1"></i> {{ setting('promo_banner_4', 'Join our WhatsApp Community!') }}</span>
@@ -35,7 +35,7 @@
                 <div class="glass-card p-3 promo-card d-flex align-items-center border-warning border-opacity-25 neon-glow-primary">
                     <div class="bg-warning bg-opacity-10 p-3 rounded-circle me-3"><i class="bi bi-gift-fill text-warning fs-4"></i></div>
                     <div>
-                        <h5 class="fw-bold text-white mb-1">Claim Your ${{ setting('signup_bonus_amount', 10) }} Bonus</h5>
+                        <h5 class="fw-bold text-white mb-1">Claim Your ${{ setting('signup_bonus', 7) }} Bonus</h5>
                         <p class="text-muted small mb-0">Available for the first {{ setting('max_bonus_users', 1000) }} users who register.</p>
                     </div>
                 </div>

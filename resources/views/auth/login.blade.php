@@ -15,7 +15,7 @@
 <!-- Promotional Marquee -->
 <div class="promo-banner mb-4 text-white" data-aos="fade-down">
     <div class="marquee-content">
-        <span class="marquee-item"><i class="bi bi-gift text-warning me-1"></i> {{ setting('promo_banner_1', 'Free $10 Signup Bonus Available!') }}</span>
+        <span class="marquee-item"><i class="bi bi-gift text-warning me-1"></i> {{ setting('promo_banner_1', 'Free $' . setting('signup_bonus', 7) . ' Signup Bonus Available!') }}</span>
         <span class="marquee-item"><i class="bi bi-rocket-takeoff text-primary me-1"></i> {{ setting('promo_banner_2', 'Build Your Team & Earn up to 10 Levels of Rewards!') }}</span>
         <span class="marquee-item"><i class="bi bi-graph-up-arrow text-success me-1"></i> {{ setting('promo_banner_3', '3X Return on all Investment Plans!') }}</span>
         <span class="marquee-item"><i class="bi bi-whatsapp text-success me-1"></i> {{ setting('promo_banner_4', 'Join our WhatsApp Community!') }}</span>
@@ -111,7 +111,7 @@
                     <div class="p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1);">
                         <span class="text-muted small">Don't have an account?</span><br>
                         <a href="{{ route('register') }}" class="text-primary fw-bold text-decoration-none fs-5 mt-1 d-inline-block">Create Free Account</a>
-                        <div class="text-warning small fw-bold mt-1"><i class="bi bi-gift-fill me-1"></i> Claim your ${{ setting('signup_bonus_amount', 10) }} Bonus today!</div>
+                        <div class="text-warning small fw-bold mt-1"><i class="bi bi-gift-fill me-1"></i> Claim your ${{ setting('signup_bonus', 7) }} Bonus today!</div>
                     </div>
                 </div>
             </form>

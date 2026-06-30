@@ -40,7 +40,7 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <label class="form-label text-muted small text-uppercase fw-bold">Sign-up Bonus Amount ($)</label>
-                        <input type="number" name="signup_bonus_amount" value="{{ setting('signup_bonus_amount', 10) }}" class="form-control bg-transparent border-secondary text-white">
+                        <input type="number" name="signup_bonus" value="{{ setting('signup_bonus', 7) }}" class="form-control bg-transparent border-secondary text-white">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label text-muted small text-uppercase fw-bold">Max Bonus Users Limit</label>
@@ -174,7 +174,7 @@
                 <h5 class="fw-bold mb-3 text-primary border-bottom border-secondary pb-2">Promotional Banners</h5>
                 <div class="mb-3">
                     <label class="form-label text-muted small">Promo Banner 1 (e.g. Signup Bonus)</label>
-                    <input type="text" name="promo_banner_1" class="form-control bg-dark border-secondary text-white" value="{{ $settings['promo_banner_1']->value ?? 'Free $10 Signup Bonus Available!' }}">
+                    <input type="text" name="promo_banner_1" class="form-control bg-dark border-secondary text-white" value="{{ $settings['promo_banner_1']->value ?? 'Free $' . setting('signup_bonus', 7) . ' Signup Bonus Available!' }}">
                 </div>
                 <div class="mb-3">
                     <label class="form-label text-muted small">Promo Banner 2 (e.g. Team Rewards)</label>

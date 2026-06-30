@@ -92,7 +92,7 @@ class AuthController extends Controller
             $user->save();
 
             // Direct credit bonus
-            $bonusAmount = Setting::getVal('signup_bonus_amount', 7);
+            $bonusAmount = Setting::getVal('signup_bonus', 7);
             if ($bonusAmount > 0) {
                 $wallet->bonus_balance = $bonusAmount;
                 $wallet->save();
@@ -269,7 +269,7 @@ class AuthController extends Controller
 
         // Award Signup Bonus
         $wallet = $user->wallet;
-        $bonusAmount = Setting::getVal('signup_bonus_amount', 7);
+        $bonusAmount = Setting::getVal('signup_bonus', 7);
         if ($bonusAmount > 0 && !$user->transactions()->where('type', 'bonus')->exists()) {
             $wallet->bonus_balance = $bonusAmount;
             $wallet->save();

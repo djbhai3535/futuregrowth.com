@@ -66,7 +66,7 @@
             {{ setting('site_name', 'FutureGrowth.tech') }}
         </div>
         <h2>Welcome to the Future of Wealth!</h2>
-        <p>Thank you for registering. Please verify your email address to unlock your account and claim your free <strong>${{ setting('signup_bonus_amount', 7) }} Signup Bonus</strong>.</p>
+        <p>Thank you for registering. Please verify your email address to unlock your account and claim your free <strong>${{ setting('signup_bonus', 7) }} Signup Bonus</strong>.</p>
         <p>Your 6-digit email verification code is:</p>
         <div style="text-align: center;">
             <div class="code-box">{{ $code }}</div>

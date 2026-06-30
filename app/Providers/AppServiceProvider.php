@@ -22,15 +22,22 @@ class AppServiceProvider extends ServiceProvider
         // Dynamically load mail configuration from settings
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
-                config([
-                    'mail.mailers.smtp.host' => setting('smtp_host', config('mail.mailers.smtp.host')),
-                    'mail.mailers.smtp.port' => (int) setting('smtp_port', config('mail.mailers.smtp.port')),
-                    'mail.mailers.smtp.username' => setting('smtp_username', config('mail.mailers.smtp.username')),
-                    'mail.mailers.smtp.password' => setting('smtp_password', config('mail.mailers.smtp.password')),
-                    'mail.mailers.smtp.encryption' => setting('smtp_encryption', config('mail.mailers.smtp.encryption')),
-                    'mail.from.address' => setting('smtp_from_address', config('mail.from.address')),
-                    'mail.from.name' => setting('site_name', config('mail.from.name')),
-                ]);
+                $smtpHost = setting('smtp_host');
+                $smtpUser = setting('smtp_username');
+                $smtpPass = setting('smtp_password');
+
+                if ($smtpHost && $smtpUser && $smtpPass && $smtpUser !== 'your-email@gmail.com') {
+                    config([
+                        'mail.default' => 'smtp',
+                        'mail.mailers.smtp.host' => $smtpHost,
+                        'mail.mailers.smtp.port' => (int) setting('smtp_port', 587),
+                        'mail.mailers.smtp.username' => $smtpUser,
+                        'mail.mailers.smtp.password' => $smtpPass,
+                        'mail.mailers.smtp.encryption' => setting('smtp_encryption', 'tls'),
+                        'mail.from.address' => setting('smtp_from_address', 'hello@futuregrowth.tech'),
+                        'mail.from.name' => setting('site_name', 'FutureGrowth.tech'),
+                    ]);
+                }
             }
         } catch (\Exception $e) {
             // Avoid failing during setup/migrations

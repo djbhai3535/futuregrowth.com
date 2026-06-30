@@ -5,7 +5,7 @@
     <div class="col-md-6" data-aos="fade-up">
         <div class="glass-card p-4 p-md-5 border-warning border-opacity-50 text-center">
             <h3 class="fw-bold text-white mb-3">Email Verification Required</h3>
-            <p class="text-muted mb-4">We have sent a 6-digit verification code to your email. Please enter it below to activate your account and claim your <strong>${{ setting('signup_bonus_amount', 7) }}</strong> Signup Bonus.</p>
+            <p class="text-muted mb-4">We have sent a 6-digit verification code to your email. Please enter it below to activate your account and claim your <strong>${{ setting('signup_bonus', 7) }}</strong> Signup Bonus.</p>
 
             @if(session('success'))
                 <div class="alert alert-success bg-success bg-opacity-10 border-success text-success text-center mb-4">
