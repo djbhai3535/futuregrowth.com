@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
             'min_deposit' => ['value' => '25', 'type' => 'integer'],
             'max_deposit' => ['value' => '50000', 'type' => 'integer'],
             'withdrawal_fee_percent' => ['value' => '5', 'type' => 'integer'],
-            'signup_bonus_amount' => ['value' => '10', 'type' => 'integer'],
+            'signup_bonus_amount' => ['value' => '7', 'type' => 'integer'],
             'max_bonus_users' => ['value' => '1000', 'type' => 'integer'],
             'direct_reward_percent' => ['value' => '20', 'type' => 'integer'],
             'referral_level_1' => ['value' => '5', 'type' => 'integer'],
@@ -50,8 +50,14 @@ class DatabaseSeeder extends Seeder
             'admin_usdt_address' => ['value' => 'TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 'type' => 'string'],
             'enable_return_multiplier' => ['value' => '1', 'type' => 'boolean'],
             'investment_return_multiplier' => ['value' => '3', 'type' => 'integer'],
+            
+            // Community Button settings
             'whatsapp_community_link' => ['value' => 'https://chat.whatsapp.com/invite', 'type' => 'string'],
             'whatsapp_button_enabled' => ['value' => '1', 'type' => 'boolean'],
+            'telegram_link' => ['value' => 'https://t.me/futuregrowthtech', 'type' => 'string'],
+            'community_button_text' => ['value' => 'Join Telegram Community', 'type' => 'string'],
+            'community_button_enabled' => ['value' => '1', 'type' => 'boolean'],
+            
             'site_name' => ['value' => 'FutureGrowth.tech', 'type' => 'string'],
             'copyright_text' => ['value' => 'FutureGrowth.tech. All rights reserved.', 'type' => 'string'],
             'footer_text' => ['value' => 'FutureGrowth.tech is a premier AI-powered investment ecosystem providing sustainable automated daily returns.', 'type' => 'string'],
@@ -60,14 +66,33 @@ class DatabaseSeeder extends Seeder
             'announcement_bar' => ['value' => 'FutureGrowth.tech Official Launch: Start earning daily passive profits now!', 'type' => 'string'],
             'support_email' => ['value' => 'support@futuregrowth.tech', 'type' => 'string'],
             'support_whatsapp' => ['value' => '+1234567890', 'type' => 'string'],
-            'telegram_link' => ['value' => 'https://t.me/futuregrowthtech', 'type' => 'string'],
             'twitter_link' => ['value' => 'https://x.com/futuregrowthtech', 'type' => 'string'],
             'facebook_link' => ['value' => 'https://facebook.com/futuregrowthtech', 'type' => 'string'],
             'instagram_link' => ['value' => 'https://instagram.com/futuregrowthtech', 'type' => 'string'],
+
+            // SMTP Settings
+            'smtp_host' => ['value' => 'smtp.gmail.com', 'type' => 'string'],
+            'smtp_port' => ['value' => '587', 'type' => 'integer'],
+            'smtp_username' => ['value' => 'your-email@gmail.com', 'type' => 'string'],
+            'smtp_password' => ['value' => 'your-app-password', 'type' => 'string'],
+            'smtp_encryption' => ['value' => 'tls', 'type' => 'string'],
+            'smtp_from_address' => ['value' => 'hello@futuregrowth.tech', 'type' => 'string'],
+
+            // Admin URL Secret
+            'admin_secret_path' => ['value' => 'admin-fg-secure', 'type' => 'string'],
+
+            // Maintenance Mode
+            'maintenance_mode' => ['value' => '0', 'type' => 'boolean'],
+
+            // Verification & Security
+            'enable_email_verification' => ['value' => '1', 'type' => 'boolean'],
+            'enable_recaptcha' => ['value' => '0', 'type' => 'boolean'],
+            'recaptcha_site_key' => ['value' => 'site_key_here', 'type' => 'string'],
+            'recaptcha_secret_key' => ['value' => 'secret_key_here', 'type' => 'string'],
         ];
 
         foreach ($settings as $key => $data) {
-            Setting::firstOrCreate(['key' => $key], $data);
+            Setting::updateOrCreate(['key' => $key], $data);
         }
 
         // 3. Default Plans
@@ -78,32 +103,36 @@ class DatabaseSeeder extends Seeder
                 'max_amount' => 100,
                 'min_roi' => 1.5,
                 'max_roi' => 3.0,
+                'status' => 'active'
             ],
             [
-                'name' => 'Standard',
+                'name' => 'Growth',
                 'min_amount' => 101,
                 'max_amount' => 500,
                 'min_roi' => 2.0,
                 'max_roi' => 4.0,
+                'status' => 'active'
             ],
             [
-                'name' => 'Premium',
+                'name' => 'Professional',
                 'min_amount' => 501,
                 'max_amount' => 1000,
                 'min_roi' => 2.5,
                 'max_roi' => 4.5,
+                'status' => 'active'
             ],
             [
-                'name' => 'VIP',
+                'name' => 'Elite',
                 'min_amount' => 1001,
                 'max_amount' => 5000,
                 'min_roi' => 3.5,
                 'max_roi' => 6.0,
+                'status' => 'active'
             ],
         ];
 
         foreach ($plans as $plan) {
-            Plan::firstOrCreate(['name' => $plan['name']], $plan);
+            Plan::updateOrCreate(['name' => $plan['name']], $plan);
         }
     }
 }

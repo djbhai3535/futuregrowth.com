@@ -15,9 +15,12 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check() && Auth::user()->is_admin) {
-            return $next($request);
+            if (session('admin_2fa_verified') === true) {
+                return $next($request);
+            }
+            return redirect()->route('admin.2fa.show');
         }
 
-        abort(403, 'Unauthorized access.');
+        abort(404);
     }
 }

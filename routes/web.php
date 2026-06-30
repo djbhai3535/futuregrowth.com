@@ -6,13 +6,14 @@ use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     $faqs = \App\Models\Faq::where('is_active', true)->orderBy('sort_order')->get();
+    $plans = \App\Models\Plan::where('status', 'active')->orderBy('min_amount')->get();
     $stats = [
         'users' => max(15, \App\Models\User::count()),
         'deposits' => max(2500, \App\Models\Deposit::where('status', 'approved')->sum('amount')),
         'levels' => 10,
         'multiplier' => setting('enable_return_multiplier', 1) ? (setting('investment_return_multiplier', 3) * 100) : 300,
     ];
-    return view('welcome', compact('faqs', 'stats'));
+    return view('welcome', compact('faqs', 'plans', 'stats'));
 })->name('home');
 
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
@@ -22,6 +23,21 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Email Verification
+Route::get('/verify-email', [AuthController::class, 'showVerificationNotice'])->name('verification.notice');
+Route::post('/verify-email', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+Route::post('/verify-email/resend', [AuthController::class, 'resendVerificationCode'])->name('verification.resend');
+
+// Forgot & Reset Password
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetCode'])->name('password.email');
+Route::get('/reset-password', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+// Admin 2FA Verification
+Route::get('/admin-login/2fa', [AuthController::class, 'showAdmin2FAForm'])->name('admin.2fa.show');
+Route::post('/admin-login/2fa', [AuthController::class, 'verifyAdmin2FA'])->name('admin.2fa.verify');
 
 Route::get('/about', [\App\Http\Controllers\PageController::class, 'about'])->name('about');
 Route::get('/terms', [\App\Http\Controllers\PageController::class, 'terms'])->name('terms');
@@ -56,7 +72,17 @@ Route::middleware('auth')->group(function () {
 
 use App\Http\Middleware\AdminMiddleware;
 
-Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->name('admin.')->group(function () {
+$adminSecret = 'admin-fg-secure';
+try {
+    $adminSecret = setting('admin_secret_path', 'admin-fg-secure');
+} catch (\Exception $e) {}
+
+// Disable standard /admin access
+Route::any('/admin', function () {
+    abort(404);
+});
+
+Route::middleware(['auth', AdminMiddleware::class])->prefix($adminSecret)->name('admin.')->group(function () {
     Route::get('/', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/settings', [\App\Http\Controllers\AdminController::class, 'settings'])->name('settings');
     Route::post('/settings', [\App\Http\Controllers\AdminController::class, 'updateSettings'])->name('settings.update');

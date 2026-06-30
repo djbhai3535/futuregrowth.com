@@ -60,6 +60,14 @@ class AdminController extends Controller
     {
         $data = $request->except(['_token', 'site_logo', 'site_favicon', 'footer_logo', 'site_og_image']);
         
+        // Filter out empty secret keys
+        if (empty($data['smtp_password'])) {
+            unset($data['smtp_password']);
+        }
+        if (empty($data['recaptcha_secret_key'])) {
+            unset($data['recaptcha_secret_key']);
+        }
+
         // Handle File Uploads
         $fileKeys = ['site_logo', 'site_favicon', 'footer_logo', 'site_og_image'];
         foreach ($fileKeys as $fileKey) {

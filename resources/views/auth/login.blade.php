@@ -86,7 +86,7 @@
                 <div class="mb-4">
                     <div class="d-flex justify-content-between mb-1">
                         <label class="form-label text-muted small text-uppercase fw-bold">Password</label>
-                        <a href="#" class="small text-decoration-none text-info fw-bold">Forgot Password?</a>
+                        <a href="{{ route('password.request') }}" class="small text-decoration-none text-info fw-bold">Forgot Password?</a>
                     </div>
                     <div class="input-group input-group-lg shadow-sm">
                         <span class="input-group-text bg-dark border-secondary text-primary"><i class="bi bi-lock"></i></span>
@@ -98,6 +98,12 @@
                     <input type="checkbox" class="form-check-input border-secondary" id="rememberMe">
                     <label class="form-check-label text-muted small" for="rememberMe">Remember my device</label>
                 </div>
+
+                @if(setting('enable_recaptcha', false))
+                <div class="mb-4 d-flex justify-content-center">
+                    <div class="g-recaptcha" data-sitekey="{{ setting('recaptcha_site_key') }}" data-theme="dark"></div>
+                </div>
+                @endif
 
                 <button type="submit" class="btn btn-premium w-100 mb-3 py-3 fs-5 btn-pulse shadow-lg">Secure Login <i class="bi bi-shield-lock ms-2"></i></button>
                 
@@ -156,8 +162,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                 grab: { distance: 140, links: { opacity: 0.5 } }
             }
         },
-        retina_detect: true
-    });
+});
 });
 </script>
 @endpush
+
+@if(setting('enable_recaptcha', false))
+@push('scripts')
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+@endpush
+@endif

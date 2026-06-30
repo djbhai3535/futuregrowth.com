@@ -60,6 +60,20 @@
         .marquee-item { display: inline-block; margin-right: 50px; }
 
         .feature-icon { width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1.5rem; }
+        
+        /* Premium style additions */
+        .hover-scale { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .hover-scale:hover { transform: scale(1.03) translateY(-8px) !important; }
+        .neon-glow-primary { box-shadow: 0 0 20px rgba(59, 130, 246, 0.08); }
+        .neon-glow-primary:hover { box-shadow: 0 0 35px rgba(59, 130, 246, 0.25); }
+        .neon-glow-secondary { box-shadow: 0 0 20px rgba(139, 92, 246, 0.05); }
+        .neon-glow-secondary:hover { box-shadow: 0 0 35px rgba(139, 92, 246, 0.18); }
+        .btn-pulse { animation: buttonPulse 2.5s infinite; }
+        @keyframes buttonPulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
     </style>
 </head>
 <body>
@@ -122,10 +136,10 @@
                 {{ setting('homepage_about_text', 'Earn secure daily profits, build a massive 10-level referral team, and achieve up to a 300% (3X) return on your investments automatically.') }}
             </p>
             <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <a href="{{ route('register') }}" class="btn btn-premium btn-lg px-5 py-3 shadow-lg fs-5">Start Investing Now <i class="bi bi-arrow-right ms-2"></i></a>
-                @if(setting('whatsapp_button_enabled') && setting('whatsapp_community_link'))
-                <a href="{{ setting('whatsapp_community_link') }}" class="btn btn-outline-success btn-lg px-4 py-3 fw-bold rounded-3" target="_blank">
-                    <i class="bi bi-whatsapp me-2"></i> Join Community
+                <a href="{{ route('register') }}" class="btn btn-premium btn-lg px-5 py-3 shadow-lg fs-5 btn-pulse">Start Investing Now <i class="bi bi-arrow-right ms-2"></i></a>
+                @if(setting('community_button_enabled', '1') == '1')
+                <a href="{{ setting('telegram_link') ?: setting('whatsapp_community_link', '#') }}" class="btn btn-outline-info btn-lg px-4 py-3 fw-bold rounded-3" target="_blank">
+                    <i class="bi bi-telegram me-2"></i> {{ setting('community_button_text', 'Join Community') }}
                 </a>
                 @endif
             </div>
@@ -184,57 +198,44 @@
             </div>
             
             <div class="row g-4 justify-content-center">
-                <!-- Starter Plan -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                    <div class="glass-card p-5 h-100 position-relative text-center">
-                        <h4 class="fw-bold text-white mb-3">Starter Tier</h4>
-                        <div class="mb-4">
-                            <span class="fs-1 fw-bold text-primary">1.5%</span><span class="text-muted">/daily</span>
+                @foreach($plans as $index => $plan)
+                @php
+                    $isPopular = ($plan->name === 'Growth' || $plan->name === 'Professional');
+                    $borderClass = $isPopular ? 'border-primary border-opacity-50 shadow-lg' : 'border-secondary border-opacity-25';
+                    $btnClass = $isPopular ? 'btn-premium btn-pulse' : 'btn-outline-primary';
+                    $glowClass = $isPopular ? 'neon-glow-primary' : 'neon-glow-secondary';
+                    $icon = 'bi-rocket-takeoff-fill';
+                    if ($plan->name === 'Starter') $icon = 'bi-lightning-charge-fill';
+                    if ($plan->name === 'Professional') $icon = 'bi-gem';
+                    if ($plan->name === 'Elite') $icon = 'bi-shield-shaded';
+                @endphp
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ ($index + 1) * 100 }}">
+                    <div class="glass-card p-5 h-100 position-relative text-center d-flex flex-column {{ $borderClass }} {{ $glowClass }} hover-scale" style="background: linear-gradient(135deg, rgba(17, 24, 39, 0.4) 0%, rgba(9, 9, 11, 0.6) 100%);">
+                        @if($isPopular)
+                        <div class="position-absolute top-0 start-50 translate-middle badge bg-primary px-3 py-2 rounded-pill fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">MOST POPULAR</div>
+                        @endif
+                        
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-flex mx-auto mb-4" style="width: fit-content;">
+                            <i class="bi {{ $icon }} fs-3 text-primary"></i>
                         </div>
-                        <ul class="list-unstyled text-start mb-5 text-muted">
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Min Deposit: <b>$50</b></li>
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Max Deposit: <b>$999</b></li>
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> 24/7 Automated ROI</li>
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> 3X Max Return Cap ($2,997)</li>
+                        
+                        <h4 class="fw-bold text-white mb-2">{{ $plan->name }}</h4>
+                        <div class="mb-4">
+                            <span class="fs-1 fw-bold text-gradient">{{ number_format($plan->min_roi, 1) }}% - {{ number_format($plan->max_roi, 1) }}%</span><span class="text-muted small">/daily</span>
+                        </div>
+                        
+                        <ul class="list-unstyled text-start mb-5 text-muted small flex-grow-1">
+                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Min Invest: <b>${{ number_format($plan->min_amount) }}</b></li>
+                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Max Invest: <b>${{ number_format($plan->max_amount) }}</b></li>
+                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> 24/7 Automatic Distribution</li>
+                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Max Return: <b>{{ setting('investment_return_multiplier', 3) }}X Cap</b></li>
                         </ul>
-                        <a href="{{ route('register') }}" class="btn btn-outline-primary w-100 py-3 fw-bold">Choose Starter</a>
+                        
+                        <a href="{{ route('register') }}" class="btn {{ $btnClass }} w-100 py-3 fw-bold mt-auto">Invest in {{ $plan->name }}</a>
                     </div>
                 </div>
-
-                <!-- Professional Plan -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                    <div class="glass-card p-5 h-100 position-relative text-center border-primary border-opacity-50" style="box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);">
-                        <div class="position-absolute top-0 start-50 translate-middle badge bg-primary px-3 py-2 rounded-pill fw-bold">MOST POPULAR</div>
-                        <h4 class="fw-bold text-white mb-3">Pro Tier</h4>
-                        <div class="mb-4">
-                            <span class="fs-1 fw-bold text-gradient">2.5%</span><span class="text-muted">/daily</span>
-                        </div>
-                        <ul class="list-unstyled text-start mb-5 text-muted">
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Min Deposit: <b>$1,000</b></li>
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Max Deposit: <b>$4,999</b></li>
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Priority Support</li>
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> 3X Max Return Cap ($14,997)</li>
-                        </ul>
-                        <a href="{{ route('register') }}" class="btn btn-premium w-100 py-3 fw-bold">Choose Pro</a>
-                    </div>
-                </div>
-
-                <!-- VIP Plan -->
-                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                    <div class="glass-card p-5 h-100 position-relative text-center border-warning border-opacity-25">
-                        <h4 class="fw-bold text-white mb-3 text-warning">VIP Tier</h4>
-                        <div class="mb-4">
-                            <span class="fs-1 fw-bold text-warning">4.0%</span><span class="text-muted">/daily</span>
-                        </div>
-                        <ul class="list-unstyled text-start mb-5 text-muted">
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Min Deposit: <b>$5,000</b></li>
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Max Deposit: <b>Unlimited</b></li>
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Dedicated Account Manager</li>
-                            <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> 3X Max Return Cap</li>
-                        </ul>
-                        <a href="{{ route('register') }}" class="btn btn-outline-warning w-100 py-3 fw-bold">Choose VIP</a>
-                    </div>
-                </div>
+                @endforeach
+            </div>
             </div>
         </div>
     </section>
@@ -312,14 +313,14 @@
         </div>
     </section>
 
-    <!-- WhatsApp CTA -->
-    @if(setting('whatsapp_button_enabled', '1') && setting('whatsapp_community_link'))
+    <!-- Community CTA -->
+    @if(setting('community_button_enabled', '1') == '1')
     <section class="py-5 bg-dark">
         <div class="container py-4 text-center" data-aos="zoom-in">
-            <h2 class="fw-bold text-white mb-3"><i class="bi bi-whatsapp text-success me-2"></i> Join Our Global Community</h2>
+            <h2 class="fw-bold text-white mb-3"><i class="bi bi-chat-right-text text-info me-2"></i> Join Our Global Community</h2>
             <p class="text-muted fs-5 mb-4 max-w-2xl mx-auto">Connect with thousands of investors, get real-time updates, and receive 24/7 support directly from our expert team.</p>
-            <a href="{{ setting('whatsapp_community_link') }}" target="_blank" class="btn btn-whatsapp rounded-pill px-5 py-3 fs-5 fw-bold whatsapp-glow">
-                Join WhatsApp Group Now
+            <a href="{{ setting('telegram_link') ?: setting('whatsapp_community_link', '#') }}" target="_blank" class="btn btn-info rounded-pill px-5 py-3 fs-5 fw-bold text-white shadow-lg btn-pulse" style="background: linear-gradient(135deg, #06b6d4, #3b82f6); border: none;">
+                {{ setting('community_button_text', 'Join Community Now') }}
             </a>
         </div>
     </section>

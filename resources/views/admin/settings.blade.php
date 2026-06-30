@@ -191,6 +191,95 @@
             </div>
         </div>
 
+        <!-- SMTP & Security Settings -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h5 class="fw-bold mb-3 text-danger border-bottom border-secondary pb-2">SMTP Mail Server Configuration</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">SMTP Host</label>
+                        <input type="text" name="smtp_host" class="form-control bg-dark border-secondary text-white" value="{{ setting('smtp_host', 'smtp.gmail.com') }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-muted small fw-bold">SMTP Port</label>
+                        <input type="number" name="smtp_port" class="form-control bg-dark border-secondary text-white" value="{{ setting('smtp_port', 587) }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">SMTP Encryption</label>
+                        <select name="smtp_encryption" class="form-control bg-dark border-secondary text-white">
+                            <option value="tls" {{ setting('smtp_encryption', 'tls') == 'tls' ? 'selected' : '' }}>TLS</option>
+                            <option value="ssl" {{ setting('smtp_encryption', 'tls') == 'ssl' ? 'selected' : '' }}>SSL</option>
+                            <option value="none" {{ setting('smtp_encryption', 'tls') == 'none' ? 'selected' : '' }}>None</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">Sender Email Address</label>
+                        <input type="email" name="smtp_from_address" class="form-control bg-dark border-secondary text-white" value="{{ setting('smtp_from_address', 'hello@futuregrowth.tech') }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">SMTP Username</label>
+                        <input type="text" name="smtp_username" class="form-control bg-dark border-secondary text-white" value="{{ setting('smtp_username', '') }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">SMTP Password</label>
+                        <input type="password" name="smtp_password" class="form-control bg-dark border-secondary text-white" placeholder="Leave empty to keep existing password">
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mb-3 text-warning border-bottom border-secondary pb-2">Security, Maintenance & 2FA</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">Custom Secret Admin URL Prefix</label>
+                        <input type="text" name="admin_secret_path" class="form-control bg-dark border-secondary text-white" value="{{ setting('admin_secret_path', 'admin-fg-secure') }}" placeholder="e.g. secure-admin-fg">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">Maintenance Mode</label>
+                        <select name="maintenance_mode" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('maintenance_mode', 0) == 1 ? 'selected' : '' }}>ON (Offline for Visitors)</option>
+                            <option value="0" {{ setting('maintenance_mode', 0) == 0 ? 'selected' : '' }}>OFF (Online)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">Email Verification</label>
+                        <select name="enable_email_verification" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('enable_email_verification', 1) == 1 ? 'selected' : '' }}>Enabled (OTP Required)</option>
+                            <option value="0" {{ setting('enable_email_verification', 1) == 0 ? 'selected' : '' }}>Disabled (Instant Login)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">Google reCAPTCHA v2</label>
+                        <select name="enable_recaptcha" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('enable_recaptcha', 0) == 1 ? 'selected' : '' }}>Enabled</option>
+                            <option value="0" {{ setting('enable_recaptcha', 0) == 0 ? 'selected' : '' }}>Disabled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">reCAPTCHA Site Key</label>
+                        <input type="text" name="recaptcha_site_key" class="form-control bg-dark border-secondary text-white" value="{{ setting('recaptcha_site_key', '') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">reCAPTCHA Secret Key</label>
+                        <input type="password" name="recaptcha_secret_key" class="form-control bg-dark border-secondary text-white" placeholder="Leave empty to keep existing key">
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mb-3 text-info border-bottom border-secondary pb-2">Dynamic Community Button</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Community Button Text</label>
+                        <input type="text" name="community_button_text" class="form-control bg-dark border-secondary text-white" value="{{ setting('community_button_text', 'Join Community') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">Community Button Status</label>
+                        <select name="community_button_enabled" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('community_button_enabled', 1) == 1 ? 'selected' : '' }}>Enabled</option>
+                            <option value="0" {{ setting('community_button_enabled', 1) == 0 ? 'selected' : '' }}>Disabled</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-4">
             <div class="col-12">
                 <h5 class="fw-bold mb-3 text-success border-bottom border-secondary pb-2">Website Settings</h5>

@@ -131,6 +131,12 @@
                     </div>
                 </div>
 
+                @if(setting('enable_recaptcha', false))
+                <div class="mb-4 d-flex justify-content-center">
+                    <div class="g-recaptcha" data-sitekey="{{ setting('recaptcha_site_key') }}" data-theme="dark"></div>
+                </div>
+                @endif
+
                 <button type="submit" class="btn btn-premium w-100 mb-3 py-3 fs-5 btn-pulse shadow-lg">Create Account <i class="bi bi-arrow-right ms-2"></i></button>
                 
                 <div class="text-center mt-3">
@@ -184,3 +190,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 </script>
 @endpush
+
+@if(setting('enable_recaptcha', false))
+@push('scripts')
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+@endpush
+@endif
