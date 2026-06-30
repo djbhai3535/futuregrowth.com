@@ -20,9 +20,11 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'System Admin',
                 'username' => 'admin',
+                'phone' => '+1234567890',
                 'password' => Hash::make('password123'),
                 'referral_code' => Str::random(10),
                 'is_admin' => true,
+                'email_verified_at' => now(),
             ]
         );
         Wallet::firstOrCreate(['user_id' => $admin->id]);

@@ -23,6 +23,10 @@ class User extends Authenticatable
         'is_admin',
         'status',
         'avatar',
+        'verification_code',
+        'verification_code_expires_at',
+        'two_factor_code',
+        'two_factor_expires_at',
     ];
 
     protected $hidden = [
