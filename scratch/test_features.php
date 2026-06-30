@@ -77,6 +77,18 @@ assertTest($user->verification_code !== null, "6-digit OTP verification code was
 assertTest($user->email_verified_at === null, "User email is initially unverified");
 
 // --------------------------------------------------
+// 1.5. RESEND VERIFICATION CODE TEST
+// --------------------------------------------------
+echo "\nTesting Resend Verification Code...\n";
+$oldCode = $user->verification_code;
+
+$resendRequest = createRequest('/verify-email/resend', 'POST');
+$response = $authController->resendVerificationCode($resendRequest);
+
+$user->refresh();
+assertTest($user->verification_code !== null && $user->verification_code !== $oldCode, "New 6-digit OTP verification code generated on resend: " . $user->verification_code);
+
+// --------------------------------------------------
 // 2. EMAIL VERIFICATION & SIGNUP BONUS TEST
 // --------------------------------------------------
 echo "\nTesting Email Verification & Signup Bonus...\n";

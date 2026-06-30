@@ -45,7 +45,7 @@ Route::get('/privacy', [\App\Http\Controllers\PageController::class, 'privacy'])
 Route::get('/risk', [\App\Http\Controllers\PageController::class, 'risk'])->name('risk');
 Route::get('/contact', [\App\Http\Controllers\PageController::class, 'contact'])->name('contact');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', \App\Http\Middleware\EnsureEmailIsVerified::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/team', [DashboardController::class, 'team'])->name('dashboard.team');
     Route::get('/dashboard/history', [DashboardController::class, 'history'])->name('dashboard.history');

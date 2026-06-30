@@ -68,12 +68,15 @@ class AuthController extends Controller
         // Create Wallet
         $wallet = Wallet::create(['user_id' => $user->id]);
 
+        // Preserve session and authentication state immediately
+        Auth::login($user);
+
         // Check if email verification is enabled
         if (setting('enable_email_verification', true)) {
             try {
                 Mail::to($user->email)->send(new \App\Mail\VerificationMail($code));
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Failed to send verification email: ' . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error('Failed to send verification email: ' . $e->getMessage(), ['exception' => $e]);
             }
 
             ActivityLog::create([
@@ -83,7 +86,7 @@ class AuthController extends Controller
                 'user_agent' => $request->userAgent()
             ]);
 
-            return redirect()->route('verification.notice')->with('user_id', $user->id);
+            return redirect()->route('verification.notice');
         } else {
             // Auto verify
             $user->email_verified_at = now();
@@ -162,7 +165,7 @@ class AuthController extends Controller
                 try {
                     Mail::to($user->email)->send(new \App\Mail\Admin2FACodeMail($code));
                 } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error('Failed to send Admin 2FA code: ' . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error('Failed to send Admin 2FA code: ' . $e->getMessage(), ['exception' => $e]);
                 }
 
                 session(['admin_2fa_verified' => false, 'admin_2fa_user_id' => $user->id]);
@@ -229,7 +232,7 @@ class AuthController extends Controller
 
     public function showVerificationNotice(Request $request)
     {
-        $userId = session('user_id') ?? $request->query('user_id');
+        $userId = Auth::id() ?? session('user_id') ?? $request->query('user_id');
         if (!$userId) {
             return redirect()->route('login');
         }
@@ -238,6 +241,11 @@ class AuthController extends Controller
 
     public function verifyEmail(Request $request)
     {
+        $userId = Auth::id() ?? $request->user_id;
+        if ($userId) {
+            $request->merge(['user_id' => $userId]);
+        }
+
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'code' => 'required|string|size:6'
@@ -298,8 +306,13 @@ class AuthController extends Controller
 
     public function resendVerificationCode(Request $request)
     {
+        $userId = Auth::id() ?? $request->user_id;
+        if ($userId) {
+            $request->merge(['user_id' => $userId]);
+        }
+
         $request->validate(['user_id' => 'required|exists:users,id']);
-        $user = User::findOrFail($request->user_id);
+        $user = User::findOrFail($userId);
 
         if ($user->email_verified_at) {
             return redirect()->route('login')->with('success', 'Email already verified.');
@@ -313,7 +326,7 @@ class AuthController extends Controller
         try {
             Mail::to($user->email)->send(new \App\Mail\VerificationMail($code));
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to resend verification email: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Failed to resend verification email: ' . $e->getMessage(), ['exception' => $e]);
         }
 
         return back()->with('success', 'Verification code resent successfully. Please check your inbox.');
@@ -355,7 +368,7 @@ class AuthController extends Controller
         try {
             Mail::to($user->email)->send(new \App\Mail\ResetPasswordMail($code));
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Failed to send reset code: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Failed to send reset code: ' . $e->getMessage(), ['exception' => $e]);
         }
 
         return redirect()->route('password.reset', ['email' => $user->email])->with('success', 'Reset verification code sent to your email.');
