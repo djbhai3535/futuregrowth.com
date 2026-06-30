@@ -19,6 +19,7 @@ class Admin2FACodeMail extends Mailable
      */
     public function __construct($code)
     {
+        \App\Providers\AppServiceProvider::loadDynamicMailConfig();
         $this->code = (string) $code;
     }
 

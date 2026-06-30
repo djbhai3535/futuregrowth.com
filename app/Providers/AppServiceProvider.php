@@ -19,9 +19,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Dynamically load mail configuration from settings
+        self::loadDynamicMailConfig();
+    }
+
+    /**
+     * Dynamically override mail configuration with database values
+     */
+    public static function loadDynamicMailConfig(): void
+    {
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+                // Clear cached configurations to read live database settings
+                \Illuminate\Support\Facades\Cache::forget('setting_smtp_host');
+                \Illuminate\Support\Facades\Cache::forget('setting_smtp_username');
+                \Illuminate\Support\Facades\Cache::forget('setting_smtp_password');
+                \Illuminate\Support\Facades\Cache::forget('setting_smtp_port');
+                \Illuminate\Support\Facades\Cache::forget('setting_smtp_encryption');
+                \Illuminate\Support\Facades\Cache::forget('setting_smtp_from_address');
+                \Illuminate\Support\Facades\Cache::forget('setting_site_name');
+
                 $smtpHost = setting('smtp_host');
                 $smtpUser = setting('smtp_username');
                 $smtpPass = setting('smtp_password');
@@ -37,10 +53,13 @@ class AppServiceProvider extends ServiceProvider
                         'mail.from.address' => setting('smtp_from_address', 'hello@futuregrowth.tech'),
                         'mail.from.name' => setting('site_name', 'FutureGrowth.tech'),
                     ]);
+
+                    // Purge resolved mailer instances to apply configurations on the fly
+                    \Illuminate\Support\Facades\Mail::purge();
                 }
             }
         } catch (\Exception $e) {
-            // Avoid failing during setup/migrations
+            // Avoid failing
         }
     }
 }

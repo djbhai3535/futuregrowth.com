@@ -19,6 +19,7 @@ class ResetPasswordMail extends Mailable
      */
     public function __construct($token)
     {
+        \App\Providers\AppServiceProvider::loadDynamicMailConfig();
         $this->token = $token;
     }
 

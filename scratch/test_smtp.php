@@ -5,6 +5,9 @@ $app = require_once 'bootstrap/app.php';
 // Bootstrap the console kernel so Laravel's environment is loaded
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
+// Force override configurations from database settings
+\App\Providers\AppServiceProvider::loadDynamicMailConfig();
+
 use Illuminate\Support\Facades\Mail;
 
 if ($argc < 2) {
