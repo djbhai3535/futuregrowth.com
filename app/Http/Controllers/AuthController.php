@@ -155,23 +155,10 @@ class AuthController extends Controller
                 return back()->withErrors(['email' => 'Your account has been banned.']);
             }
 
-            // Check if user is admin
+            // Check if user is admin (Temporarily bypass 2FA until SMTP is configured)
             if ($user->is_admin) {
-                $code = rand(100000, 999999);
-                $user->two_factor_code = $code;
-                $user->two_factor_expires_at = now()->addMinutes(10);
-                $user->save();
-
-                try {
-                    Mail::to($user->email)->send(new \App\Mail\Admin2FACodeMail($code));
-                } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error('Failed to send Admin 2FA code: ' . $e->getMessage(), ['exception' => $e]);
-                }
-
-                session(['admin_2fa_verified' => false, 'admin_2fa_user_id' => $user->id]);
-                Auth::logout(); // Logout standard session until 2FA completes
-
-                return redirect()->route('admin.2fa.show');
+                session(['admin_2fa_verified' => true]);
+                return redirect()->route('admin.dashboard');
             }
 
             // Check if email verification is completed

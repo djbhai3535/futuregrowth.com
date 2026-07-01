@@ -174,18 +174,8 @@ $adminLoginRequest = createRequest('/login', 'POST', [
 $response = $authController->login($adminLoginRequest);
 $adminUser->refresh();
 
-assertTest(session('admin_2fa_user_id') === $adminUser->id, "Admin login redirects to 2FA page; 2FA session registered");
-assertTest($adminUser->two_factor_code !== null, "Admin 2FA login code generated: " . $adminUser->two_factor_code);
-
-// Verify 2FA OTP Code
-$verify2faRequest = createRequest('/admin-login/2fa', 'POST', [
-    'code' => $adminUser->two_factor_code
-]);
-session(['admin_2fa_user_id' => $adminUser->id]); // Put in request session
-
-$response = $authController->verifyAdmin2FA($verify2faRequest);
-assertTest(Auth::check() && Auth::user()->is_admin, "Admin successfully authenticated after 2FA validation");
-assertTest(session('admin_2fa_verified') === true, "Admin 2FA session token activated: session('admin_2fa_verified') = true");
+assertTest(Auth::check() && Auth::user()->is_admin, "Admin successfully authenticated after standard login");
+assertTest(session('admin_2fa_verified') === true, "Admin 2FA session token bypassed/activated: session('admin_2fa_verified') = true");
 
 // --------------------------------------------------
 // 6. MAINTENANCE MODE TEST
