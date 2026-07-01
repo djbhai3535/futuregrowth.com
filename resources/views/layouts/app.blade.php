@@ -381,6 +381,35 @@
     @endauth
 
     <main class="container py-4">
+        <!-- Dynamic WhatsApp Community Banner -->
+        @auth
+            @if(setting('enable_whatsapp_banner', 1) == 1 && setting('whatsapp_community_link'))
+                <div class="whatsapp-sticky-banner py-3 px-4 mb-4 glass-card border-success border-opacity-25" style="background: rgba(37, 211, 102, 0.04); position: relative; overflow: hidden; border-radius: 1rem; border-color: rgba(37, 211, 102, 0.25) !important;">
+                    <div class="tech-grid-overlay" style="opacity: 0.05;"></div>
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-9 d-flex align-items-start gap-3">
+                            <div class="bg-success bg-opacity-15 p-3 rounded-circle text-success shadow-sm d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; flex-shrink: 0; animation: whatsapp-pulse 2s infinite;">
+                                <i class="bi bi-whatsapp fs-3"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1 text-success d-flex align-items-center gap-2">
+                                    💬 {{ setting('whatsapp_banner_title', 'Join our Official WhatsApp Community') }}
+                                </h6>
+                                <p class="text-muted small mb-0">
+                                    {{ setting('whatsapp_banner_text', 'Stay updated with announcements, deposit confirmations, promotions, support, investment news.') }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-md-end">
+                            <a href="{{ setting('whatsapp_community_link') }}" target="_blank" class="btn btn-whatsapp rounded-pill px-4 fw-bold shadow-lg whatsapp-glow">
+                                <i class="bi bi-whatsapp me-2"></i> {{ setting('whatsapp_button_text', 'Join WhatsApp Community') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endauth
+
         <!-- Global Toasts for Success/Errors -->
         <div class="toast-container position-fixed top-0 end-0 p-3">
             @if(session('success'))

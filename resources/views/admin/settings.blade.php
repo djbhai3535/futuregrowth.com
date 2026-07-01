@@ -224,6 +224,46 @@
                         <label class="form-label text-muted small fw-bold">SMTP Password</label>
                         <input type="password" name="smtp_password" class="form-control bg-dark border-secondary text-white" placeholder="Leave empty to keep existing password">
                     </div>
+                <h5 class="fw-bold mb-3 text-info border-bottom border-secondary pb-2">Payment Gateway Settings (NOWPayments)</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">Enable / Disable Gateway</label>
+                        <select name="nowpayments_enabled" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('nowpayments_enabled', 1) == 1 ? 'selected' : '' }}>Enabled</option>
+                            <option value="0" {{ setting('nowpayments_enabled', 1) == 0 ? 'selected' : '' }}>Disabled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">Sandbox / Live Mode</label>
+                        <select name="nowpayments_sandbox_mode" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('nowpayments_sandbox_mode', 0) == 1 ? 'selected' : '' }}>Sandbox Mode (Testing)</option>
+                            <option value="0" {{ setting('nowpayments_sandbox_mode', 0) == 0 ? 'selected' : '' }}>Live Mode (Production)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">Default Coin</label>
+                        <input type="text" name="nowpayments_default_coin" class="form-control bg-dark border-secondary text-white" value="{{ setting('nowpayments_default_coin', 'usdt') }}" placeholder="e.g. usdt">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">Default Network</label>
+                        <input type="text" name="nowpayments_default_network" class="form-control bg-dark border-secondary text-white" value="{{ setting('nowpayments_default_network', 'trc20') }}" placeholder="e.g. trc20">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">NOWPayments API Key</label>
+                        <input type="password" name="nowpayments_api_key" class="form-control bg-dark border-secondary text-white" placeholder="Leave empty to keep existing key">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">IPN Secret</label>
+                        <input type="password" name="nowpayments_ipn_secret" class="form-control bg-dark border-secondary text-white" placeholder="Leave empty to keep existing secret">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Minimum Deposit ($)</label>
+                        <input type="number" step="0.01" name="nowpayments_min_deposit" class="form-control bg-dark border-secondary text-white" value="{{ setting('nowpayments_min_deposit', 25) }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Maximum Deposit ($)</label>
+                        <input type="number" step="0.01" name="nowpayments_max_deposit" class="form-control bg-dark border-secondary text-white" value="{{ setting('nowpayments_max_deposit', 50000) }}">
+                    </div>
                 </div>
 
                 <h5 class="fw-bold mb-3 text-warning border-bottom border-secondary pb-2">Security, Maintenance & 2FA</h5>
@@ -263,18 +303,30 @@
                     </div>
                 </div>
 
-                <h5 class="fw-bold mb-3 text-info border-bottom border-secondary pb-2">Dynamic Community Button</h5>
+                <h5 class="fw-bold mb-3 text-success border-bottom border-secondary pb-2">WhatsApp Community System</h5>
                 <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small fw-bold">Community Button Text</label>
-                        <input type="text" name="community_button_text" class="form-control bg-dark border-secondary text-white" value="{{ setting('community_button_text', 'Join Community') }}">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label text-muted small fw-bold">Community Button Status</label>
-                        <select name="community_button_enabled" class="form-control bg-dark border-secondary text-white">
-                            <option value="1" {{ setting('community_button_enabled', 1) == 1 ? 'selected' : '' }}>Enabled</option>
-                            <option value="0" {{ setting('community_button_enabled', 1) == 0 ? 'selected' : '' }}>Disabled</option>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">Enable / Disable WhatsApp Banner</label>
+                        <select name="enable_whatsapp_banner" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('enable_whatsapp_banner', 1) == 1 ? 'selected' : '' }}>Enabled</option>
+                            <option value="0" {{ setting('enable_whatsapp_banner', 1) == 0 ? 'selected' : '' }}>Disabled</option>
                         </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">WhatsApp Community Link</label>
+                        <input type="text" name="whatsapp_community_link" class="form-control bg-dark border-secondary text-white" value="{{ setting('whatsapp_community_link', '') }}" placeholder="https://chat.whatsapp.com/...">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">WhatsApp Support Number</label>
+                        <input type="text" name="support_whatsapp" class="form-control bg-dark border-secondary text-white" value="{{ setting('support_whatsapp', '') }}" placeholder="+1234567890">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">Button Text</label>
+                        <input type="text" name="whatsapp_button_text" class="form-control bg-dark border-secondary text-white" value="{{ setting('whatsapp_button_text', 'Join WhatsApp Community') }}" placeholder="Join WhatsApp Community">
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label text-muted small fw-bold">Banner Text</label>
+                        <input type="text" name="whatsapp_banner_text" class="form-control bg-dark border-secondary text-white" value="{{ setting('whatsapp_banner_text', 'Stay updated with announcements, deposit confirmations, promotions, support, investment news.') }}" placeholder="Stay updated with announcements, deposit confirmations...">
                     </div>
                 </div>
             </div>

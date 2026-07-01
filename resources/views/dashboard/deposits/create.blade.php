@@ -13,6 +13,13 @@
                 <i class="bi bi-info-circle-fill me-2"></i> {{ setting('deposit_instructions', 'Only send USDT (TRC20) to this address.') }}
             </div>
 
+            @php
+                $autoEnabled = setting('nowpayments_enabled', 1) == 1;
+                $autoMin = setting('nowpayments_min_deposit', setting('min_deposit', 25));
+                $autoMax = setting('nowpayments_max_deposit', setting('max_deposit', 50000));
+            @endphp
+
+            @if($autoEnabled)
             <ul class="nav nav-pills mb-4 nav-fill" id="depositTab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active bg-transparent border border-secondary text-white fw-bold py-2 custom-hover-pill" id="auto-tab" data-bs-toggle="pill" data-bs-target="#auto-deposit" type="button" role="tab"><i class="bi bi-cpu text-info me-2"></i> Instant Auto Deposit</button>
@@ -21,26 +28,29 @@
                     <button class="nav-link bg-transparent border border-secondary text-white fw-bold py-2 custom-hover-pill" id="manual-tab" data-bs-toggle="pill" data-bs-target="#manual-deposit" type="button" role="tab"><i class="bi bi-wallet2 text-warning me-2"></i> Manual Deposit</button>
                 </li>
             </ul>
+            @endif
 
             <div class="tab-content" id="depositTabContent">
                 <!-- Automatic Deposit -->
+                @if($autoEnabled)
                 <div class="tab-pane fade show active" id="auto-deposit" role="tabpanel">
                     <form action="{{ route('dashboard.deposits.nowpayments') }}" method="POST">
                         @csrf
                         <div class="mb-4">
-                            <label class="form-label text-muted small text-uppercase fw-bold">Deposit Amount (USD) <span class="text-warning fw-normal">(Min: ${{ setting('min_deposit', 25) }} | Max: ${{ setting('max_deposit', 50000) }})</span></label>
+                            <label class="form-label text-muted small text-uppercase fw-bold">Deposit Amount (USD) <span class="text-warning fw-normal">(Min: ${{ $autoMin }} | Max: ${{ $autoMax }})</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-dark border-secondary text-muted">$</span>
-                                <input type="number" step="0.01" min="{{ setting('min_deposit', 25) }}" max="{{ setting('max_deposit', 50000) }}" name="amount" class="form-control bg-transparent border-secondary text-white focus-ring" placeholder="Enter amount to pay..." required>
+                                <input type="number" step="0.01" min="{{ $autoMin }}" max="{{ $autoMax }}" name="amount" class="form-control bg-transparent border-secondary text-white focus-ring" placeholder="Enter amount to pay..." required>
                             </div>
                             <small class="text-muted mt-2 d-block"><i class="bi bi-shield-check text-info me-1"></i> Checkout securely using NOWPayments gateway. Instant confirmation.</small>
                         </div>
                         <button type="submit" class="btn btn-premium w-100 py-2 fw-bold"><i class="bi bi-lightning-charge me-1"></i> Pay with NOWPayments</button>
                     </form>
                 </div>
+                @endif
 
                 <!-- Manual Deposit -->
-                <div class="tab-pane fade" id="manual-deposit" role="tabpanel">
+                <div class="tab-pane fade {{ !$autoEnabled ? 'show active' : '' }}" id="manual-deposit" role="tabpanel">
                     <div class="mb-4 text-center p-4 rounded" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.2);">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ $adminAddress }}&color=fff&bgcolor=1e293b" class="img-fluid rounded mb-3" alt="QR Code">
                         <h6 class="text-muted text-uppercase small mb-1">Company USDT (TRC20) Address</h6>

@@ -207,8 +207,79 @@ assertTest($response->getContent() === "Allowed" && $response->getStatusCode() =
 Setting::where('key', 'maintenance_mode')->update(['value' => '0']);
 \Illuminate\Support\Facades\Cache::forget('setting_maintenance_mode');
 
+// --------------------------------------------------
+// 6.5. EMAIL BRANDING & NOWPAYMENTS IPN WEBHOOK TEST
+// --------------------------------------------------
+echo "\nTesting Email Branding & NOWPayments Webhook...\n";
+
+// Set sandbox mode, keys, and default coin settings in settings table
+Setting::updateOrCreate(['key' => 'nowpayments_enabled'], ['value' => '1']);
+Setting::updateOrCreate(['key' => 'nowpayments_sandbox_mode'], ['value' => '1']);
+Setting::updateOrCreate(['key' => 'nowpayments_api_key'], ['value' => 'TEST_API_KEY']);
+Setting::updateOrCreate(['key' => 'nowpayments_ipn_secret'], ['value' => 'TEST_IPN_SECRET']);
+Setting::updateOrCreate(['key' => 'nowpayments_default_coin'], ['value' => 'usdt']);
+Setting::updateOrCreate(['key' => 'nowpayments_default_network'], ['value' => 'trc20']);
+Setting::updateOrCreate(['key' => 'nowpayments_min_deposit'], ['value' => '10']);
+Setting::updateOrCreate(['key' => 'nowpayments_max_deposit'], ['value' => '10000']);
+
+// Forget cached values
+foreach (['nowpayments_enabled', 'nowpayments_sandbox_mode', 'nowpayments_api_key', 'nowpayments_ipn_secret', 'nowpayments_default_coin', 'nowpayments_default_network', 'nowpayments_min_deposit', 'nowpayments_max_deposit'] as $k) {
+    \Illuminate\Support\Facades\Cache::forget("setting_{$k}");
+}
+
+// 1. Verify AppServiceProvider set dynamic email from brand correctly
+\App\Providers\AppServiceProvider::loadDynamicMailConfig();
+assertTest(config('mail.from.name') === setting('site_name', 'FutureGrowth.tech'), "Dynamic email sender name configured correctly: " . config('mail.from.name'));
+
+// Create a pending deposit for verification
+$deposit = \App\Models\Deposit::create([
+    'user_id' => $user->id,
+    'amount' => 50,
+    'txid' => 'NOW_12345678',
+    'status' => 'pending'
+]);
+
+// Build mock payload for confirmed payment
+$payload = [
+    'payment_id' => '12345678',
+    'payment_status' => 'confirmed',
+    'pay_address' => '0xMockAddress',
+    'price_amount' => '50.00',
+    'price_currency' => 'usd',
+    'pay_amount' => '50.00',
+    'pay_currency' => 'usdttrc20',
+    'order_id' => (string) $deposit->id,
+];
+
+// Sort payload keys alphabetically
+$signPayload = $payload;
+ksort($signPayload);
+unset($signPayload['signature']);
+$serialized = json_encode($signPayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$signature = hash_hmac('sha512', $serialized, 'TEST_IPN_SECRET');
+
+// Construct mock request for IPN
+$ipnRequest = createRequest('/payment/nowpayments/webhook', 'POST', $payload);
+$ipnRequest->headers->set('x-nowpayments-sig', $signature);
+
+// Resolve controller and handle webhook
+$nowpaymentsController = new \App\Http\Controllers\NOWPaymentsController(new \App\Services\NOWPaymentsService());
+$response = $nowpaymentsController->ipnCallback($ipnRequest);
+
+// Assert the deposit is automatically approved and wallet is credited
+$deposit->refresh();
+assertTest($deposit->status === 'approved', "Deposit status is automatically approved via valid IPN callback");
+
+$wallet = \App\Models\Wallet::where('user_id', $user->id)->first();
+assertTest($wallet->deposit_balance == 50, "User wallet is automatically credited with deposit amount: $" . $wallet->deposit_balance);
+
+// Cleanup deposit and wallet balance
+$deposit->delete();
+$wallet->deposit_balance = 0;
+$wallet->save();
+
 // Clean up test user
-User::where('email', 'testuser@example.com')->delete();
+\App\Models\User::where('email', 'testuser@example.com')->delete();
 
 // --------------------------------------------------
 // 7. COMPLETED SUCCESS

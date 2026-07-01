@@ -36,6 +36,12 @@ class AppServiceProvider extends ServiceProvider
             if (\Illuminate\Support\Facades\Schema::hasTable('settings')) {
                 \Illuminate\Support\Facades\Log::info('loadDynamicMailConfig: settings table exists.');
                 
+                // Set default sender brand name and address dynamically from settings
+                config([
+                    'mail.from.name' => setting('site_name', 'FutureGrowth.tech'),
+                    'mail.from.address' => setting('smtp_from_address', 'hello@futuregrowth.tech'),
+                ]);
+                
                 // Clear cached configurations to read live database settings
                 \Illuminate\Support\Facades\Cache::forget('setting_smtp_host');
                 \Illuminate\Support\Facades\Cache::forget('setting_smtp_username');

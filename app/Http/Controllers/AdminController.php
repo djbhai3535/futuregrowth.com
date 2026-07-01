@@ -67,6 +67,12 @@ class AdminController extends Controller
         if (empty($data['recaptcha_secret_key'])) {
             unset($data['recaptcha_secret_key']);
         }
+        if (empty($data['nowpayments_api_key'])) {
+            unset($data['nowpayments_api_key']);
+        }
+        if (empty($data['nowpayments_ipn_secret'])) {
+            unset($data['nowpayments_ipn_secret']);
+        }
 
         // Handle File Uploads
         $fileKeys = ['site_logo', 'site_favicon', 'footer_logo', 'site_og_image'];

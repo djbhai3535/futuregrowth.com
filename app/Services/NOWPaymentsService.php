@@ -7,15 +7,29 @@ use Illuminate\Support\Facades\Log;
 
 class NOWPaymentsService
 {
-    protected $apiKey;
-    protected $ipnSecret;
-    protected $apiUrl;
-
-    public function __construct()
+    /**
+     * Get API Key dynamically from settings
+     */
+    protected function getApiKey()
     {
-        $this->apiKey = env('NOWPAYMENTS_API_KEY');
-        $this->ipnSecret = env('NOWPAYMENTS_IPN_SECRET');
-        $this->apiUrl = 'https://api.nowpayments.io/v1';
+        return setting('nowpayments_api_key', env('NOWPAYMENTS_API_KEY'));
+    }
+
+    /**
+     * Get IPN Secret dynamically from settings
+     */
+    protected function getIpnSecret()
+    {
+        return setting('nowpayments_ipn_secret', env('NOWPAYMENTS_IPN_SECRET'));
+    }
+
+    /**
+     * Get API URL dynamically based on Sandbox/Live setting
+     */
+    protected function getApiUrl()
+    {
+        $sandbox = setting('nowpayments_sandbox_mode', 0);
+        return $sandbox == 1 ? 'https://api-sandbox.nowpayments.io/v1' : 'https://api.nowpayments.io/v1';
     }
 
     /**
@@ -23,19 +37,26 @@ class NOWPaymentsService
      */
     public function createPayment($amount, $orderId, $callbackUrl)
     {
-        if (empty($this->apiKey)) {
-            Log::error('NOWPayments API Key is not set in environment variables.');
+        $apiKey = $this->getApiKey();
+        $apiUrl = $this->getApiUrl();
+
+        if (empty($apiKey)) {
+            Log::error('NOWPayments API Key is not set in settings.');
             return null;
         }
 
+        $coin = setting('nowpayments_default_coin', 'usdt');
+        $network = setting('nowpayments_default_network', 'trc20');
+        $payCurrency = strtolower($coin . $network);
+
         $response = Http::withHeaders([
-            'x-api-key' => $this->apiKey,
+            'x-api-key' => $apiKey,
             'Content-Type' => 'application/json',
-        ])->post($this->apiUrl . '/payment', [
+        ])->post($apiUrl . '/payment', [
             'price_amount' => $amount,
             'price_currency' => 'usd',
             'pay_amount' => $amount,
-            'pay_currency' => 'usdttrc20',
+            'pay_currency' => $payCurrency,
             'order_id' => $orderId,
             'order_description' => 'USDT Deposit order #' . $orderId,
             'ipn_callback_url' => $callbackUrl,
@@ -58,7 +79,9 @@ class NOWPaymentsService
      */
     public function verifyIPN(array $payload, $signature)
     {
-        if (empty($signature) || empty($this->ipnSecret)) {
+        $ipnSecret = $this->getIpnSecret();
+
+        if (empty($signature) || empty($ipnSecret)) {
             Log::warning('NOWPayments verification aborted: Missing signature or IPN secret.');
             return false;
         }
@@ -71,7 +94,7 @@ class NOWPaymentsService
 
         $serializedPayload = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         
-        $calculatedSignature = hash_hmac('sha512', $serializedPayload, $this->ipnSecret);
+        $calculatedSignature = hash_hmac('sha512', $serializedPayload, $ipnSecret);
 
         return hash_equals($calculatedSignature, $signature);
     }
