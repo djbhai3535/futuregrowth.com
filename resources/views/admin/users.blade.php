@@ -4,161 +4,234 @@
 <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-down">
     <div>
         <h2 class="fw-bold mb-1 text-warning"><i class="bi bi-people-fill me-2"></i> User Directory</h2>
-        <p class="text-muted small">View, search, ban/unban users, and manage account details.</p>
+        <p class="text-muted small">Manage, filter, sort, audit, and inspect platform users.</p>
     </div>
-    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('admin.reports') }}" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-bar-graph"></i> Export Reports</a>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+    </div>
 </div>
 
+<!-- Search & Filters -->
 <div class="glass-card p-4 mb-4" data-aos="fade-up">
     <form action="{{ route('admin.users') }}" method="GET" class="row g-3">
-        <div class="col-md-9">
+        <!-- Search input -->
+        <div class="col-md-4">
+            <label class="form-label text-muted small fw-bold">Search</label>
             <div class="input-group">
                 <span class="input-group-text bg-dark border-secondary text-muted"><i class="bi bi-search"></i></span>
-                <input type="text" name="search" class="form-control bg-dark border-secondary text-white" placeholder="Search by name, username, email or phone..." value="{{ request('search') }}">
+                <input type="text" name="search" class="form-control bg-dark border-secondary text-white" placeholder="Search name, username, email, phone..." value="{{ request('search') }}">
             </div>
         </div>
-        <div class="col-md-3 d-flex gap-2">
-            <button type="submit" class="btn btn-warning fw-bold flex-grow-1">Search</button>
-            @if(request('search'))
-                <a href="{{ route('admin.users') }}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
-            @endif
+
+        <!-- Status Filter -->
+        <div class="col-md-2">
+            <label class="form-label text-muted small fw-bold">Status</label>
+            <select name="status" class="form-select bg-dark border-secondary text-white">
+                <option value="">All Statuses</option>
+                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                <option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }}>Suspended</option>
+                <option value="banned" {{ request('status') === 'banned' ? 'selected' : '' }}>Banned</option>
+            </select>
+        </div>
+
+        <!-- Verification Filter -->
+        <div class="col-md-2">
+            <label class="form-label text-muted small fw-bold">Email Status</label>
+            <select name="email_verified" class="form-select bg-dark border-secondary text-white">
+                <option value="">All</option>
+                <option value="verified" {{ request('email_verified') === 'verified' ? 'selected' : '' }}>Verified</option>
+                <option value="unverified" {{ request('email_verified') === 'unverified' ? 'selected' : '' }}>Unverified</option>
+            </select>
+        </div>
+
+        <!-- Role Filter -->
+        <div class="col-md-2">
+            <label class="form-label text-muted small fw-bold">Role</label>
+            <select name="role" class="form-select bg-dark border-secondary text-white">
+                <option value="">All Roles</option>
+                <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>User</option>
+                <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Administrator</option>
+            </select>
+        </div>
+
+        <!-- Sort By -->
+        <div class="col-md-2">
+            <label class="form-label text-muted small fw-bold">Sort By</label>
+            <div class="input-group">
+                <select name="sort_by" class="form-select bg-dark border-secondary text-white">
+                    <option value="created_at" {{ request('sort_by') === 'created_at' ? 'selected' : '' }}>Reg Date</option>
+                    <option value="id" {{ request('sort_by') === 'id' ? 'selected' : '' }}>ID</option>
+                    <option value="name" {{ request('sort_by') === 'name' ? 'selected' : '' }}>Name</option>
+                    <option value="email" {{ request('sort_by') === 'email' ? 'selected' : '' }}>Email</option>
+                    <option value="status" {{ request('sort_by') === 'status' ? 'selected' : '' }}>Status</option>
+                </select>
+                <select name="sort_order" class="form-select bg-dark border-secondary text-white" style="max-width: 65px;">
+                    <option value="desc" {{ request('sort_order') === 'desc' ? 'selected' : '' }}>↓</option>
+                    <option value="asc" {{ request('sort_order') === 'asc' ? 'selected' : '' }}>↑</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+            <a href="{{ route('admin.users') }}" class="btn btn-outline-secondary">Reset Filters</a>
+            <button type="submit" class="btn btn-warning fw-bold px-4">Apply Filters</button>
         </div>
     </form>
 </div>
 
+<!-- Users Table Card -->
 <div class="glass-card p-4" data-aos="fade-up" data-aos-delay="100">
     <div class="table-responsive">
-        <table class="table table-dark table-hover align-middle mb-0">
+        <table class="table table-dark table-hover align-middle mb-0 small">
             <thead>
                 <tr>
-                    <th>User Detail</th>
-                    <th>Wallet Balances</th>
-                    <th>Status</th>
-                    <th>Joined Date</th>
+                    <th>User ID</th>
+                    <th>User Details</th>
+                    <th>Referrals</th>
+                    <th>Balances</th>
+                    <th>Finances (Dep / With / Inv / ROI)</th>
+                    <th>Verification & Status</th>
+                    <th>Last Login</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($users as $user)
+                    @php
+                        $wallet = $user->wallet;
+                        $totalBalance = $wallet ? ($wallet->deposit_balance + $wallet->roi_balance + $wallet->referral_balance + $wallet->bonus_balance) : 0;
+                        
+                        // Finances calculations
+                        $totalDep = \App\Models\Deposit::where('user_id', $user->id)->where('status', 'approved')->sum('amount');
+                        $totalWith = \App\Models\Withdrawal::where('user_id', $user->id)->where('status', 'approved')->sum('amount');
+                        $totalInv = \App\Models\Investment::where('user_id', $user->id)->sum('amount');
+                        $totalEarnedRoi = \App\Models\Investment::where('user_id', $user->id)->sum('total_earned');
+                        $refIncome = \App\Models\Transaction::where('user_id', $user->id)->where('type', 'commission')->sum('amount');
+
+                        // Team size levels calculation
+                        $teamSize = 0;
+                        $currentLevelReferrals = \App\Models\User::where('referred_by', $user->id)->get();
+                        for ($i = 1; $i <= 10; $i++) {
+                            if ($currentLevelReferrals->isEmpty()) break;
+                            $teamSize += $currentLevelReferrals->count();
+                            $userIds = $currentLevelReferrals->pluck('id');
+                            $currentLevelReferrals = \App\Models\User::whereIn('referred_by', $userIds)->get();
+                        }
+
+                        // Last login log
+                        $loginLog = $user->activityLogs()->where('action', 'Logged in')->latest()->first();
+                    @endphp
                     <tr>
+                        <td><strong class="text-warning">#{{ $user->id }}</strong></td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <div class="bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm me-3 text-white" style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #8b5cf6);">
+                                <div class="bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm me-3 text-white" style="width: 38px; height: 38px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); flex-shrink: 0;">
                                     {{ substr($user->name, 0, 1) }}
                                 </div>
                                 <div>
-                                    <h6 class="fw-bold text-white mb-0">{{ $user->name }} <small class="text-info">({{ $user->username }})</small></h6>
-                                    <small class="text-muted d-block">{{ $user->email }} | {{ $user->phone }}</small>
-                                    @if($user->is_admin)
-                                        <span class="badge bg-warning text-dark mt-1">Administrator</span>
-                                    @endif
+                                    <div class="fw-bold text-white">{{ $user->name }} <span class="text-info small">({{ $user->username }})</span></div>
+                                    <small class="text-muted d-block">{{ $user->email }}</small>
+                                    <small class="text-muted d-block">{{ $user->phone }}</small>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            @php
-                                $wallet = $user->wallet;
-                            @endphp
-                            @if($wallet)
-                                <div class="row g-1" style="max-width: 320px; font-size: 0.8rem;">
-                                    <div class="col-6"><span class="text-muted">Deposit:</span> <strong class="text-white">${{ number_format($wallet->deposit_balance, 2) }}</strong></div>
-                                    <div class="col-6"><span class="text-success">ROI:</span> <strong class="text-success">${{ number_format($wallet->roi_balance, 2) }}</strong></div>
-                                    <div class="col-6"><span class="text-primary">Referral:</span> <strong class="text-primary">${{ number_format($wallet->referral_balance, 2) }}</strong></div>
-                                    <div class="col-6"><span class="text-warning">Bonus:</span> <strong class="text-warning">${{ number_format($wallet->bonus_balance, 2) }}</strong></div>
-                                </div>
-                            @else
-                                <span class="text-danger small">No Wallet Setup</span>
-                            @endif
+                            <div><span class="text-muted">Code:</span> <code class="text-warning fw-bold">{{ $user->referral_code }}</code></div>
+                            <div><span class="text-muted">Upline:</span> <small class="text-white">{{ $user->referrer ? $user->referrer->username : 'None' }}</small></div>
+                            <div><span class="text-muted">Team Size:</span> <span class="badge bg-secondary">{{ $teamSize }}</span></div>
                         </td>
                         <td>
-                            @if($user->status === 'active')
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><i class="bi bi-check-circle"></i> Active</span>
+                            <div><span class="text-muted">Total:</span> <strong class="text-white">${{ number_format($totalBalance, 2) }}</strong></div>
+                            <div><span class="text-muted">Bonus:</span> <strong class="text-warning">${{ number_format($wallet ? $wallet->bonus_balance : 0, 2) }}</strong></div>
+                        </td>
+                        <td>
+                            <div><span class="text-muted">Deposits:</span> <strong class="text-success">${{ number_format($totalDep, 2) }}</strong></div>
+                            <div><span class="text-muted">Withdrawals:</span> <strong class="text-danger">${{ number_format($totalWith, 2) }}</strong></div>
+                            <div><span class="text-muted">Investments:</span> <strong class="text-info">${{ number_format($totalInv, 2) }}</strong></div>
+                            <div><span class="text-muted">ROI / Ref Inc:</span> <strong class="text-warning">${{ number_format($totalEarnedRoi, 2) }}</strong> / <strong class="text-primary">${{ number_format($refIncome, 2) }}</strong></div>
+                        </td>
+                        <td>
+                            <div class="mb-1">
+                                @if($user->email_verified_at)
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-0.5"><i class="bi bi-shield-check"></i> Verified</span>
+                                @else
+                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-0.5"><i class="bi bi-shield-exclamation"></i> Unverified</span>
+                                @endif
+                            </div>
+                            <div>
+                                @if($user->status === 'active')
+                                    <span class="badge bg-success text-white px-2 py-0.5">Active</span>
+                                @elseif($user->status === 'suspended')
+                                    <span class="badge bg-warning text-dark px-2 py-0.5">Suspended</span>
+                                @else
+                                    <span class="badge bg-danger text-white px-2 py-0.5">Banned</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td>
+                            @if($loginLog)
+                                <div class="text-white">{{ $loginLog->created_at->format('M d, Y') }}</div>
+                                <small class="text-muted d-block">{{ $loginLog->created_at->format('H:i') }} ({{ $loginLog->ip_address }})</small>
                             @else
-                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1"><i class="bi bi-x-circle"></i> Banned</span>
+                                <span class="text-muted small">No record</span>
                             @endif
                         </td>
-                        <td class="text-muted small">{{ $user->created_at->format('M d, Y') }}</td>
                         <td class="text-end">
-                            <div class="d-flex justify-content-end gap-2">
-                                <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#userModal{{ $user->id }}" title="View Profile Detail"><i class="bi bi-eye"></i></button>
-                                <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#passModal{{ $user->id }}" title="Reset Password"><i class="bi bi-key"></i></button>
+                            <div class="d-flex justify-content-end gap-1">
+                                <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-outline-info" title="View Profile & Manage Tabs"><i class="bi bi-eye"></i></a>
                                 
                                 @if($user->id !== Auth::id())
-                                    <form action="{{ route('admin.users.toggle-status', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to change this user\'s access status?')">
-                                        @csrf
-                                        @if($user->status === 'active')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Ban User"><i class="bi bi-slash-circle"></i></button>
-                                        @else
-                                            <button type="submit" class="btn btn-sm btn-outline-success" title="Unban User"><i class="bi bi-check-circle"></i></button>
-                                        @endif
-                                    </form>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end glass-card border-secondary">
+                                            <li>
+                                                <form action="{{ route('admin.users.activate', $user->id) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item text-success"><i class="bi bi-check-circle me-2"></i> Activate Account</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('admin.users.suspend', $user->id) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item text-warning"><i class="bi bi-pause-circle me-2"></i> Suspend Account</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('admin.users.ban', $user->id) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item text-danger"><i class="bi bi-slash-circle me-2"></i> Ban User</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('admin.users.verify-email', $user->id) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item text-info"><i class="bi bi-envelope-check me-2"></i> Verify Email</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('admin.users.reset-password-auto', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to generate a new random password for this user?')">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item text-light"><i class="bi bi-key me-2"></i> Reset Password (Auto)</button>
+                                                </form>
+                                            </li>
+                                            <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                                            <li>
+                                                <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to soft delete this user?')">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item text-danger fw-bold"><i class="bi bi-trash me-2"></i> Soft Delete User</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 @endif
                             </div>
                         </td>
                     </tr>
-
-                    <!-- Details Modal -->
-                    <div class="modal fade" id="userModal{{ $user->id }}" tabindex="-1" aria-hidden="true" data-bs-theme="dark">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content bg-dark border border-secondary border-opacity-50 rounded-4">
-                                <div class="modal-header border-bottom border-secondary border-opacity-25">
-                                    <h5 class="modal-title fw-bold text-white"><i class="bi bi-person-badge text-warning me-2"></i> User Card: {{ $user->username }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body p-4 text-white">
-                                    <div class="text-center mb-4">
-                                        <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center fw-bold text-white fs-2 mb-2" style="width: 70px; height: 70px; background: linear-gradient(135deg, #3b82f6, #8b5cf6);">
-                                            {{ substr($user->name, 0, 1) }}
-                                        </div>
-                                        <h5 class="fw-bold mb-1">{{ $user->name }}</h5>
-                                        <span class="text-muted small">ID: #{{ $user->id }}</span>
-                                    </div>
-                                    <ul class="list-group list-group-flush bg-transparent">
-                                        <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-white d-flex justify-content-between px-0"><span class="text-muted">Username</span> <span>{{ $user->username }}</span></li>
-                                        <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-white d-flex justify-content-between px-0"><span class="text-muted">Email Address</span> <span>{{ $user->email }}</span></li>
-                                        <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-white d-flex justify-content-between px-0"><span class="text-muted">Phone Number</span> <span>{{ $user->phone }}</span></li>
-                                        <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-white d-flex justify-content-between px-0"><span class="text-muted">Referral Code</span> <code class="text-warning fw-bold">{{ $user->referral_code }}</code></li>
-                                        <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-white d-flex justify-content-between px-0"><span class="text-muted">Upline ID</span> <span>{{ $user->referred_by ?? 'None (Direct registration)' }}</span></li>
-                                        <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-white d-flex justify-content-between px-0"><span class="text-muted">Total Investments</span> <span>${{ number_format(\App\Models\Investment::where('user_id', $user->id)->sum('amount'), 2) }}</span></li>
-                                        <li class="list-group-item bg-transparent border-secondary border-opacity-25 text-white d-flex justify-content-between px-0"><span class="text-muted">Direct Referrals</span> <span>{{ \App\Models\User::where('referred_by', $user->id)->count() }}</span></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Reset Password Modal -->
-                    <div class="modal fade" id="passModal{{ $user->id }}" tabindex="-1" aria-hidden="true" data-bs-theme="dark">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content bg-dark border border-secondary border-opacity-50 rounded-4">
-                                <div class="modal-header border-bottom border-secondary border-opacity-25">
-                                    <h5 class="modal-title fw-bold text-white"><i class="bi bi-key text-warning me-2"></i> Reset Password</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <form action="{{ route('admin.users.reset-password', $user->id) }}" method="POST">
-                                    @csrf
-                                    <div class="modal-body p-4">
-                                        <p class="text-muted small mb-3">Resetting password for <strong>{{ $user->name }} ({{ $user->username }})</strong>.</p>
-                                        <div class="mb-3">
-                                            <label class="form-label text-muted small">New Password</label>
-                                            <input type="password" name="password" class="form-control bg-dark border-secondary text-white" required minlength="8">
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label text-muted small">Confirm New Password</label>
-                                            <input type="password" name="password_confirmation" class="form-control bg-dark border-secondary text-white" required minlength="8">
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer border-top border-secondary border-opacity-25">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-sm btn-warning fw-bold">Reset Password</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">
+                        <td colspan="8" class="text-center py-5 text-muted">
                             <i class="bi bi-people fs-2 mb-2 d-block opacity-50"></i>
                             No users matched your query.
                         </td>

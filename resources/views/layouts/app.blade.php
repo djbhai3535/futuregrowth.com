@@ -277,8 +277,22 @@
                         <a class="nav-link {{ request()->routeIs('dashboard.settings') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.settings') }}">Settings</a>
                     </li>
                     @if(auth()->user()->is_admin)
-                    <li class="nav-item">
-                        <a class="nav-link text-warning fw-bold" href="{{ route('admin.dashboard') }}">Admin Panel</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-warning fw-bold {{ request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*') ? 'active' : '' }}" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-shield-lock me-1"></i> Admin Panel
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark glass-card border-warning border-opacity-25 shadow-lg mt-2" aria-labelledby="adminDropdown">
+                            <li><a class="dropdown-item py-2" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 text-info me-2"></i> Dashboard</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('admin.users') }}"><i class="bi bi-people text-warning me-2"></i> Users Directory</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('admin.deposits') }}"><i class="bi bi-arrow-down-circle text-success me-2"></i> Deposits</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('admin.withdrawals') }}"><i class="bi bi-arrow-up-circle text-danger me-2"></i> Withdrawals</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('admin.plans') }}"><i class="bi bi-box text-info me-2"></i> Investment Plans</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('admin.tickets') }}"><i class="bi bi-headset text-primary me-2"></i> Support Tickets</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('admin.audit-logs') }}"><i class="bi bi-journal-text text-light me-2"></i> Audit Logs</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('admin.reports') }}"><i class="bi bi-file-earmark-bar-graph text-success me-2"></i> Reports & Export</a></li>
+                            <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('admin.settings') }}"><i class="bi bi-gear text-warning me-2"></i> Platform Settings</a></li>
+                        </ul>
                     </li>
                     @endif
                     @endauth

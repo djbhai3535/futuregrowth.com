@@ -96,8 +96,21 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix($adminSecret)->name(
     Route::post('/withdrawals/{id}/reject', [\App\Http\Controllers\AdminController::class, 'rejectWithdrawal'])->name('withdrawals.reject');
     
     Route::get('/users', [\App\Http\Controllers\AdminController::class, 'users'])->name('users');
-    Route::post('/users/{id}/toggle-status', [\App\Http\Controllers\AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
+    Route::get('/users/{id}', [\App\Http\Controllers\AdminController::class, 'showUser'])->name('users.show');
+    Route::post('/users/{id}/update', [\App\Http\Controllers\AdminController::class, 'updateUser'])->name('users.update');
+    Route::post('/users/{id}/activate', [\App\Http\Controllers\AdminController::class, 'activateUser'])->name('users.activate');
+    Route::post('/users/{id}/suspend', [\App\Http\Controllers\AdminController::class, 'suspendUser'])->name('users.suspend');
+    Route::post('/users/{id}/ban', [\App\Http\Controllers\AdminController::class, 'banUser'])->name('users.ban');
+    Route::post('/users/{id}/delete', [\App\Http\Controllers\AdminController::class, 'deleteUser'])->name('users.delete');
+    Route::post('/users/{id}/change-password', [\App\Http\Controllers\AdminController::class, 'changeUserPassword'])->name('users.change-password');
     Route::post('/users/{id}/reset-password', [\App\Http\Controllers\AdminController::class, 'resetUserPassword'])->name('users.reset-password');
+    Route::post('/users/{id}/reset-password-auto', [\App\Http\Controllers\AdminController::class, 'resetUserPasswordAuto'])->name('users.reset-password-auto');
+    Route::post('/users/{id}/verify-email', [\App\Http\Controllers\AdminController::class, 'verifyUserEmail'])->name('users.verify-email');
+    
+    // Reports & Audit Logs
+    Route::get('/audit-logs', [\App\Http\Controllers\AdminController::class, 'auditLogs'])->name('audit-logs');
+    Route::get('/reports', [\App\Http\Controllers\AdminController::class, 'reports'])->name('reports');
+    Route::get('/reports/export', [\App\Http\Controllers\AdminController::class, 'exportReport'])->name('reports.export');
     Route::get('/plans', [\App\Http\Controllers\AdminController::class, 'plans'])->name('plans');
     Route::post('/plans', [\App\Http\Controllers\AdminController::class, 'storePlan'])->name('plans.store');
     Route::post('/plans/{id}/update', [\App\Http\Controllers\AdminController::class, 'updatePlan'])->name('plans.update');

@@ -6,10 +6,37 @@
         <h2 class="fw-bold mb-1 text-warning"><i class="bi bi-arrow-down-circle-fill me-2"></i> Deposits Center</h2>
         <p class="text-muted small">Verify TXIDs and approve or reject client USDT deposits.</p>
     </div>
-    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('admin.reports') }}?type=deposits" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-bar-graph"></i> Export Deposits</a>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+    </div>
 </div>
 
-<div class="glass-card p-4" data-aos="fade-up">
+<div class="glass-card p-4 mb-4" data-aos="fade-up">
+    <form action="{{ route('admin.deposits') }}" method="GET" class="row g-3 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label text-muted small fw-bold">Search Deposits</label>
+            <input type="text" name="search" class="form-control bg-dark border-secondary text-white" placeholder="Search by TXID, Amount, User name, email..." value="{{ request('search') }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label text-muted small fw-bold">Status Filter</label>
+            <select name="status" class="form-select bg-dark border-secondary text-white">
+                <option value="">All Statuses</option>
+                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Approved</option>
+                <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+            </select>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button type="submit" class="btn btn-warning fw-bold flex-grow-1">Search & Filter</button>
+            @if(request('search') || request('status'))
+                <a href="{{ route('admin.deposits') }}" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
+            @endif
+        </div>
+    </form>
+</div>
+
+<div class="glass-card p-4" data-aos="fade-up" data-aos-delay="100">
     <div class="table-responsive">
         <table class="table table-dark table-hover align-middle mb-0">
             <thead>
@@ -26,8 +53,12 @@
                 @forelse($deposits as $dep)
                     <tr>
                         <td>
-                            <h6 class="fw-bold text-white mb-0">{{ $dep->user->name }}</h6>
-                            <small class="text-muted d-block">{{ $dep->user->email }} | {{ $dep->user->username }}</small>
+                            @if($dep->user)
+                                <h6 class="fw-bold text-white mb-0">{{ $dep->user->name }}</h6>
+                                <small class="text-muted d-block">{{ $dep->user->email }} | {{ $dep->user->username }}</small>
+                            @else
+                                <span class="text-danger small">Deleted User</span>
+                            @endif
                         </td>
                         <td class="fw-bold text-success">${{ number_format($dep->amount, 2) }}</td>
                         <td>
