@@ -36,6 +36,41 @@
                 <div class="tab-pane fade show active" id="auto-deposit" role="tabpanel">
                     <form action="{{ route('dashboard.deposits.nowpayments') }}" method="POST">
                         @csrf
+                        
+                        @php
+                            $trc20Enabled = setting('nowpayments_enable_trc20', 1) == 1;
+                            $bep20Enabled = setting('nowpayments_enable_bep20', 1) == 1;
+                            $defaultNetwork = setting('nowpayments_default_network', 'trc20');
+                        @endphp
+
+                        @if($trc20Enabled || $bep20Enabled)
+                        <div class="mb-4">
+                            <label class="form-label text-muted small text-uppercase fw-bold">Select USDT Network</label>
+                            <div class="d-flex gap-3">
+                                @if($trc20Enabled)
+                                <div class="form-check flex-grow-1 p-0">
+                                    <input type="radio" class="btn-check" name="network" id="net-trc20" value="trc20" {{ $defaultNetwork === 'trc20' || !$bep20Enabled ? 'checked' : '' }} required>
+                                    <label class="btn btn-outline-warning w-100 py-3 fw-bold" for="net-trc20">
+                                        <i class="bi bi-cpu me-1"></i> USDT (TRC20)
+                                    </label>
+                                </div>
+                                @endif
+                                @if($bep20Enabled)
+                                <div class="form-check flex-grow-1 p-0">
+                                    <input type="radio" class="btn-check" name="network" id="net-bep20" value="bep20" {{ $defaultNetwork === 'bep20' || !$trc20Enabled ? 'checked' : '' }} required>
+                                    <label class="btn btn-outline-warning w-100 py-3 fw-bold" for="net-bep20">
+                                        <i class="bi bi-shield-fill-check me-1"></i> USDT (BEP20)
+                                    </label>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        @else
+                        <div class="alert alert-danger mb-4">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> No USDT networks are currently enabled by the administrator.
+                        </div>
+                        @endif
+
                         <div class="mb-4">
                             <label class="form-label text-muted small text-uppercase fw-bold">Deposit Amount (USD) <span class="text-warning fw-normal">(Min: ${{ $autoMin }} | Max: ${{ $autoMax }})</span></label>
                             <div class="input-group">

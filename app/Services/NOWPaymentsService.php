@@ -35,7 +35,7 @@ class NOWPaymentsService
     /**
      * Create payment request with NOWPayments gateway
      */
-    public function createPayment($amount, $orderId, $callbackUrl)
+    public function createPayment($amount, $orderId, $callbackUrl, $network = null)
     {
         $apiKey = $this->getApiKey();
         $apiUrl = $this->getApiUrl();
@@ -45,9 +45,20 @@ class NOWPaymentsService
             return null;
         }
 
-        $coin = setting('nowpayments_default_coin', 'usdt');
-        $network = setting('nowpayments_default_network', 'trc20');
-        $payCurrency = strtolower($coin . $network);
+        $coin = strtolower(setting('nowpayments_default_coin', 'usdt'));
+        if (!$network) {
+            $network = setting('nowpayments_default_network', 'trc20');
+        }
+
+        if ($coin === 'usdt') {
+            if (strtolower($network) === 'bep20') {
+                $payCurrency = 'usdtbsc';
+            } else {
+                $payCurrency = 'usdttrc20';
+            }
+        } else {
+            $payCurrency = $coin . strtolower($network);
+        }
 
         $response = Http::withHeaders([
             'x-api-key' => $apiKey,

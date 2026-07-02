@@ -245,8 +245,25 @@
                         <input type="text" name="nowpayments_default_coin" class="form-control bg-dark border-secondary text-white" value="{{ setting('nowpayments_default_coin', 'usdt') }}" placeholder="e.g. usdt">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-muted small fw-bold">Default Network</label>
-                        <input type="text" name="nowpayments_default_network" class="form-control bg-dark border-secondary text-white" value="{{ setting('nowpayments_default_network', 'trc20') }}" placeholder="e.g. trc20">
+                        <label class="form-label text-muted small fw-bold">Enable TRC20 Network</label>
+                        <select name="nowpayments_enable_trc20" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('nowpayments_enable_trc20', 1) == 1 ? 'selected' : '' }}>Yes</option>
+                            <option value="0" {{ setting('nowpayments_enable_trc20', 1) == 0 ? 'selected' : '' }}>No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">Enable BEP20 Network</label>
+                        <select name="nowpayments_enable_bep20" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('nowpayments_enable_bep20', 1) == 1 ? 'selected' : '' }}>Yes</option>
+                            <option value="0" {{ setting('nowpayments_enable_bep20', 1) == 0 ? 'selected' : '' }}>No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">Default Selected Network</label>
+                        <select name="nowpayments_default_network" class="form-control bg-dark border-secondary text-white">
+                            <option value="trc20" {{ setting('nowpayments_default_network', 'trc20') === 'trc20' ? 'selected' : '' }}>USDT (TRC20)</option>
+                            <option value="bep20" {{ setting('nowpayments_default_network', 'trc20') === 'bep20' ? 'selected' : '' }}>USDT (BEP20)</option>
+                        </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label text-muted small fw-bold">NOWPayments API Key</label>

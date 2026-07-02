@@ -25,15 +25,29 @@ class NOWPaymentsController extends Controller
      */
     public function initiatePayment(Request $request)
     {
-        $min = setting('min_deposit', 25);
-        $max = setting('max_deposit', 50000);
+        $min = setting('nowpayments_min_deposit', setting('min_deposit', 25));
+        $max = setting('nowpayments_max_deposit', setting('max_deposit', 50000));
+
+        // Fetch enabled networks
+        $trc20Enabled = setting('nowpayments_enable_trc20', 1) == 1;
+        $bep20Enabled = setting('nowpayments_enable_bep20', 1) == 1;
+
+        $allowedNetworks = [];
+        if ($trc20Enabled) $allowedNetworks[] = 'trc20';
+        if ($bep20Enabled) $allowedNetworks[] = 'bep20';
+
+        if (empty($allowedNetworks)) {
+            return back()->withErrors(['amount' => 'NOWPayments deposit is currently offline. No networks are enabled.']);
+        }
 
         $request->validate([
             'amount' => "required|numeric|min:{$min}|max:{$max}",
+            'network' => "required|in:" . implode(',', $allowedNetworks),
         ]);
 
         $user = Auth::user();
         $amount = $request->amount;
+        $network = $request->network;
 
         // Generate temporary checkout transaction reference
         $tempTxid = 'NP_TEMP_' . uniqid();
@@ -50,7 +64,7 @@ class NOWPaymentsController extends Controller
         $callbackUrl = route('nowpayments.webhook');
 
         // Call payment creation API
-        $paymentData = $this->nowPaymentsService->createPayment($amount, $deposit->id, $callbackUrl);
+        $paymentData = $this->nowPaymentsService->createPayment($amount, $deposit->id, $callbackUrl, $network);
 
         if ($paymentData && isset($paymentData['payment_id'])) {
             // Update deposit with actual NOWPayments payment ID

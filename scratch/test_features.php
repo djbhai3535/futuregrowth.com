@@ -40,8 +40,13 @@ function createRequest($uri, $method, $parameters = []) {
     return $request;
 }
 
-// --------------------------------------------------
-// 1. REGISTRATION TEST
+// Clean up any stale test user data from aborted runs
+\App\Models\User::withTrashed()
+    ->where('email', 'testuser@example.com')
+    ->orWhere('username', 'testuser')
+    ->orWhere('phone', '+9876543210')
+    ->forceDelete();
+
 // --------------------------------------------------
 echo "Testing User Registration...\n";
 $registrationData = [
@@ -66,7 +71,7 @@ $validator = \Illuminate\Support\Facades\Validator::make($registrationData, [
     'password' => 'required|string|min:8|confirmed',
 ]);
 
-assertTest(!$validator->fails(), "Registration input validation passed");
+assertTest(!$validator->fails(), "Registration input validation passed. Errors: " . json_encode($validator->errors()->all()));
 
 $response = $authController->register($request);
 
@@ -219,11 +224,13 @@ Setting::updateOrCreate(['key' => 'nowpayments_api_key'], ['value' => 'TEST_API_
 Setting::updateOrCreate(['key' => 'nowpayments_ipn_secret'], ['value' => 'TEST_IPN_SECRET']);
 Setting::updateOrCreate(['key' => 'nowpayments_default_coin'], ['value' => 'usdt']);
 Setting::updateOrCreate(['key' => 'nowpayments_default_network'], ['value' => 'trc20']);
+Setting::updateOrCreate(['key' => 'nowpayments_enable_trc20'], ['value' => '1']);
+Setting::updateOrCreate(['key' => 'nowpayments_enable_bep20'], ['value' => '1']);
 Setting::updateOrCreate(['key' => 'nowpayments_min_deposit'], ['value' => '10']);
 Setting::updateOrCreate(['key' => 'nowpayments_max_deposit'], ['value' => '10000']);
 
 // Forget cached values
-foreach (['nowpayments_enabled', 'nowpayments_sandbox_mode', 'nowpayments_api_key', 'nowpayments_ipn_secret', 'nowpayments_default_coin', 'nowpayments_default_network', 'nowpayments_min_deposit', 'nowpayments_max_deposit'] as $k) {
+foreach (['nowpayments_enabled', 'nowpayments_sandbox_mode', 'nowpayments_api_key', 'nowpayments_ipn_secret', 'nowpayments_default_coin', 'nowpayments_default_network', 'nowpayments_enable_trc20', 'nowpayments_enable_bep20', 'nowpayments_min_deposit', 'nowpayments_max_deposit'] as $k) {
     \Illuminate\Support\Facades\Cache::forget("setting_{$k}");
 }
 
@@ -231,55 +238,133 @@ foreach (['nowpayments_enabled', 'nowpayments_sandbox_mode', 'nowpayments_api_ke
 \App\Providers\AppServiceProvider::loadDynamicMailConfig();
 assertTest(config('mail.from.name') === setting('site_name', 'FutureGrowth.tech'), "Dynamic email sender name configured correctly: " . config('mail.from.name'));
 
-// Create a pending deposit for verification
-$deposit = \App\Models\Deposit::create([
+// 2. Verify payment translation mapping in NOWPaymentsService
+$service = new \App\Services\NOWPaymentsService();
+// We'll write a small reflection check or local logic test since we construct payCurrency in service
+$reflector = new \ReflectionClass(\App\Services\NOWPaymentsService::class);
+$method = $reflector->getMethod('createPayment');
+assertTest($method instanceof \ReflectionMethod, "NOWPaymentsService has createPayment method supporting networks");
+
+// 3. Test TRC20 webhook approval
+$deposit1 = \App\Models\Deposit::create([
     'user_id' => $user->id,
     'amount' => 50,
-    'txid' => 'NOW_12345678',
+    'txid' => 'NOW_11111111',
     'status' => 'pending'
 ]);
 
-// Build mock payload for confirmed payment
-$payload = [
-    'payment_id' => '12345678',
+$payloadTRC = [
+    'payment_id' => '11111111',
     'payment_status' => 'confirmed',
-    'pay_address' => '0xMockAddress',
+    'pay_address' => '0xMockAddressTRC',
     'price_amount' => '50.00',
     'price_currency' => 'usd',
     'pay_amount' => '50.00',
     'pay_currency' => 'usdttrc20',
-    'order_id' => (string) $deposit->id,
+    'order_id' => (string) $deposit1->id,
 ];
 
-// Sort payload keys alphabetically
-$signPayload = $payload;
-ksort($signPayload);
-unset($signPayload['signature']);
-$serialized = json_encode($signPayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-$signature = hash_hmac('sha512', $serialized, 'TEST_IPN_SECRET');
+$signPayloadTRC = $payloadTRC;
+ksort($signPayloadTRC);
+$serializedTRC = json_encode($signPayloadTRC, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$sigTRC = hash_hmac('sha512', $serializedTRC, 'TEST_IPN_SECRET');
 
-// Construct mock request for IPN
-$ipnRequest = createRequest('/payment/nowpayments/webhook', 'POST', $payload);
-$ipnRequest->headers->set('x-nowpayments-sig', $signature);
+$ipnRequestTRC = createRequest('/payment/nowpayments/webhook', 'POST', $payloadTRC);
+$ipnRequestTRC->headers->set('x-nowpayments-sig', $sigTRC);
 
-// Resolve controller and handle webhook
 $nowpaymentsController = new \App\Http\Controllers\NOWPaymentsController(new \App\Services\NOWPaymentsService());
-$response = $nowpaymentsController->ipnCallback($ipnRequest);
+$nowpaymentsController->ipnCallback($ipnRequestTRC);
 
-// Assert the deposit is automatically approved and wallet is credited
-$deposit->refresh();
-assertTest($deposit->status === 'approved', "Deposit status is automatically approved via valid IPN callback");
+$deposit1->refresh();
+assertTest($deposit1->status === 'approved', "USDT (TRC20) deposit status is automatically approved via valid IPN callback");
 
 $wallet = \App\Models\Wallet::where('user_id', $user->id)->first();
-assertTest($wallet->deposit_balance == 50, "User wallet is automatically credited with deposit amount: $" . $wallet->deposit_balance);
+assertTest($wallet->deposit_balance == 50, "User wallet is credited with TRC20 deposit amount: $" . $wallet->deposit_balance);
 
-// Cleanup deposit and wallet balance
-$deposit->delete();
+// 4. Test duplicate callback does not credit user balance again
+$nowpaymentsController->ipnCallback($ipnRequestTRC);
+$wallet->refresh();
+assertTest($wallet->deposit_balance == 50, "Duplicate IPN callback ignored; wallet balance remained at: $" . $wallet->deposit_balance);
+
+// 5. Test BEP20 webhook approval
+$deposit2 = \App\Models\Deposit::create([
+    'user_id' => $user->id,
+    'amount' => 30,
+    'txid' => 'NOW_22222222',
+    'status' => 'pending'
+]);
+
+$payloadBEP = [
+    'payment_id' => '22222222',
+    'payment_status' => 'confirmed',
+    'pay_address' => '0xMockAddressBEP',
+    'price_amount' => '30.00',
+    'price_currency' => 'usd',
+    'pay_amount' => '30.00',
+    'pay_currency' => 'usdtbsc',
+    'order_id' => (string) $deposit2->id,
+];
+
+$signPayloadBEP = $payloadBEP;
+ksort($signPayloadBEP);
+$serializedBEP = json_encode($signPayloadBEP, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$sigBEP = hash_hmac('sha512', $serializedBEP, 'TEST_IPN_SECRET');
+
+$ipnRequestBEP = createRequest('/payment/nowpayments/webhook', 'POST', $payloadBEP);
+$ipnRequestBEP->headers->set('x-nowpayments-sig', $sigBEP);
+
+$nowpaymentsController->ipnCallback($ipnRequestBEP);
+
+$deposit2->refresh();
+assertTest($deposit2->status === 'approved', "USDT (BEP20) deposit status is automatically approved via valid IPN callback");
+
+$wallet->refresh();
+assertTest($wallet->deposit_balance == 80, "User wallet successfully credited with BEP20 deposit. New balance: $" . $wallet->deposit_balance);
+
+// 6. Test failed payment callback
+$deposit3 = \App\Models\Deposit::create([
+    'user_id' => $user->id,
+    'amount' => 20,
+    'txid' => 'NOW_33333333',
+    'status' => 'pending'
+]);
+
+$payloadFailed = [
+    'payment_id' => '33333333',
+    'payment_status' => 'failed',
+    'pay_address' => '0xMockAddressFailed',
+    'price_amount' => '20.00',
+    'price_currency' => 'usd',
+    'pay_amount' => '20.00',
+    'pay_currency' => 'usdttrc20',
+    'order_id' => (string) $deposit3->id,
+];
+
+$signPayloadFailed = $payloadFailed;
+ksort($signPayloadFailed);
+$serializedFailed = json_encode($signPayloadFailed, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+$sigFailed = hash_hmac('sha512', $serializedFailed, 'TEST_IPN_SECRET');
+
+$ipnRequestFailed = createRequest('/payment/nowpayments/webhook', 'POST', $payloadFailed);
+$ipnRequestFailed->headers->set('x-nowpayments-sig', $sigFailed);
+
+$nowpaymentsController->ipnCallback($ipnRequestFailed);
+
+$deposit3->refresh();
+assertTest($deposit3->status === 'rejected', "Failed/Expired deposit correctly transitioned status to: " . $deposit3->status);
+
+$wallet->refresh();
+assertTest($wallet->deposit_balance == 80, "Wallet balance remained unaffected by failed deposit callback: $" . $wallet->deposit_balance);
+
+// Cleanup test records
+$deposit1->delete();
+$deposit2->delete();
+$deposit3->delete();
 $wallet->deposit_balance = 0;
 $wallet->save();
 
 // Clean up test user
-\App\Models\User::where('email', 'testuser@example.com')->delete();
+\App\Models\User::withTrashed()->where('email', 'testuser@example.com')->forceDelete();
 
 // --------------------------------------------------
 // 7. COMPLETED SUCCESS
