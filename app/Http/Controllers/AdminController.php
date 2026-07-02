@@ -379,6 +379,10 @@ class AdminController extends Controller
     {
         $user = \App\Models\User::findOrFail($id);
 
+        $request->merge([
+            'is_admin' => $request->has('is_admin') ? 1 : 0
+        ]);
+
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users,username,' . $user->id,

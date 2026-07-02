@@ -363,6 +363,63 @@ $deposit3->delete();
 $wallet->deposit_balance = 0;
 $wallet->save();
 
+// 6.7. VERIFY BUG #1 & BUG #2 RESOLUTIONS
+echo "\nTesting Bug #1 Resolution (updateUser without is_admin parameter)...\n";
+$tempUser = \App\Models\User::create([
+    'name' => 'Temp User',
+    'username' => 'tempuser_' . uniqid(),
+    'email' => 'tempuser_' . uniqid() . '@example.com',
+    'phone' => '+1' . rand(1000000000, 9999999999),
+    'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+    'status' => 'active',
+    'referral_code' => 'REF_' . uniqid()
+]);
+\App\Models\Wallet::create(['user_id' => $tempUser->id]);
+
+// Call updateUser via request simulation (mimic form submission without is_admin checkbox)
+$adminController = new \App\Http\Controllers\AdminController();
+$updateRequest = createRequest('/admin/users/' . $tempUser->id . '/update', 'POST', [
+    'name' => 'Temp User Updated',
+    'username' => $tempUser->username,
+    'email' => $tempUser->email,
+    'phone' => $tempUser->phone,
+    'status' => 'active',
+    'referral_code' => $tempUser->referral_code,
+    'deposit_balance' => '100.00',
+    'roi_balance' => '50.00',
+    'referral_balance' => '0.00',
+    'bonus_balance' => '10.00'
+]);
+
+// Call and assert no validation exception is thrown
+try {
+    $adminController->updateUser($updateRequest, $tempUser->id);
+    $tempUser->refresh();
+    assertTest($tempUser->name === 'Temp User Updated', "User profile name successfully updated to: " . $tempUser->name);
+    assertTest($tempUser->is_admin == 0, "is_admin defaulted correctly to 0 without throwing required validation error");
+} catch (\Illuminate\Validation\ValidationException $e) {
+    assertTest(false, "Validation failed: " . json_encode($e->errors()));
+}
+
+// Clean up temp user
+$tempUser->forceDelete();
+
+echo "\nTesting Bug #2 Resolution (Dynamic SMTPS Scheme Resolution on port 465)...\n";
+// Temporarily set port to 465 and encryption to ssl in settings table
+Setting::updateOrCreate(['key' => 'smtp_port'], ['value' => '465']);
+Setting::updateOrCreate(['key' => 'smtp_encryption'], ['value' => 'ssl']);
+\Illuminate\Support\Facades\Cache::forget('setting_smtp_port');
+\Illuminate\Support\Facades\Cache::forget('setting_smtp_encryption');
+
+\App\Providers\AppServiceProvider::loadDynamicMailConfig();
+assertTest(config('mail.mailers.smtp.scheme') === 'smtps', "SMTP scheme correctly resolved to SMTPS for port 465");
+
+// Restore original test settings
+Setting::updateOrCreate(['key' => 'smtp_port'], ['value' => '587']);
+Setting::updateOrCreate(['key' => 'smtp_encryption'], ['value' => 'tls']);
+\Illuminate\Support\Facades\Cache::forget('setting_smtp_port');
+\Illuminate\Support\Facades\Cache::forget('setting_smtp_encryption');
+
 // Clean up test user
 \App\Models\User::withTrashed()->where('email', 'testuser@example.com')->forceDelete();
 
