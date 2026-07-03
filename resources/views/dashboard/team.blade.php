@@ -146,14 +146,12 @@
             <thead>
                 <tr class="text-muted small text-uppercase">
                     <th>Level</th>
-                    <th class="text-end">Commissions</th>
-                    <th class="text-end">Total Users</th>
-                    <th class="text-end">Active</th>
-                    <th class="text-end">Inactive</th>
-                    <th class="text-end">Total Investment</th>
-                    <th class="text-end">Earnings</th>
-                    <th class="text-end">Pending</th>
-                    <th class="text-end">Paid</th>
+                    <th class="text-end">Commissions (%)</th>
+                    <th class="text-end">Number of Users</th>
+                    <th class="text-end">Total Deposits</th>
+                    <th class="text-end">Total Investments</th>
+                    <th class="text-end">Total Team Business</th>
+                    <th class="text-end">Referral Earnings</th>
                 </tr>
             </thead>
             <tbody>
@@ -164,12 +162,10 @@
                     </td>
                     <td class="text-end fw-bold text-primary">{{ $ld['percent'] }}%</td>
                     <td class="text-end text-white">{{ number_format($ld['total_users']) }}</td>
-                    <td class="text-end text-success">{{ number_format($ld['active_users']) }}</td>
-                    <td class="text-end text-muted">{{ number_format($ld['inactive_users']) }}</td>
-                    <td class="text-end text-white fw-bold">${{ number_format($ld['total_investment'], 2) }}</td>
+                    <td class="text-end text-success fw-bold">${{ number_format($ld['total_deposits'], 2) }}</td>
+                    <td class="text-end text-white fw-bold">${{ number_format($ld['total_investments'], 2) }}</td>
+                    <td class="text-end text-info fw-bold">${{ number_format($ld['team_business'], 2) }}</td>
                     <td class="text-end text-warning fw-bold">${{ number_format($ld['referral_earnings'], 2) }}</td>
-                    <td class="text-end text-muted">${{ number_format($ld['pending_earnings'], 2) }}</td>
-                    <td class="text-end text-warning fw-bold">${{ number_format($ld['paid_earnings'], 2) }}</td>
                 </tr>
                 @endforeach
             </tbody>

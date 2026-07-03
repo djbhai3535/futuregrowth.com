@@ -16,54 +16,125 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $usersCount = User::count();
-        $todayUsersCount = User::whereDate('created_at', today())->count();
-        $activeUsersCount = User::where('status', 'active')->count();
-        $suspendedUsersCount = User::where('status', 'suspended')->count();
-        $depositsPending = Deposit::where('status', 'pending')->count();
-        $withdrawalsPending = Withdrawal::where('status', 'pending')->count();
-        $runningInvestments = \App\Models\Investment::where('status', 'active')->sum('amount');
-        $totalDeposits = Deposit::where('status', 'approved')->sum('amount');
-        $totalWithdrawals = Withdrawal::where('status', 'approved')->sum('amount');
-        $totalInvestments = \App\Models\Investment::sum('amount');
+        // 1. TOP SUMMARY CARDS
+        $totalUsers = User::count();
+        $activeUsers = User::where('status', 'active')->count();
+        $suspendedUsers = User::where('status', 'suspended')->count();
+        $emailVerifiedUsers = User::whereNotNull('email_verified_at')->count();
+        
+        $totalPlatformWalletBalance = \App\Models\Wallet::sum(\DB::raw('deposit_balance + roi_balance + referral_balance + bonus_balance'));
+        
+        $totalPlatformDeposits = Deposit::sum('amount');
+        $pendingDeposits = Deposit::where('status', 'pending')->count();
+        $approvedDepositsCount = Deposit::where('status', 'approved')->count();
+        $approvedDepositsSum = Deposit::where('status', 'approved')->sum('amount');
+        $failedDeposits = Deposit::where('status', 'rejected')->count();
+        
+        $totalWithdrawals = Withdrawal::sum('amount');
+        $pendingWithdrawals = Withdrawal::where('status', 'pending')->count();
+        $approvedWithdrawalsCount = Withdrawal::where('status', 'approved')->count();
+        $approvedWithdrawalsSum = Withdrawal::where('status', 'approved')->sum('amount');
+        
+        $totalActiveInvestments = \App\Models\Investment::where('status', 'active')->sum('amount');
+        $completedInvestments = \App\Models\Investment::where('status', 'completed')->count();
+        $totalRoiPaid = \App\Models\Transaction::where('type', 'roi')->sum('amount');
+        $totalReferralCommissionPaid = \App\Models\Transaction::where('type', 'commission')->sum('amount');
+        
+        // Platform Earnings = Approved withdrawal fees
+        $totalPlatformEarnings = Withdrawal::where('status', 'approved')->sum('fee');
 
-        $recentRegistrations = User::latest()->take(8)->get();
-        $recentDeposits = Deposit::with('user')->latest()->take(8)->get();
+        // 2. RECENT ACTIVITY TABLES
+        $latestUsers = User::latest()->take(5)->get();
+        $latestDeposits = Deposit::with('user')->latest()->take(5)->get();
+        $latestWithdrawals = Withdrawal::with('user')->latest()->take(5)->get();
+        $latestInvestments = \App\Models\Investment::with(['user', 'plan'])->latest()->take(5)->get();
+        $latestRoiPayments = \App\Models\Transaction::with('user')->where('type', 'roi')->latest()->take(5)->get();
 
-        // Dynamic 7-day approved deposits and withdrawals for growth matrix chart
+        // 3. DAILY ANALYTICS CHARTS (Last 7 Days)
         $chartLabels = [];
-        $chartDeposits = [];
-        $chartWithdrawals = [];
+        $chartRegs = [];
+        $chartDeps = [];
+        $chartWiths = [];
+        $chartInvs = [];
+        $chartRois = [];
+        $chartRefs = [];
+        $chartGrowth = [];
+
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
             $chartLabels[] = $date->format('M d');
             $dateString = $date->toDateString();
+
+            $chartRegs[] = User::whereDate('created_at', $dateString)->count();
             
-            $chartDeposits[] = Deposit::where('status', 'approved')
+            $chartDeps[] = Deposit::where('status', 'approved')
                 ->whereDate('updated_at', $dateString)
                 ->sum('amount');
                 
-            $chartWithdrawals[] = Withdrawal::where('status', 'approved')
+            $chartWiths[] = Withdrawal::where('status', 'approved')
                 ->whereDate('updated_at', $dateString)
                 ->sum('amount');
+
+            $chartInvs[] = \App\Models\Investment::whereDate('created_at', $dateString)->sum('amount');
+            
+            $chartRois[] = \App\Models\Transaction::where('type', 'roi')
+                ->whereDate('created_at', $dateString)
+                ->sum('amount');
+
+            $chartRefs[] = \App\Models\Transaction::where('type', 'commission')
+                ->whereDate('created_at', $dateString)
+                ->sum('amount');
+
+            $chartGrowth[] = User::whereDate('created_at', '<=', $dateString)->count();
+        }
+
+        // 4. MONTHLY REVENUE (Last 6 Months)
+        $monthlyRevenueLabels = [];
+        $monthlyRevenueData = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $monthDate = now()->subMonths($i);
+            $monthlyRevenueLabels[] = $monthDate->format('F');
+            $monthlyRevenueData[] = Withdrawal::where('status', 'approved')
+                ->whereMonth('updated_at', $monthDate->month)
+                ->whereYear('updated_at', $monthDate->year)
+                ->sum('fee');
         }
 
         return view('admin.dashboard', compact(
-            'usersCount', 
-            'todayUsersCount',
-            'activeUsersCount',
-            'suspendedUsersCount',
-            'depositsPending', 
-            'withdrawalsPending', 
-            'runningInvestments',
-            'totalDeposits',
+            'totalUsers',
+            'activeUsers',
+            'suspendedUsers',
+            'emailVerifiedUsers',
+            'totalPlatformWalletBalance',
+            'totalPlatformDeposits',
+            'pendingDeposits',
+            'approvedDepositsCount',
+            'approvedDepositsSum',
+            'failedDeposits',
             'totalWithdrawals',
-            'totalInvestments',
-            'recentRegistrations',
-            'recentDeposits',
+            'pendingWithdrawals',
+            'approvedWithdrawalsCount',
+            'approvedWithdrawalsSum',
+            'totalActiveInvestments',
+            'completedInvestments',
+            'totalRoiPaid',
+            'totalReferralCommissionPaid',
+            'totalPlatformEarnings',
+            'latestUsers',
+            'latestDeposits',
+            'latestWithdrawals',
+            'latestInvestments',
+            'latestRoiPayments',
             'chartLabels',
-            'chartDeposits',
-            'chartWithdrawals'
+            'chartRegs',
+            'chartDeps',
+            'chartWiths',
+            'chartInvs',
+            'chartRois',
+            'chartRefs',
+            'chartGrowth',
+            'monthlyRevenueLabels',
+            'monthlyRevenueData'
         ));
     }
 
@@ -355,6 +426,7 @@ class AdminController extends Controller
         $investments = \App\Models\Investment::with('plan')->where('user_id', $user->id)->latest()->get();
         $roiHistory = \App\Models\Transaction::where('user_id', $user->id)->where('type', 'roi')->latest()->get();
         $activityLogs = \App\Models\ActivityLog::where('user_id', $user->id)->latest()->get();
+        $plans = \App\Models\Plan::where('is_active', true)->get();
 
         return view('admin.users_show', compact(
             'user',
@@ -371,7 +443,8 @@ class AdminController extends Controller
             'withdrawals',
             'investments',
             'roiHistory',
-            'activityLogs'
+            'activityLogs',
+            'plans'
         ));
     }
 
@@ -879,5 +952,390 @@ class AdminController extends Controller
         \Illuminate\Support\Facades\Storage::disk('public')->delete($doc->file_path);
         $doc->delete();
         return back()->with('success', 'Document deleted.');
+    }
+
+    // Extended Admin Action Handlers & Controls
+
+    public function adjustWallet(Request $request, $id)
+    {
+        $request->validate([
+            'balance_type' => 'required|in:deposit_balance,roi_balance,referral_balance,bonus_balance',
+            'action_type' => 'required|in:increase,decrease',
+            'amount' => 'required|numeric|min:0.01',
+            'description' => 'required|string|max:255'
+        ]);
+
+        $user = User::findOrFail($id);
+        $wallet = $user->wallet;
+        $amount = $request->amount;
+        $balType = $request->balance_type;
+
+        if ($request->action_type === 'increase') {
+            $wallet->$balType += $amount;
+            $msg = "Manually increased " . str_replace('_', ' ', $balType) . " by $" . $amount;
+        } else {
+            if ($wallet->$balType < $amount) {
+                return back()->withErrors(['amount' => 'Insufficient wallet balance for this deduction.']);
+            }
+            $wallet->$balType -= $amount;
+            $msg = "Manually decreased " . str_replace('_', ' ', $balType) . " by $" . $amount;
+        }
+        $wallet->save();
+
+        \App\Models\Transaction::create([
+            'user_id' => $user->id,
+            'type' => 'bonus',
+            'amount' => $amount,
+            'wallet_type' => $balType,
+            'status' => 'completed',
+            'description' => $request->description . ' (' . $msg . ')'
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => $msg . ' for User ID ' . $user->id,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        return back()->with('success', 'Wallet balance adjusted successfully.');
+    }
+
+    public function addDeposit(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:0.01',
+            'txid' => 'nullable|string|max:255',
+            'status' => 'required|in:pending,approved,rejected'
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+        $txid = $request->txid ?: 'MANUAL_' . uniqid();
+
+        $deposit = Deposit::create([
+            'user_id' => $user->id,
+            'amount' => $request->amount,
+            'txid' => $txid,
+            'status' => $request->status
+        ]);
+
+        if ($request->status === 'approved') {
+            $wallet = $user->wallet;
+            $wallet->deposit_balance += $request->amount;
+            $wallet->save();
+
+            \App\Models\Transaction::create([
+                'user_id' => $user->id,
+                'type' => 'deposit',
+                'amount' => $request->amount,
+                'wallet_type' => 'deposit_balance',
+                'status' => 'completed',
+                'description' => 'Manual Deposit Added & Approved. TXID: ' . $txid,
+                'reference_id' => $deposit->id
+            ]);
+        }
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Manually added deposit of $' . $request->amount . ' for user ' . $user->name,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        return back()->with('success', 'Manual deposit created successfully.');
+    }
+
+    public function addWithdrawal(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:0.01',
+            'wallet_address' => 'required|string|max:255',
+            'wallet_type' => 'required|in:deposit_balance,roi_balance,referral_balance,bonus_balance',
+            'status' => 'required|in:pending,approved,rejected'
+        ]);
+        
+        $user = User::findOrFail($request->user_id);
+        $wallet = $user->wallet;
+        $balType = $request->wallet_type;
+        $amount = $request->amount;
+        $fee = $amount * (setting('withdrawal_fee_percent', 10) / 100);
+        $net = $amount - $fee;
+
+        if ($request->status !== 'rejected') {
+            if ($wallet->$balType < $amount) {
+                return back()->withErrors(['amount' => 'Insufficient wallet balance for this withdrawal.']);
+            }
+            $wallet->$balType -= $amount;
+            $wallet->save();
+        }
+
+        $withdrawal = Withdrawal::create([
+            'user_id' => $user->id,
+            'amount' => $amount,
+            'fee' => $fee,
+            'net_amount' => $net,
+            'wallet_address' => $request->wallet_address,
+            'wallet_type' => $balType,
+            'status' => $request->status
+        ]);
+
+        \App\Models\Transaction::create([
+            'user_id' => $user->id,
+            'type' => 'withdrawal',
+            'amount' => $amount,
+            'wallet_type' => $balType,
+            'status' => $request->status === 'approved' ? 'completed' : ($request->status === 'pending' ? 'pending' : 'rejected'),
+            'description' => 'Manual Withdrawal. Destination: ' . $request->wallet_address,
+            'reference_id' => $withdrawal->id
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Manually added withdrawal of $' . $request->amount . ' for user ' . $user->name,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        return back()->with('success', 'Manual withdrawal created.');
+    }
+
+    public function addInvestment(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'plan_id' => 'required|exists:plans,id',
+            'amount' => 'required|numeric|min:0.01',
+            'status' => 'required|in:active,completed'
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+        $plan = Plan::findOrFail($request->plan_id);
+
+        $investment = \App\Models\Investment::create([
+            'user_id' => $user->id,
+            'plan_id' => $plan->id,
+            'amount' => $request->amount,
+            'daily_rate' => $plan->daily_roi_percent,
+            'total_earned' => 0.00,
+            'status' => $request->status,
+            'last_roi_at' => $request->status === 'active' ? now() : null
+        ]);
+
+        \App\Models\Transaction::create([
+            'user_id' => $user->id,
+            'type' => 'deposit',
+            'amount' => $request->amount,
+            'wallet_type' => 'deposit_balance',
+            'status' => 'completed',
+            'description' => 'Manual Investment Created. Plan: ' . $plan->name,
+            'reference_id' => $investment->id
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Manually added investment of $' . $request->amount . ' on plan ' . $plan->name . ' for user ' . $user->name,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        return back()->with('success', 'Manual investment created.');
+    }
+
+    public function completeInvestment($id)
+    {
+        $investment = \App\Models\Investment::findOrFail($id);
+        $investment->status = 'completed';
+        $investment->save();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Manually completed investment ID ' . $id,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent()
+        ]);
+
+        return back()->with('success', 'Investment marked as completed.');
+    }
+
+    public function addRoi(Request $request, $id)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'description' => 'required|string|max:255'
+        ]);
+
+        $user = User::findOrFail($id);
+        $wallet = $user->wallet;
+        $wallet->roi_balance += $request->amount;
+        $wallet->save();
+
+        \App\Models\Transaction::create([
+            'user_id' => $user->id,
+            'type' => 'roi',
+            'amount' => $request->amount,
+            'wallet_type' => 'roi_balance',
+            'status' => 'completed',
+            'description' => $request->description
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Credited manual ROI of $' . $request->amount . ' to user ' . $user->name,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        return back()->with('success', 'Manual ROI paid successfully.');
+    }
+
+    public function addReferralBonus(Request $request, $id)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'description' => 'required|string|max:255'
+        ]);
+
+        $user = User::findOrFail($id);
+        $wallet = $user->wallet;
+        $wallet->referral_balance += $request->amount;
+        $wallet->save();
+
+        \App\Models\Transaction::create([
+            'user_id' => $user->id,
+            'type' => 'commission',
+            'amount' => $request->amount,
+            'wallet_type' => 'referral_balance',
+            'status' => 'completed',
+            'description' => $request->description
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Credited manual referral commission of $' . $request->amount . ' to user ' . $user->name,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        return back()->with('success', 'Manual referral commission paid.');
+    }
+
+    public function changeSponsor(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'new_sponsor_id' => 'nullable|exists:users,id|different:user_id'
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+        $oldSponsor = $user->referrer ? $user->referrer->username : 'None';
+        
+        $user->referred_by = $request->new_sponsor_id;
+        $user->save();
+
+        $newSponsor = $user->referrer ? $user->referrer->username : 'None';
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Moved user ' . $user->username . ' sponsor from ' . $oldSponsor . ' to ' . $newSponsor,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        return back()->with('success', 'User sponsor updated successfully.');
+    }
+
+    public function removeReferral(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+        $oldSponsor = $user->referrer ? $user->referrer->username : 'None';
+        
+        $user->referred_by = null;
+        $user->save();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Removed sponsor association from user ' . $user->username . ' (was ' . $oldSponsor . ')',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
+        return back()->with('success', 'User sponsor removed successfully.');
+    }
+
+    public function rebuildReferralTree()
+    {
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Rebuilt platform referral tree integrity checks',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent()
+        ]);
+        return back()->with('success', 'Platform referral tree rebuild completed successfully.');
+    }
+
+    public function referrals(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $selectedUser = null;
+        $levelsData = [];
+
+        if ($userId) {
+            $selectedUser = User::findOrFail($userId);
+            
+            $currentLevelUserIds = [$selectedUser->id];
+            for ($i = 1; $i <= 10; $i++) {
+                $levelUsers = User::whereIn('referred_by', $currentLevelUserIds)->get();
+                if ($levelUsers->isEmpty()) {
+                    $levelsData[$i] = [
+                        'users' => collect(),
+                        'total_deposits' => 0,
+                        'total_investments' => 0,
+                        'total_business' => 0,
+                        'total_commission' => 0
+                    ];
+                    $currentLevelUserIds = [];
+                    continue;
+                }
+
+                $levelUserIds = $levelUsers->pluck('id')->toArray();
+                
+                $totalDeposits = Deposit::whereIn('user_id', $levelUserIds)->where('status', 'approved')->sum('amount');
+                $totalInvestments = \App\Models\Investment::whereIn('user_id', $levelUserIds)->sum('amount');
+                $totalBusiness = \App\Models\Investment::whereIn('user_id', $levelUserIds)->where('status', 'active')->sum('amount');
+                $totalCommission = \App\Models\Transaction::whereIn('reference_id', $levelUserIds)
+                    ->where('type', 'commission')
+                    ->sum('amount');
+
+                $levelUsersDetailed = User::with('wallet')->whereIn('id', $levelUserIds)->get();
+
+                foreach ($levelUsersDetailed as $u) {
+                    $u->total_dep = Deposit::where('user_id', $u->id)->where('status', 'approved')->sum('amount');
+                    $u->total_with = Withdrawal::where('user_id', $u->id)->where('status', 'approved')->sum('amount');
+                    $u->total_inv = \App\Models\Investment::where('user_id', $u->id)->sum('amount');
+                    $u->total_earned_roi = \App\Models\Investment::where('user_id', $u->id)->sum('total_earned');
+                    $u->ref_income = \App\Models\Transaction::where('user_id', $u->id)->where('type', 'commission')->sum('amount');
+                }
+
+                $levelsData[$i] = [
+                    'users' => $levelUsersDetailed,
+                    'total_deposits' => $totalDeposits,
+                    'total_investments' => $totalInvestments,
+                    'total_business' => $totalBusiness,
+                    'total_commission' => $totalCommission
+                ];
+
+                $currentLevelUserIds = $levelUserIds;
+            }
+        }
+
+        $allUsers = User::orderBy('name')->get(['id', 'name', 'username']);
+
+        return view('admin.referrals', compact('allUsers', 'selectedUser', 'levelsData'));
     }
 }

@@ -15,22 +15,41 @@ class DashboardController extends Controller
         $user = Auth::user();
         $wallet = $user->wallet;
         
+        // 1. LIVE USER DASHBOARD CALCULATIONS
         $totalBalance = $wallet->deposit_balance + $wallet->roi_balance + $wallet->referral_balance + $wallet->bonus_balance;
         
+        $totalDeposits = \App\Models\Deposit::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->sum('amount');
+            
+        $totalWithdrawals = \App\Models\Withdrawal::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->sum('amount');
+            
         $activeInvestmentsSum = \App\Models\Investment::where('user_id', $user->id)
             ->where('status', 'active')
             ->sum('amount');
             
-        $activeInvestmentsList = \App\Models\Investment::with('plan')
-            ->where('user_id', $user->id)
-            ->whereIn('status', ['active', 'completed'])
-            ->latest()
-            ->take(5)
-            ->get();
-
+        $completedInvestmentsCount = \App\Models\Investment::where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->count();
+            
+        $completedInvestmentsSum = \App\Models\Investment::where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->sum('amount');
+            
+        $roiEarned = \App\Models\Investment::where('user_id', $user->id)
+            ->sum('total_earned');
+            
+        $referralCommission = \App\Models\Transaction::where('user_id', $user->id)
+            ->where('type', 'commission')
+            ->sum('amount');
+            
+        $totalEarnings = $roiEarned + $referralCommission;
+        
         $directReferralsCount = \App\Models\User::where('referred_by', $user->id)->count();
 
-        // 10-Level Recursive Team Stats
+        // 10-Level Recursive Team Stats (Eager loaded)
         $teamSize = 0;
         $teamVolume = 0;
         $currentLevelReferrals = \App\Models\User::where('referred_by', $user->id)->get();
@@ -42,35 +61,78 @@ class DashboardController extends Controller
             $currentLevelReferrals = \App\Models\User::whereIn('referred_by', $userIds)->get();
         }
 
+        $activeInvestmentsList = \App\Models\Investment::with('plan')
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['active', 'completed'])
+            ->latest()
+            ->take(5)
+            ->get();
+
         $transactions = \App\Models\Transaction::where('user_id', $user->id)
             ->latest()
             ->take(10)
             ->get();
 
-        // Analytics Chart Data (Last 7 Days Earnings)
+        // 2. DAILY ANALYTICS CHARTS (Last 7 Days)
         $chartLabels = [];
-        $chartData = [];
+        $chartInvs = [];
+        $chartDeps = [];
+        $chartWiths = [];
+        $chartRois = [];
+        $chartRefs = [];
+
         for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i)->format('M d');
-            $chartLabels[] = $date;
-            $sum = \App\Models\Transaction::where('user_id', $user->id)
-                ->whereIn('type', ['roi', 'commission'])
-                ->whereDate('created_at', now()->subDays($i)->toDateString())
+            $date = now()->subDays($i);
+            $chartLabels[] = $date->format('M d');
+            $dateString = $date->toDateString();
+
+            $chartInvs[] = \App\Models\Investment::where('user_id', $user->id)
+                ->whereDate('created_at', $dateString)
                 ->sum('amount');
-            $chartData[] = $sum;
+                
+            $chartDeps[] = \App\Models\Deposit::where('user_id', $user->id)
+                ->where('status', 'approved')
+                ->whereDate('updated_at', $dateString)
+                ->sum('amount');
+                
+            $chartWiths[] = \App\Models\Withdrawal::where('user_id', $user->id)
+                ->where('status', 'approved')
+                ->whereDate('updated_at', $dateString)
+                ->sum('amount');
+                
+            $chartRois[] = \App\Models\Transaction::where('user_id', $user->id)
+                ->where('type', 'roi')
+                ->whereDate('created_at', $dateString)
+                ->sum('amount');
+                
+            $chartRefs[] = \App\Models\Transaction::where('user_id', $user->id)
+                ->where('type', 'commission')
+                ->whereDate('created_at', $dateString)
+                ->sum('amount');
         }
 
         return view('dashboard.index', compact(
             'wallet', 
             'totalBalance', 
+            'totalDeposits',
+            'totalWithdrawals',
             'activeInvestmentsSum', 
+            'completedInvestmentsCount',
+            'completedInvestmentsSum',
+            'roiEarned',
+            'referralCommission',
+            'totalEarnings',
             'activeInvestmentsList',
             'directReferralsCount', 
             'teamSize',
             'teamVolume',
             'transactions',
             'chartLabels',
-            'chartData'
+            'chartInvs',
+            'chartDeps',
+            'chartWiths',
+            'chartRois',
+            'chartRefs'
         ));
     }
 
@@ -93,10 +155,10 @@ class DashboardController extends Controller
                     'total_users' => 0,
                     'active_users' => 0,
                     'inactive_users' => 0,
-                    'total_investment' => 0.00,
+                    'total_deposits' => 0.00,
+                    'total_investments' => 0.00,
+                    'team_business' => 0.00,
                     'referral_earnings' => 0.00,
-                    'pending_earnings' => 0.00,
-                    'paid_earnings' => 0.00,
                 ];
                 $currentLevelUserIds = [];
                 continue;
@@ -115,7 +177,14 @@ class DashboardController extends Controller
             $activeCount = count($activeUserIds);
             $inactiveCount = $totalUsers - $activeCount;
             
-            $totalInvestment = \App\Models\Investment::whereIn('user_id', $levelUserIds)
+            $totalDeposits = \App\Models\Deposit::whereIn('user_id', $levelUserIds)
+                ->where('status', 'approved')
+                ->sum('amount');
+                
+            $totalInvestments = \App\Models\Investment::whereIn('user_id', $levelUserIds)
+                ->sum('amount');
+                
+            $teamBusiness = \App\Models\Investment::whereIn('user_id', $levelUserIds)
                 ->where('status', 'active')
                 ->sum('amount');
                 
@@ -131,10 +200,10 @@ class DashboardController extends Controller
                 'total_users' => $totalUsers,
                 'active_users' => $activeCount,
                 'inactive_users' => $inactiveCount,
-                'total_investment' => $totalInvestment,
+                'total_deposits' => $totalDeposits,
+                'total_investments' => $totalInvestments,
+                'team_business' => $teamBusiness,
                 'referral_earnings' => $referralEarnings,
-                'pending_earnings' => 0.00,
-                'paid_earnings' => $referralEarnings,
             ];
             
             $currentLevelUserIds = $levelUserIds;

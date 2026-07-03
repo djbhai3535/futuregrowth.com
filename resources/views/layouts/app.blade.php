@@ -284,6 +284,7 @@
                         <ul class="dropdown-menu dropdown-menu-dark glass-card border-warning border-opacity-25 shadow-lg mt-2" aria-labelledby="adminDropdown">
                             <li><a class="dropdown-item py-2" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 text-info me-2"></i> Dashboard</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('admin.users') }}"><i class="bi bi-people text-warning me-2"></i> Users Directory</a></li>
+                            <li><a class="dropdown-item py-2" href="{{ route('admin.referrals') }}"><i class="bi bi-diagram-3 text-warning me-2"></i> Referral Tree Explorer</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('admin.deposits') }}"><i class="bi bi-arrow-down-circle text-success me-2"></i> Deposits</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('admin.withdrawals') }}"><i class="bi bi-arrow-up-circle text-danger me-2"></i> Withdrawals</a></li>
                             <li><a class="dropdown-item py-2" href="{{ route('admin.plans') }}"><i class="bi bi-box text-info me-2"></i> Investment Plans</a></li>

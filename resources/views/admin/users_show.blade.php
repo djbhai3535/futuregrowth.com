@@ -6,7 +6,7 @@
         <h2 class="fw-bold mb-1 text-warning"><i class="bi bi-person-badge me-2"></i> User Card: {{ $user->username }}</h2>
         <p class="text-muted small">ID: #{{ $user->id }} | Registered on {{ $user->created_at->format('M d, Y H:i') }}</p>
     </div>
-    <a href="{{ route('admin.users') }}" class="btn btn-outline-light btn-sm"><i class="bi bi-arrow-left"></i> Back to Directory</a>
+    <a href="{{ route('admin.users') }}" class="btn btn-outline-light btn-sm fw-bold"><i class="bi bi-arrow-left"></i> Back to Directory</a>
 </div>
 
 <div class="row g-4">
@@ -20,7 +20,7 @@
             </div>
             
             <h4 class="fw-bold text-white mb-1">{{ $user->name }}</h4>
-            <p class="text-muted small mb-3">@ {{ $user->username }}</p>
+            <p class="text-muted small mb-3">@&nbsp;{{ $user->username }}</p>
             
             <div class="mb-3">
                 @if($user->status === 'active')
@@ -60,41 +60,65 @@
             </div>
         </div>
 
-        <!-- Security & Quick Controls Card -->
-        <div class="glass-card p-4">
-            <h5 class="fw-bold mb-4 text-warning"><i class="bi bi-shield-lock-fill me-2"></i> Security Shield & Password</h5>
+        <!-- Administrative Account Controls -->
+        <div class="glass-card p-4 mb-4">
+            <h5 class="fw-bold mb-3 text-warning"><i class="bi bi-gear-fill me-2"></i> Account Access Actions</h5>
             
-            <!-- Manual Change Password -->
-            <form action="{{ route('admin.users.change-password', $user->id) }}" method="POST" class="mb-4">
-                @csrf
-                <h6 class="fw-bold text-white small mb-3">Change Password Manually</h6>
-                <div class="mb-3">
-                    <label class="form-label text-muted small">New Password</label>
-                    <input type="password" name="password" class="form-control bg-dark border-secondary text-white" required minlength="8">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label text-muted small">Confirm New Password</label>
-                    <input type="password" name="password_confirmation" class="form-control bg-dark border-secondary text-white" required minlength="8">
-                </div>
-                <button type="submit" class="btn btn-warning w-100 btn-sm fw-bold">Update Password</button>
-            </form>
-
-            <hr class="border-secondary opacity-25 my-4">
-
-            <!-- Reset password and email verification tools -->
             <div class="d-flex flex-column gap-2">
-                <form action="{{ route('admin.users.reset-password-auto', $user->id) }}" method="POST" onsubmit="return confirm('Generate random password for this user?')">
-                    @csrf
-                    <button type="submit" class="btn btn-outline-info w-100 btn-sm fw-bold"><i class="bi bi-key me-2"></i> Auto Generate Password</button>
-                </form>
-
+                @if($user->status !== 'active')
+                    <form action="{{ route('admin.users.activate', $user->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-success w-100 btn-sm fw-bold"><i class="bi bi-person-check me-2"></i> Activate Account</button>
+                    </form>
+                @endif
+                @if($user->status !== 'suspended')
+                    <form action="{{ route('admin.users.suspend', $user->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-warning w-100 btn-sm fw-bold text-dark"><i class="bi bi-person-exclamation me-2"></i> Suspend Account</button>
+                    </form>
+                @endif
+                @if($user->status !== 'banned')
+                    <form action="{{ route('admin.users.ban', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to BAN this user?')">
+                        @csrf
+                        <button type="submit" class="btn btn-danger w-100 btn-sm fw-bold"><i class="bi bi-person-dash me-2"></i> Ban Account</button>
+                    </form>
+                @endif
+                
                 @if(!$user->email_verified_at)
                     <form action="{{ route('admin.users.verify-email', $user->id) }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-outline-success w-100 btn-sm fw-bold"><i class="bi bi-envelope-check me-2"></i> Manually Verify Email</button>
+                        <button type="submit" class="btn btn-outline-info w-100 btn-sm fw-bold"><i class="bi bi-envelope-check me-2"></i> Manually Verify Email</button>
                     </form>
                 @endif
+
+                <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to DELETE this user completely? This action cannot be undone.')">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger w-100 btn-sm fw-bold"><i class="bi bi-trash me-2"></i> Delete Account</button>
+                </form>
             </div>
+        </div>
+
+        <!-- Security & Password Card -->
+        <div class="glass-card p-4">
+            <h5 class="fw-bold mb-3 text-warning"><i class="bi bi-shield-lock-fill me-2"></i> Security Shield & Password</h5>
+            
+            <form action="{{ route('admin.users.change-password', $user->id) }}" method="POST" class="mb-3">
+                @csrf
+                <div class="mb-2">
+                    <label class="form-label text-muted small fw-bold">New Password</label>
+                    <input type="password" name="password" class="form-control form-control-sm bg-dark border-secondary text-white" required minlength="8">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label text-muted small fw-bold">Confirm Password</label>
+                    <input type="password" name="password_confirmation" class="form-control form-control-sm bg-dark border-secondary text-white" required minlength="8">
+                </div>
+                <button type="submit" class="btn btn-warning w-100 btn-sm fw-bold text-dark">Update Password</button>
+            </form>
+
+            <form action="{{ route('admin.users.reset-password-auto', $user->id) }}" method="POST" onsubmit="return confirm('Generate random password for this user?')">
+                @csrf
+                <button type="submit" class="btn btn-outline-info w-100 btn-sm fw-bold"><i class="bi bi-key me-2"></i> Auto-Generate Password</button>
+            </form>
         </div>
     </div>
 
@@ -116,10 +140,10 @@
                     <button class="nav-link text-white" id="investments-tab" data-bs-toggle="tab" data-bs-target="#investments" type="button" role="tab"><i class="bi bi-box me-1"></i> Investments</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link text-white" id="referrals-tab" data-bs-toggle="tab" data-bs-target="#referrals" type="button" role="tab"><i class="bi bi-diagram-3 me-1"></i> Referral Tree</button>
+                    <button class="nav-link text-white" id="referrals-tab" data-bs-toggle="tab" data-bs-target="#referrals" type="button" role="tab"><i class="bi bi-diagram-3 me-1"></i> Referrals</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link text-white" id="roi-tab" data-bs-toggle="tab" data-bs-target="#roi" type="button" role="tab"><i class="bi bi-graph-up me-1"></i> ROI History</button>
+                    <button class="nav-link text-white" id="roi-tab" data-bs-toggle="tab" data-bs-target="#roi" type="button" role="tab"><i class="bi bi-graph-up me-1"></i> ROI Logs</button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link text-white" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab"><i class="bi bi-journal-text me-1"></i> Activity Logs</button>
@@ -131,7 +155,7 @@
                 
                 <!-- PROFILE & WALLET BALANCE ADJUSTMENTS -->
                 <div class="tab-pane fade show active" id="profile" role="tabpanel">
-                    <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
+                    <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="mb-4">
                         @csrf
                         <h5 class="fw-bold mb-3 text-warning">Edit Profile Settings</h5>
                         <div class="row g-3 mb-4">
@@ -175,7 +199,7 @@
                             </div>
                         </div>
 
-                        <h5 class="fw-bold mb-3 text-success">Modify Wallet Balances</h5>
+                        <h5 class="fw-bold mb-3 text-success">Modify Wallet Balances (Absolute Values)</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6 col-lg-3">
                                 <label class="form-label text-muted small fw-bold">Deposit Balance ($)</label>
@@ -195,128 +219,306 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-warning fw-bold px-4">Save Changes</button>
+                        <button type="submit" class="btn btn-warning fw-bold px-4 text-dark">Save Changes</button>
                     </form>
+
+                    <hr class="border-secondary opacity-25 my-4">
+
+                    <!-- Custom Wallet adjustments (Increase/Decrease) -->
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-dark bg-opacity-25 rounded border border-secondary border-opacity-25">
+                                <h6 class="fw-bold text-white mb-3"><i class="bi bi-wallet2 text-warning me-2"></i> Manual Wallet Adjustments</h6>
+                                <form action="{{ route('admin.users.adjust-wallet', $user->id) }}" method="POST">
+                                    @csrf
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold">Select Wallet Type</label>
+                                        <select class="form-select form-select-sm bg-dark text-white border-secondary" name="balance_type" required>
+                                            <option value="deposit_balance">Deposit Wallet</option>
+                                            <option value="roi_balance">ROI Wallet</option>
+                                            <option value="referral_balance">Referral Wallet</option>
+                                            <option value="bonus_balance">Bonus Wallet</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold">Action</label>
+                                        <select class="form-select form-select-sm bg-dark text-white border-secondary" name="action_type" required>
+                                            <option value="increase">Increase Balance (+)</option>
+                                            <option value="decrease">Decrease Balance (-)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold">USDT Amount</label>
+                                        <input type="number" step="0.01" class="form-control form-control-sm bg-dark text-white border-secondary" name="amount" required min="0.01">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted small fw-bold">Audit Description/Reason</label>
+                                        <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" name="description" placeholder="e.g. Deposit correction" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-warning fw-bold text-dark w-100">Apply Adjustment</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Manual ROI & Referral Payouts -->
+                        <div class="col-md-6">
+                            <div class="p-3 bg-dark bg-opacity-25 rounded border border-secondary border-opacity-25 h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <h6 class="fw-bold text-white mb-3"><i class="bi bi-cash-stack text-success me-2"></i> Pay Manual ROI & Commission</h6>
+                                    
+                                    <!-- ROI payout -->
+                                    <form action="{{ route('admin.users.add-roi', $user->id) }}" method="POST" class="mb-3">
+                                        @csrf
+                                        <div class="row g-2 align-items-end">
+                                            <div class="col-5">
+                                                <label class="form-label text-muted small fw-bold">ROI ($)</label>
+                                                <input type="number" step="0.01" class="form-control form-control-sm bg-dark text-white border-secondary" name="amount" required>
+                                            </div>
+                                            <div class="col-5">
+                                                <label class="form-label text-muted small fw-bold">Description</label>
+                                                <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" name="description" placeholder="Daily profit" required>
+                                            </div>
+                                            <div class="col-2">
+                                                <button type="submit" class="btn btn-sm btn-success w-100 fw-bold"><i class="bi bi-check"></i></button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <!-- Referral Commission payout -->
+                                    <form action="{{ route('admin.users.add-referral-bonus', $user->id) }}" method="POST">
+                                        @csrf
+                                        <div class="row g-2 align-items-end">
+                                            <div class="col-5">
+                                                <label class="form-label text-muted small fw-bold">Referral ($)</label>
+                                                <input type="number" step="0.01" class="form-control form-control-sm bg-dark text-white border-secondary" name="amount" required>
+                                            </div>
+                                            <div class="col-5">
+                                                <label class="form-label text-muted small fw-bold">Description</label>
+                                                <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" name="description" placeholder="L1 commission" required>
+                                            </div>
+                                            <div class="col-2">
+                                                <button type="submit" class="btn btn-sm btn-primary w-100 fw-bold"><i class="bi bi-check"></i></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- USER DEPOSITS -->
                 <div class="tab-pane fade" id="deposits" role="tabpanel">
-                    <h5 class="fw-bold mb-3 text-success">Deposits Log</h5>
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle mb-0 small">
-                            <thead>
-                                <tr>
-                                    <th>TXID</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Submitted At</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($deposits as $dep)
-                                    <tr>
-                                        <td><code class="text-warning">{{ $dep->txid }}</code></td>
-                                        <td class="fw-bold text-success">${{ number_format($dep->amount, 2) }}</td>
-                                        <td>
-                                            @if($dep->status === 'approved')
-                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-0.5">Approved</span>
-                                            @elseif($dep->status === 'pending')
-                                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-0.5">Pending</span>
-                                            @else
-                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-0.5">Rejected</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $dep->created_at->format('Y-m-d H:i') }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center text-muted py-4">No deposits submitted yet</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-7">
+                            <h5 class="fw-bold mb-3 text-success">Deposits History</h5>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover align-middle mb-0 small">
+                                    <thead>
+                                        <tr>
+                                            <th>TXID</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($deposits as $dep)
+                                            <tr>
+                                                <td><code class="text-warning">{{ Str::limit($dep->txid, 16) }}</code></td>
+                                                <td class="fw-bold text-success">${{ number_format($dep->amount, 2) }}</td>
+                                                <td>
+                                                    <span class="badge bg-{{ $dep->status === 'approved' ? 'success' : ($dep->status === 'pending' ? 'warning' : 'danger') }} bg-opacity-10 text-{{ $dep->status === 'approved' ? 'success' : ($dep->status === 'pending' ? 'warning' : 'danger') }} border border-{{ $dep->status === 'approved' ? 'success' : ($dep->status === 'pending' ? 'warning' : 'danger') }} border-opacity-25">
+                                                        {{ ucfirst($dep->status) }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-muted">{{ $dep->created_at->format('Y-m-d H:i') }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr><td colspan="4" class="text-center text-muted py-4">No deposits submitted yet</td></tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Manual deposit form -->
+                        <div class="col-md-5">
+                            <div class="p-3 bg-dark bg-opacity-25 rounded border border-secondary border-opacity-25">
+                                <h6 class="fw-bold text-success mb-3"><i class="bi bi-plus-circle me-2"></i> Add Manual Deposit</h6>
+                                <form action="{{ route('admin.deposits.manual') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold">USDT Amount</label>
+                                        <input type="number" step="0.01" class="form-control form-control-sm bg-dark text-white border-secondary" name="amount" required min="0.01">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold">Transaction Hash (TXID)</label>
+                                        <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" name="txid" placeholder="Optional hash">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted small fw-bold">Initial Status</label>
+                                        <select class="form-select form-select-sm bg-dark text-white border-secondary" name="status" required>
+                                            <option value="approved">Approved (Immediately credits wallet)</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="rejected">Rejected</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-success fw-bold w-100">Add Deposit</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- USER WITHDRAWALS -->
                 <div class="tab-pane fade" id="withdrawals" role="tabpanel">
-                    <h5 class="fw-bold mb-3 text-danger">Withdrawals Log</h5>
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle mb-0 small">
-                            <thead>
-                                <tr>
-                                    <th>Wallet Address</th>
-                                    <th>Amount</th>
-                                    <th>Balance Type</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($withdrawals as $with)
-                                    <tr>
-                                        <td><code class="text-info">{{ $with->wallet_address }}</code></td>
-                                        <td class="fw-bold text-danger">${{ number_format($with->amount, 2) }}</td>
-                                        <td><span class="text-muted">{{ $with->wallet_type }}</span></td>
-                                        <td>
-                                            @if($with->status === 'approved')
-                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-0.5">Approved</span>
-                                            @elseif($with->status === 'pending')
-                                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-0.5">Pending</span>
-                                            @else
-                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-0.5">Rejected</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $with->created_at->format('Y-m-d H:i') }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">No withdrawals requested yet</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-7">
+                            <h5 class="fw-bold mb-3 text-danger">Withdrawals History</h5>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover align-middle mb-0 small">
+                                    <thead>
+                                        <tr>
+                                            <th>Wallet Address</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($withdrawals as $with)
+                                            <tr>
+                                                <td><code class="text-info">{{ Str::limit($with->wallet_address, 16) }}</code></td>
+                                                <td class="fw-bold text-danger">${{ number_format($with->amount, 2) }}</td>
+                                                <td>
+                                                    <span class="badge bg-{{ $with->status === 'approved' ? 'success' : ($with->status === 'pending' ? 'warning' : 'danger') }} bg-opacity-10 text-{{ $with->status === 'approved' ? 'success' : ($with->status === 'pending' ? 'warning' : 'danger') }} border border-{{ $with->status === 'approved' ? 'success' : ($with->status === 'pending' ? 'warning' : 'danger') }} border-opacity-25">
+                                                        {{ ucfirst($with->status) }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-muted">{{ $with->created_at->format('Y-m-d H:i') }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr><td colspan="4" class="text-center text-muted py-4">No withdrawals requested yet</td></tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Manual withdrawal form -->
+                        <div class="col-md-5">
+                            <div class="p-3 bg-dark bg-opacity-25 rounded border border-secondary border-opacity-25">
+                                <h6 class="fw-bold text-danger mb-3"><i class="bi bi-dash-circle me-2"></i> Add Manual Withdrawal</h6>
+                                <form action="{{ route('admin.withdrawals.manual') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold">USDT Amount</label>
+                                        <input type="number" step="0.01" class="form-control form-control-sm bg-dark text-white border-secondary" name="amount" required min="0.01">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold">USDT Destination Wallet Address</label>
+                                        <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" name="wallet_address" required>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold">Deduct from Wallet</label>
+                                        <select class="form-select form-select-sm bg-dark text-white border-secondary" name="wallet_type" required>
+                                            <option value="deposit_balance">Deposit Wallet</option>
+                                            <option value="roi_balance">ROI Wallet</option>
+                                            <option value="referral_balance">Referral Wallet</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted small fw-bold">Initial Status</label>
+                                        <select class="form-select form-select-sm bg-dark text-white border-secondary" name="status" required>
+                                            <option value="approved">Approved (Immediately deducts wallet)</option>
+                                            <option value="pending">Pending (Deducts wallet)</option>
+                                            <option value="rejected">Rejected (No wallet action)</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-danger fw-bold w-100">Add Withdrawal</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- USER INVESTMENTS -->
                 <div class="tab-pane fade" id="investments" role="tabpanel">
-                    <h5 class="fw-bold mb-3 text-info">Investments History</h5>
-                    <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle mb-0 small">
-                            <thead>
-                                <tr>
-                                    <th>Plan Name</th>
-                                    <th>Amount Invested</th>
-                                    <th>ROI Generated</th>
-                                    <th>Last Payout</th>
-                                    <th>Status</th>
-                                    <th>Started At</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($investments as $inv)
-                                    <tr>
-                                        <td class="fw-bold text-white">{{ $inv->plan ? $inv->plan->name : 'Custom Plan' }}</td>
-                                        <td class="fw-bold text-info">${{ number_format($inv->amount, 2) }}</td>
-                                        <td class="text-success">${{ number_format($inv->total_earned, 2) }}</td>
-                                        <td class="text-muted">{{ $inv->last_roi_at ? $inv->last_roi_at->format('M d, H:i') : 'Never' }}</td>
-                                        <td>
-                                            @if($inv->status === 'active')
-                                                <span class="badge bg-success">Running</span>
-                                            @else
-                                                <span class="badge bg-secondary">Completed</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $inv->created_at->format('Y-m-d') }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted py-4">No investments found</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-7">
+                            <h5 class="fw-bold mb-3 text-info">Investments history</h5>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover align-middle mb-0 small" style="font-size: 0.82rem;">
+                                    <thead>
+                                        <tr>
+                                            <th>Plan</th>
+                                            <th>Invested</th>
+                                            <th>ROI Earned</th>
+                                            <th>Status</th>
+                                            <th>Started</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($investments as $inv)
+                                            <tr>
+                                                <td class="fw-bold text-white">{{ $inv->plan ? $inv->plan->name : 'Custom Plan' }}</td>
+                                                <td class="fw-bold text-info">${{ number_format($inv->amount, 2) }}</td>
+                                                <td class="text-success">${{ number_format($inv->total_earned, 2) }}</td>
+                                                <td><span class="badge bg-{{ $inv->status === 'active' ? 'success' : 'secondary' }}">{{ ucfirst($inv->status) }}</span></td>
+                                                <td class="text-muted">{{ $inv->created_at->format('Y-m-d') }}</td>
+                                                <td>
+                                                    @if($inv->status === 'active')
+                                                        <form action="{{ route('admin.investments.complete', $inv->id) }}" method="POST" onsubmit="return confirm('Complete this investment?')" class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-xs btn-outline-warning py-0.5 px-1.5 fw-bold" style="font-size:0.75rem;">Complete</button>
+                                                        </form>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr><td colspan="6" class="text-center text-muted py-4">No investments found</td></tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Manual Investment Form -->
+                        <div class="col-md-5">
+                            <div class="p-3 bg-dark bg-opacity-25 rounded border border-secondary border-opacity-25">
+                                <h6 class="fw-bold text-info mb-3"><i class="bi bi-plus-square me-2"></i> Add Manual Investment</h6>
+                                <form action="{{ route('admin.investments.manual') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold">Select Plan</label>
+                                        <select class="form-select form-select-sm bg-dark text-white border-secondary" name="plan_id" required>
+                                            @foreach($plans as $p)
+                                                <option value="{{ $p->id }}">{{ $p->name }} (Min: ${{ $p->min_deposit }} | ROI: {{ $p->daily_roi_percent }}%)</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label text-muted small fw-bold">Investment Amount ($)</label>
+                                        <input type="number" step="0.01" class="form-control form-control-sm bg-dark text-white border-secondary" name="amount" required min="0.01">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted small fw-bold">Initial Status</label>
+                                        <select class="form-select form-select-sm bg-dark text-white border-secondary" name="status" required>
+                                            <option value="active">Active (Earning Daily ROI)</option>
+                                            <option value="completed">Completed</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-info fw-bold w-100">Activate Investment</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

@@ -107,6 +107,19 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix($adminSecret)->name(
     Route::post('/users/{id}/reset-password-auto', [\App\Http\Controllers\AdminController::class, 'resetUserPasswordAuto'])->name('users.reset-password-auto');
     Route::post('/users/{id}/verify-email', [\App\Http\Controllers\AdminController::class, 'verifyUserEmail'])->name('users.verify-email');
     
+    // Extended Admin Actions & Referral Control routes
+    Route::post('/users/{id}/adjust-wallet', [\App\Http\Controllers\AdminController::class, 'adjustWallet'])->name('users.adjust-wallet');
+    Route::post('/deposits/manual', [\App\Http\Controllers\AdminController::class, 'addDeposit'])->name('deposits.manual');
+    Route::post('/withdrawals/manual', [\App\Http\Controllers\AdminController::class, 'addWithdrawal'])->name('withdrawals.manual');
+    Route::post('/investments/manual', [\App\Http\Controllers\AdminController::class, 'addInvestment'])->name('investments.manual');
+    Route::post('/investments/{id}/complete', [\App\Http\Controllers\AdminController::class, 'completeInvestment'])->name('investments.complete');
+    Route::post('/users/{id}/add-roi', [\App\Http\Controllers\AdminController::class, 'addRoi'])->name('users.add-roi');
+    Route::post('/users/{id}/add-referral-bonus', [\App\Http\Controllers\AdminController::class, 'addReferralBonus'])->name('users.add-referral-bonus');
+    Route::post('/users/change-sponsor', [\App\Http\Controllers\AdminController::class, 'changeSponsor'])->name('users.change-sponsor');
+    Route::post('/users/remove-referral', [\App\Http\Controllers\AdminController::class, 'removeReferral'])->name('users.remove-referral');
+    Route::post('/users/rebuild-tree', [\App\Http\Controllers\AdminController::class, 'rebuildReferralTree'])->name('users.rebuild-tree');
+    Route::get('/referrals', [\App\Http\Controllers\AdminController::class, 'referrals'])->name('referrals');
+
     // Reports & Audit Logs
     Route::get('/audit-logs', [\App\Http\Controllers\AdminController::class, 'auditLogs'])->name('audit-logs');
     Route::get('/reports', [\App\Http\Controllers\AdminController::class, 'reports'])->name('reports');

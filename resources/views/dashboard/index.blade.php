@@ -100,45 +100,84 @@
     </div>
 </div>
 
-<div class="row g-4 mb-4">
-    <!-- Total Balance -->
-    <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="100">
-        <div class="glass-card p-4 h-100 position-relative neon-glow-primary">
-            <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                <i class="bi bi-wallet2 display-4 text-primary"></i>
-            </div>
-            <p class="text-muted small text-uppercase fw-bold mb-1">Total Balance</p>
-            <h2 class="fw-bold text-white mb-0">$<span class="countup" data-val="{{ $totalBalance }}">0</span></h2>
+<div class="row g-3 mb-4">
+    <!-- Row 1: Core Financials -->
+    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="glass-card p-3 position-relative neon-glow-primary overflow-hidden">
+            <p class="text-muted small fw-bold mb-1">Total Wallet Balance</p>
+            <h3 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalBalance }}">0</span></h3>
+            <i class="bi bi-wallet2 position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-primary opacity-25"></i>
         </div>
     </div>
-    <!-- Active Investments -->
-    <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="200">
-        <div class="glass-card p-4 h-100 position-relative neon-glow-success border-success border-opacity-25">
-            <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                <i class="bi bi-graph-up-arrow display-4 text-success"></i>
-            </div>
-            <p class="text-muted small text-uppercase fw-bold mb-1">Active Investments</p>
-            <h2 class="fw-bold text-white mb-0">$<span class="countup" data-val="{{ $activeInvestmentsSum }}">0</span></h2>
+    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="glass-card p-3 position-relative overflow-hidden">
+            <p class="text-muted small fw-bold mb-1">Total Deposits</p>
+            <h3 class="text-success fw-bold mb-0">$<span class="countup" data-val="{{ $totalDeposits }}">0</span></h3>
+            <i class="bi bi-arrow-down-circle position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-success opacity-25"></i>
         </div>
     </div>
-    <!-- Team Size -->
-    <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="300">
-        <div class="glass-card p-4 h-100 position-relative border-info border-opacity-25">
-            <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                <i class="bi bi-people-fill display-4 text-info"></i>
-            </div>
-            <p class="text-muted small text-uppercase fw-bold mb-1">Direct Referrals</p>
-            <h2 class="fw-bold text-white mb-0"><span class="countup" data-val="{{ $directReferralsCount }}">0</span></h2>
+    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+        <div class="glass-card p-3 position-relative overflow-hidden">
+            <p class="text-muted small fw-bold mb-1">Total Withdrawals</p>
+            <h3 class="text-danger fw-bold mb-0">$<span class="countup" data-val="{{ $totalWithdrawals }}">0</span></h3>
+            <i class="bi bi-arrow-up-circle position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-danger opacity-25"></i>
         </div>
     </div>
-    <!-- Total Earned -->
-    <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="400">
-        <div class="glass-card p-4 h-100 position-relative border-warning border-opacity-25">
-            <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                <i class="bi bi-cash-stack display-4 text-warning"></i>
-            </div>
-            <p class="text-muted small text-uppercase fw-bold mb-1">Total Earnings</p>
-            <h2 class="fw-bold text-white mb-0">$<span class="countup" data-val="{{ $wallet->roi_balance + $wallet->referral_balance }}">0</span></h2>
+    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+        <div class="glass-card p-3 position-relative overflow-hidden">
+            <p class="text-muted small fw-bold mb-1">Total Earnings</p>
+            <h3 class="text-warning fw-bold mb-0">$<span class="countup" data-val="{{ $totalEarnings }}">0</span></h3>
+            <i class="bi bi-cash-stack position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-warning opacity-25"></i>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <!-- Row 2: Investment & ROI metrics -->
+    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="glass-card p-3 position-relative overflow-hidden">
+            <p class="text-muted small fw-bold mb-1">Active Investments</p>
+            <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $activeInvestmentsSum }}">0</span></h4>
+            <i class="bi bi-activity position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-info opacity-25"></i>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="glass-card p-3 position-relative overflow-hidden">
+            <p class="text-muted small fw-bold mb-1">Completed Investments</p>
+            <h4 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $completedInvestmentsCount }}">0</span> <span class="fs-6 text-muted">(${{ number_format($completedInvestmentsSum, 0) }})</span></h4>
+            <i class="bi bi-patch-check position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-success opacity-25"></i>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+        <div class="glass-card p-3 position-relative overflow-hidden">
+            <p class="text-muted small fw-bold mb-1">ROI Earned</p>
+            <h4 class="text-warning fw-bold mb-0">$<span class="countup" data-val="{{ $roiEarned }}">0</span></h4>
+            <i class="bi bi-graph-up-arrow position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-warning opacity-25"></i>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+        <div class="glass-card p-3 position-relative overflow-hidden">
+            <p class="text-muted small fw-bold mb-1">Referral Commission</p>
+            <h4 class="text-primary fw-bold mb-0">$<span class="countup" data-val="{{ $referralCommission }}">0</span></h4>
+            <i class="bi bi-diagram-3 position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-primary opacity-25"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Row 3: Team Metrics & Share Link -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="glass-card p-3 position-relative overflow-hidden">
+            <p class="text-muted small fw-bold mb-1">Direct Referrals</p>
+            <h4 class="text-white fw-bold mb-0"><span class="countup" data-val="{{ $directReferralsCount }}">0</span></h4>
+            <i class="bi bi-person-plus position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-info opacity-25"></i>
+        </div>
+    </div>
+    <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="glass-card p-3 position-relative overflow-hidden">
+            <p class="text-muted small fw-bold mb-1">Total Team Size (10 Levels)</p>
+            <h4 class="text-white fw-bold mb-0"><span class="countup" data-val="{{ $teamSize }}">0</span></h4>
+            <i class="bi bi-people position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-warning opacity-25"></i>
         </div>
     </div>
 </div>
@@ -149,41 +188,36 @@
         <div class="glass-card p-4 h-100 border-primary border-opacity-25 tech-bg-container">
             <!-- Subtle Tech Background Effects -->
             <div class="tech-grid-overlay"></div>
-            <div class="tech-data-stream"></div>
-            <div class="tech-data-stream tech-data-stream-2"></div>
-            <div class="tech-data-stream tech-data-stream-3"></div>
             
-            <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
-                <h5 class="fw-bold mb-0"><i class="bi bi-bar-chart-fill text-primary me-2"></i> Investment Analytics</h5>
-                <select class="form-select form-select-sm bg-dark text-white border-secondary" style="width: auto;">
-                    <option>Last 7 Days</option>
-                    <option>Last 30 Days</option>
-                    <option>All Time</option>
-                </select>
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 position-relative gap-2">
+                <h5 class="fw-bold mb-0 text-white"><i class="bi bi-bar-chart-fill text-primary me-2"></i> Account Analytics Matrix</h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-primary active" onclick="switchUserChart('invs')">Investments</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="switchUserChart('deps')">Deposits</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="switchUserChart('withs')">Withdrawals</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="switchUserChart('rois')">ROI History</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="switchUserChart('refs')">Referral Growth</button>
+                </div>
             </div>
-            <div style="height: 250px; position: relative;">
+            <div style="height: 280px; position: relative;">
                 <canvas id="userAnalyticsChart"></canvas>
             </div>
         </div>
     </div>
     <div class="col-lg-4">
         <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
-            <h5 class="fw-bold mb-4"><i class="bi bi-pie-chart-fill text-info me-2"></i> Portfolio Status</h5>
+            <h5 class="fw-bold mb-4 text-white"><i class="bi bi-pie-chart-fill text-info me-2"></i> Portfolio Status</h5>
             <div class="mb-3">
-                <div class="d-flex justify-content-between text-muted small mb-1"><span>Total Investments</span> <span class="text-white fw-bold">{{ count($transactions->where('type', 'deposit')) }}</span></div>
-                <div class="progress" style="height: 6px;"><div class="progress-bar bg-primary" style="width: 100%"></div></div>
+                <div class="d-flex justify-content-between text-muted small mb-1"><span>Total Active Investments</span> <span class="text-white fw-bold">${{ number_format($activeInvestmentsSum, 2) }}</span></div>
+                <div class="progress" style="height: 6px;"><div class="progress-bar bg-success" style="width: {{ $activeInvestmentsSum > 0 ? 100 : 0 }}%"></div></div>
             </div>
             <div class="mb-3">
-                <div class="d-flex justify-content-between text-muted small mb-1"><span>Active Investments</span> <span class="text-white fw-bold">{{ $activeInvestmentsList->count() }}</span></div>
-                <div class="progress" style="height: 6px;"><div class="progress-bar bg-success" style="width: {{ $activeInvestmentsList->count() > 0 ? 100 : 0 }}%"></div></div>
-            </div>
-            <div class="mb-3">
-                <div class="d-flex justify-content-between text-muted small mb-1"><span>Completed (3X Max)</span> <span class="text-white fw-bold">0</span></div>
-                <div class="progress" style="height: 6px;"><div class="progress-bar bg-warning" style="width: 0%"></div></div>
+                <div class="d-flex justify-content-between text-muted small mb-1"><span>Completed Investments</span> <span class="text-white fw-bold">${{ number_format($completedInvestmentsSum, 2) }}</span></div>
+                <div class="progress" style="height: 6px;"><div class="progress-bar bg-warning" style="width: {{ $completedInvestmentsSum > 0 ? 100 : 0 }}%"></div></div>
             </div>
             <div class="p-3 mt-3 rounded bg-dark border border-success border-opacity-25">
                 <p class="text-success small fw-bold mb-1"><i class="bi bi-graph-up-arrow me-1"></i> Total ROI Earned</p>
-                <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $wallet->roi_balance }}">0</span></h4>
+                <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $roiEarned }}">0</span></h4>
             </div>
         </div>
     </div>
@@ -194,7 +228,7 @@
     <div class="col-lg-8" data-aos="fade-right">
         <div class="glass-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold mb-0"><i class="bi bi-safe2 text-primary me-2"></i> My Wallets</h5>
+                <h5 class="fw-bold mb-0 text-white"><i class="bi bi-safe2 text-primary me-2"></i> My Wallets</h5>
                 <div>
                     <a href="{{ route('dashboard.deposits') }}" class="btn btn-sm btn-outline-success me-2 fw-bold"><i class="bi bi-arrow-down-circle"></i> Deposit</a>
                     <a href="{{ route('dashboard.withdrawals') }}" class="btn btn-sm btn-outline-light fw-bold"><i class="bi bi-arrow-up-circle"></i> Withdraw</a>
@@ -207,7 +241,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-muted small mb-1">Deposit Wallet</p>
-                                <h4 class="mb-0 fw-bold">$<span class="countup" data-val="{{ $wallet->deposit_balance }}">0</span></h4>
+                                <h4 class="mb-0 fw-bold text-white">$<span class="countup" data-val="{{ $wallet->deposit_balance }}">0</span></h4>
                             </div>
                             <i class="bi bi-box-arrow-in-down fs-1 text-muted opacity-50"></i>
                         </div>
@@ -253,7 +287,7 @@
     <!-- 3X Progress -->
     <div class="col-lg-4" data-aos="fade-left">
         <div class="glass-card p-4 h-100 position-relative border-primary border-opacity-25 neon-glow-primary">
-            <h5 class="fw-bold mb-4"><i class="bi bi-rocket-takeoff text-primary me-2"></i> Investment Progress (3X)</h5>
+            <h5 class="fw-bold mb-4 text-white"><i class="bi bi-rocket-takeoff text-primary me-2"></i> Investment Progress (3X)</h5>
             @forelse($activeInvestmentsList as $inv)
                 @php
                     $multiplier = setting('enable_return_multiplier', 1) ? setting('investment_return_multiplier', 3) : 999;
@@ -296,7 +330,7 @@
     <!-- Referral System -->
     <div class="col-lg-4" data-aos="fade-up">
         <div class="glass-card p-4 h-100">
-            <h5 class="fw-bold mb-3"><i class="bi bi-share-fill text-info me-2"></i> Referral Program</h5>
+            <h5 class="fw-bold mb-3 text-white"><i class="bi bi-share-fill text-info me-2"></i> Referral Program</h5>
             <p class="text-muted small mb-3">Share your link to earn up to 10 levels of commissions instantly!</p>
             
             <div class="input-group mb-3 shadow-sm">
@@ -329,7 +363,7 @@
                 </div>
                 <div class="col-6">
                     <div class="p-2 rounded bg-dark border border-secondary text-center">
-                        <small class="text-muted d-block">Direct Earnings</small>
+                        <small class="text-muted d-block">Referral Income</small>
                         <strong class="text-success">${{ number_format($wallet->referral_balance, 2) }}</strong>
                     </div>
                 </div>
@@ -347,7 +381,7 @@
     <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
         <div class="glass-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-secondary me-2"></i> Recent Activity</h5>
+                <h5 class="fw-bold mb-0 text-white"><i class="bi bi-clock-history text-secondary me-2"></i> Recent Activity</h5>
                 <a href="{{ route('dashboard.history') }}" class="btn btn-sm btn-outline-secondary">View All</a>
             </div>
             
@@ -409,68 +443,105 @@
 
 @push('scripts')
 <script>
+    let userChart;
+    const chartLabels = {!! json_encode($chartLabels) !!};
+
+    const userDatasets = {
+        invs: {
+            label: 'Investments Created ($)',
+            data: {!! json_encode($chartInvs) !!},
+            color: '#a855f7',
+            fillColor: 'rgba(168, 85, 247, 0.1)'
+        },
+        deps: {
+            label: 'Approved Deposits ($)',
+            data: {!! json_encode($chartDeps) !!},
+            color: '#10b981',
+            fillColor: 'rgba(16, 185, 129, 0.1)'
+        },
+        withs: {
+            label: 'Approved Withdrawals ($)',
+            data: {!! json_encode($chartWiths) !!},
+            color: '#ef4444',
+            fillColor: 'rgba(239, 68, 68, 0.1)'
+        },
+        rois: {
+            label: 'Daily ROI Earned ($)',
+            data: {!! json_encode($chartRois) !!},
+            color: '#eab308',
+            fillColor: 'rgba(234, 179, 8, 0.1)'
+        },
+        refs: {
+            label: 'Referral Commissions ($)',
+            data: {!! json_encode($chartRefs) !!},
+            color: '#3b82f6',
+            fillColor: 'rgba(59, 130, 246, 0.1)'
+        }
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize CountUp for all stats
+        // Initialize CountUp numbers
         const countElements = document.querySelectorAll('.countup');
         countElements.forEach(el => {
             const val = parseFloat(el.getAttribute('data-val'));
             const decimals = val % 1 !== 0 ? 2 : 0;
             const countUp = new countUp.CountUp(el, val, {
                 decimalPlaces: decimals,
-                duration: 2.5,
+                duration: 2,
                 useEasing: true,
             });
-            if (!countUp.error) {
-                countUp.start();
-            }
+            if (!countUp.error) countUp.start();
         });
 
-        // Animate Progress Bars smoothly
-        setTimeout(() => {
-            const progressBars = document.querySelectorAll('.progress-bar-premium');
-            progressBars.forEach(bar => {
-                bar.style.width = bar.getAttribute('data-target-width');
-            });
-        }, 300);
-
-        // Investment Analytics Chart
-        const ctx = document.getElementById('userAnalyticsChart');
-        if(ctx) {
-            const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
-            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
-            
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: {!! json_encode($chartLabels) !!},
-                    datasets: [{
-                        label: 'Earnings ($)',
-                        data: {!! json_encode($chartData) !!},
-                        borderColor: '#3b82f6',
-                        backgroundColor: gradient,
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#1e293b',
-                        pointBorderColor: '#3b82f6',
-                        pointBorderWidth: 2,
-                        pointRadius: 4
-                    }]
+        // Initialize user chart
+        const ctx = document.getElementById('userAnalyticsChart').getContext('2d');
+        userChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: userDatasets.invs.label,
+                    data: userDatasets.invs.data,
+                    borderColor: userDatasets.invs.color,
+                    backgroundColor: userDatasets.invs.fillColor,
+                    borderWidth: 3,
+                    tension: 0.35,
+                    fill: true,
+                    pointBackgroundColor: '#0f172a',
+                    pointBorderColor: userDatasets.invs.color,
+                    pointBorderWidth: 2,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
-                    },
-                    interaction: { intersect: false, mode: 'index' }
-                }
-            });
-        }
+                interaction: { intersect: false, mode: 'index' }
+            }
+        });
     });
+
+    function switchUserChart(key) {
+        // Remove active class from buttons
+        const buttons = document.querySelectorAll('.btn-group button');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        // Add active class to clicked button
+        event.target.classList.add('active');
+
+        const activeSet = userDatasets[key];
+        userChart.data.datasets[0].label = activeSet.label;
+        userChart.data.datasets[0].data = activeSet.data;
+        userChart.data.datasets[0].borderColor = activeSet.color;
+        userChart.data.datasets[0].backgroundColor = activeSet.fillColor;
+        userChart.data.datasets[0].pointBorderColor = activeSet.color;
+        userChart.update();
+    }
 
     // Native Share API
     function shareLink() {
