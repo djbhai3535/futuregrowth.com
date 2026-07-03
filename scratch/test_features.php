@@ -420,6 +420,121 @@ Setting::updateOrCreate(['key' => 'smtp_encryption'], ['value' => 'tls']);
 \Illuminate\Support\Facades\Cache::forget('setting_smtp_port');
 \Illuminate\Support\Facades\Cache::forget('setting_smtp_encryption');
 
+// 6.8. VERIFY SYNCHRONIZATION BETWEEN ADMIN PANEL AND USER DASHBOARD (Section 11 & 14)
+echo "\nTesting Dashboard & Admin Panel Synchronization (Section 11 & 14)...\n";
+
+// Create Test User A
+$userA = \App\Models\User::create([
+    'name' => 'User A Sync',
+    'username' => 'usera_sync',
+    'email' => 'usera_sync@example.com',
+    'phone' => '+18889991111',
+    'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+    'status' => 'active',
+    'referral_code' => 'REFA_SYNC'
+]);
+$walletA = \App\Models\Wallet::create(['user_id' => $userA->id]);
+
+// Create Test User B referred by User A
+$userB = \App\Models\User::create([
+    'name' => 'User B Sync',
+    'username' => 'userb_sync',
+    'email' => 'userb_sync@example.com',
+    'phone' => '+18889992222',
+    'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+    'status' => 'active',
+    'referral_code' => 'REFB_SYNC',
+    'referred_by' => $userA->id
+]);
+$walletB = \App\Models\Wallet::create(['user_id' => $userB->id]);
+
+// Check direct referral count initially
+$directCount = \App\Models\User::where('referred_by', $userA->id)->count();
+assertTest($directCount === 1, "User A direct referral count is initially 1");
+
+// Admin action: change User B sponsor to null
+$changeSponsorRequest = createRequest('/admin/users/change-sponsor', 'POST', [
+    'user_id' => $userB->id,
+    'new_sponsor_id' => null
+]);
+$adminController->changeSponsor($changeSponsorRequest);
+$userB->refresh();
+assertTest($userB->referred_by === null, "User B sponsor changed successfully to None by Admin");
+
+// Verify User A direct referral count is updated instantly
+$directCountUpdated = \App\Models\User::where('referred_by', $userA->id)->count();
+assertTest($directCountUpdated === 0, "User A direct referral count updated instantly to 0");
+
+// Re-connect sponsor
+$userB->referred_by = $userA->id;
+$userB->save();
+
+// Admin action: Wallet adjustment (Increase deposit balance by $500)
+$adjustWalletRequest1 = createRequest('/admin/users/' . $userA->id . '/adjust-wallet', 'POST', [
+    'balance_type' => 'deposit_balance',
+    'action_type' => 'increase',
+    'amount' => '500.00',
+    'description' => 'Test increase'
+]);
+$adminController->adjustWallet($adjustWalletRequest1, $userA->id);
+$walletA->refresh();
+assertTest($walletA->deposit_balance == 500.00, "User A wallet deposit balance successfully increased to $500.00");
+
+// Admin action: Wallet adjustment (Decrease deposit balance by $200)
+$adjustWalletRequest2 = createRequest('/admin/users/' . $userA->id . '/adjust-wallet', 'POST', [
+    'balance_type' => 'deposit_balance',
+    'action_type' => 'decrease',
+    'amount' => '200.00',
+    'description' => 'Test decrease'
+]);
+$adminController->adjustWallet($adjustWalletRequest2, $userA->id);
+$walletA->refresh();
+assertTest($walletA->deposit_balance == 300.00, "User A wallet deposit balance successfully decreased to $300.00");
+
+// Admin action: Add Manual Deposit ($150)
+$addDepositRequest = createRequest('/admin/deposits/manual', 'POST', [
+    'user_id' => $userA->id,
+    'amount' => '150.00',
+    'status' => 'approved'
+]);
+$adminController->addDeposit($addDepositRequest);
+$walletA->refresh();
+assertTest($walletA->deposit_balance == 450.00, "Approved manual deposit of $150 instantly credited wallet balance to $450.00");
+
+// Admin action: Add Manual Withdrawal ($100)
+$addWithdrawalRequest = createRequest('/admin/withdrawals/manual', 'POST', [
+    'user_id' => $userA->id,
+    'amount' => '100.00',
+    'wallet_address' => '0xTestAddressSync',
+    'wallet_type' => 'deposit_balance',
+    'status' => 'approved'
+]);
+$adminController->addWithdrawal($addWithdrawalRequest);
+$walletA->refresh();
+assertTest($walletA->deposit_balance == 350.00, "Approved manual withdrawal of $100 instantly debited wallet balance to $350.00");
+
+// Admin action: Add manual ROI ($50)
+$addRoiRequest = createRequest('/admin/users/' . $userA->id . '/add-roi', 'POST', [
+    'amount' => '50.00',
+    'description' => 'Test ROI payout'
+]);
+$adminController->addRoi($addRoiRequest, $userA->id);
+$walletA->refresh();
+assertTest($walletA->roi_balance == 50.00, "Manual ROI payout of $50 successfully credited ROI balance");
+
+// Admin action: Add manual referral commission ($25)
+$addCommissionRequest = createRequest('/admin/users/' . $userA->id . '/add-referral-bonus', 'POST', [
+    'amount' => '25.00',
+    'description' => 'Test commission payout'
+]);
+$adminController->addReferralBonus($addCommissionRequest, $userA->id);
+$walletA->refresh();
+assertTest($walletA->referral_balance == 25.00, "Manual commission payout of $25 successfully credited referral balance");
+
+// Clean up
+$userB->forceDelete();
+$userA->forceDelete();
+
 // Clean up test user
 \App\Models\User::withTrashed()->where('email', 'testuser@example.com')->forceDelete();
 
