@@ -23,8 +23,22 @@ echo "\n========================================================================
 echo "FutureGrowth.tech - LIVE PRODUCTION USERS SYNC VALIDATION SUITE\n";
 echo "=========================================================================\n";
 
-// Fetch the first 10 users from the database
-$users = User::take(10)->get();
+// Fetch 10 users with actual activity
+$users = User::where(function ($query) {
+    $query->whereHas('wallet', function ($q) {
+        $q->where('deposit_balance', '>', 0)
+          ->orWhere('roi_balance', '>', 0)
+          ->orWhere('referral_balance', '>', 0)
+          ->orWhere('bonus_balance', '>', 0);
+    })
+    ->orWhereHas('deposits', function ($q) {
+        $q->where('status', 'approved');
+    })
+    ->orWhereHas('investments')
+    ->orWhereIn('id', function ($q) {
+        $q->select('referred_by')->from('users')->whereNotNull('referred_by');
+    });
+})->take(10)->get();
 
 if ($users->isEmpty()) {
     echo "❌ ERROR: No existing users found in the database. Please ensure you are running this on the live VPS database.\n";
