@@ -234,8 +234,8 @@
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-premium sticky-top">
         <div class="container">
-            <a class="navbar-brand fs-4" href="{{ (request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*')) ? route('admin.dashboard') : route('dashboard') }}">
-                @if(request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*'))
+            <a class="navbar-brand fs-4" href="{{ request()->routeIs('admin.*') ? route('admin.dashboard') : route('dashboard') }}">
+                @if(request()->routeIs('admin.*'))
                     <i class="bi bi-shield-check text-warning"></i> <span class="fw-bold text-warning">ADMIN</span><span class="fw-light text-muted">PANEL</span>
                 @elseif(setting('site_logo'))
                     <img src="{{ Storage::url(setting('site_logo')) }}" alt="{{ setting('site_name', 'Logo') }}" style="height: 35px;">
@@ -251,7 +251,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto navbar-desktop-links">
                     @auth
-                    @if(request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*'))
+                    @if(request()->routeIs('admin.*'))
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active text-warning fw-bold' : '' }}" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
                         </li>
@@ -317,7 +317,7 @@
                         <li class="nav-item"><a href="{{ route('login') }}" class="nav-link fw-bold">Login</a></li>
                         <li class="nav-item"><a href="{{ route('register') }}" class="btn btn-premium ms-3">Get Started</a></li>
                     @else
-                        @if(!(request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*')))
+                        @if(!request()->routeIs('admin.*'))
                             <li class="nav-item me-2 d-none d-lg-block">
                                 <a class="btn btn-outline-primary rounded-pill btn-sm px-3 fw-bold btn-pulse" href="#" onclick="copyToClipboard('{{ url('/register?ref='.auth()->user()->referral_code) }}', this)">
                                     <i class="bi bi-person-plus-fill"></i> Invite Friends
@@ -344,7 +344,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end glass-card border-primary border-opacity-50 shadow-lg rounded-4 mt-3 p-2" style="min-width: 260px; animation: slideDown 0.3s ease;">
                                 <!-- User Status & Balance Preview -->
-                                @if(request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*'))
+                                @if(request()->routeIs('admin.*'))
                                     <li class="px-3 py-3 text-center border-bottom border-secondary border-opacity-25 mb-2 position-relative overflow-hidden rounded-3 bg-dark">
                                         <div class="tech-grid-overlay" style="opacity: 0.1;"></div>
                                         <div class="mb-2">
