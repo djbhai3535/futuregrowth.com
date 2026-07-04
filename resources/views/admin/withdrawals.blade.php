@@ -41,13 +41,15 @@
         <table class="table table-dark table-hover align-middle mb-0">
             <thead>
                 <tr>
-                    <th>User</th>
+                    <th>User Name</th>
                     <th>Requested Amount</th>
                     <th>Fee</th>
                     <th>Net Payout</th>
-                    <th>Destination Wallet</th>
+                    <th>Wallet Type</th>
+                    <th>Destination Address</th>
                     <th>Status</th>
-                    <th>Requested Date</th>
+                    <th>Submission Date</th>
+                    <th>Pending Duration</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -66,6 +68,9 @@
                         <td class="text-muted">${{ number_format($with->fee, 2) }}</td>
                         <td class="fw-bold text-warning">${{ number_format($with->net_amount, 2) }}</td>
                         <td>
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">{{ str_replace('_', ' ', \Illuminate\Support\Str::title($with->wallet_type)) }}</span>
+                        </td>
+                        <td>
                             <div class="d-flex align-items-center gap-2" style="max-width: 250px;">
                                 <code class="text-info text-truncate" id="address-{{ $with->id }}" style="font-size: 0.85rem;">{{ $with->wallet_address }}</code>
                                 <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" onclick="navigator.clipboard.writeText('{{ $with->wallet_address }}')" title="Copy Address"><i class="bi bi-copy" style="font-size: 0.75rem;"></i></button>
@@ -78,10 +83,17 @@
                             @elseif($with->status === 'rejected')
                                 <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1"><i class="bi bi-x-circle-fill me-1"></i> Rejected</span>
                             @else
-                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1"><i class="bi bi-clock-fill me-1"></i> Pending Payment</span>
+                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1"><i class="bi bi-clock-fill me-1"></i> Pending</span>
                             @endif
                         </td>
                         <td class="text-muted small">{{ $with->created_at->format('M d, Y H:i') }}</td>
+                        <td>
+                            @if($with->status === 'pending')
+                                <span class="text-warning fw-bold small"><i class="bi bi-hourglass-split"></i> {{ $with->created_at->diffForHumans(null, true) }}</span>
+                            @else
+                                <span class="text-muted small">N/A</span>
+                            @endif
+                        </td>
                         <td class="text-end">
                             @if($with->status === 'pending')
                                 <div class="d-flex justify-content-end gap-2">
@@ -101,7 +113,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center py-5 text-muted">
+                        <td colspan="10" class="text-center py-5 text-muted">
                             <i class="bi bi-receipt fs-2 mb-2 d-block opacity-50"></i>
                             No withdrawal requests found.
                         </td>

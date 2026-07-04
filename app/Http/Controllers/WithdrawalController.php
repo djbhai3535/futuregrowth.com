@@ -69,6 +69,16 @@ class WithdrawalController extends Controller
             'reference_id' => $withdrawal->id
         ]);
 
+        // Send email notifications to administrators
+        $admins = \App\Models\User::where('is_admin', true)->get();
+        foreach ($admins as $admin) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($admin->email)->send(new \App\Mail\AdminWithdrawalNotificationMail($withdrawal));
+            } catch (\Exception $e) {
+                // Fail-safe to keep platform stable if mail server credentials are incorrect/offline
+            }
+        }
+
         return redirect()->route('dashboard.history')->with('success', 'Withdrawal request submitted.');
     }
 }

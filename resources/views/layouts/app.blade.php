@@ -25,10 +25,10 @@
         :root {
             --primary-color: #3b82f6;
             --primary-glow: rgba(59, 130, 246, 0.5);
-            --bg-dark: #09090b; /* Even darker for premium contrast */
-            --card-bg: rgba(24, 24, 27, 0.6);
-            --text-muted: #a1a1aa;
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --bg-dark: #0b0f19; /* Slightly brighter slate-midnight background for improved readability */
+            --card-bg: rgba(20, 26, 43, 0.75); /* Richer glassmorphism slate background */
+            --text-muted: #cbd5e1; /* Brighter muted text for high contrast readability */
+            --glass-border: rgba(255, 255, 255, 0.14); /* Enhanced glass borders */
             --neon-green: #10b981;
             --neon-purple: #8b5cf6;
         }

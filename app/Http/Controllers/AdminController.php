@@ -426,7 +426,7 @@ class AdminController extends Controller
         $investments = \App\Models\Investment::with('plan')->where('user_id', $user->id)->latest()->get();
         $roiHistory = \App\Models\Transaction::where('user_id', $user->id)->where('type', 'roi')->latest()->get();
         $activityLogs = \App\Models\ActivityLog::where('user_id', $user->id)->latest()->get();
-        $plans = \App\Models\Plan::where('is_active', true)->get();
+        $plans = \App\Models\Plan::where('status', 'active')->get();
 
         return view('admin.users_show', compact(
             'user',
