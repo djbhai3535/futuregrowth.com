@@ -9,6 +9,17 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="glass-card p-4">
+            <div class="mb-4 p-3 rounded border border-warning border-opacity-25 bg-warning bg-opacity-10 text-warning d-flex justify-content-between align-items-center">
+                <div>
+                    <strong class="d-block small text-uppercase"><i class="bi bi-clock-history me-1"></i> Processing Policy</strong>
+                    <span class="small opacity-75">Processed after admin approval.</span>
+                </div>
+                <div class="text-end">
+                    <span class="small d-block text-muted">Estimated Time</span>
+                    <strong class="text-warning">3 Days</strong>
+                </div>
+            </div>
+
             <div class="d-flex justify-content-between mb-4 p-3 rounded" style="background: rgba(255,255,255,0.05);">
                 <span class="text-muted">Total Available:</span>
                 <span class="fw-bold text-success fs-5">${{ number_format($totalAvailable, 2) }}</span>

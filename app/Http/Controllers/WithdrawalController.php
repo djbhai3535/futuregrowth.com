@@ -79,6 +79,6 @@ class WithdrawalController extends Controller
             }
         }
 
-        return redirect()->route('dashboard.history')->with('success', 'Withdrawal request submitted.');
+        return redirect()->route('dashboard.history')->with('success', 'Your withdrawal request has been received successfully. Withdrawals are processed within 3 business days after admin approval.');
     }
 }

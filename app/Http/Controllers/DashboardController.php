@@ -13,6 +13,8 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $this->distributeUserROI($user);
+        $user->refresh();
         $wallet = $user->wallet;
         
         // 1. LIVE USER DASHBOARD CALCULATIONS
@@ -49,14 +51,21 @@ class DashboardController extends Controller
         
         $directReferralsCount = \App\Models\User::where('referred_by', $user->id)->count();
 
-        // 10-Level Recursive Team Stats (Eager loaded)
+        // 10-Level Recursive Team Stats (Eager loaded & Cycle-safe)
         $teamSize = 0;
         $teamVolume = 0;
+        $visitedUserIds = [$user->id];
         $currentLevelReferrals = \App\Models\User::where('referred_by', $user->id)->get();
         for ($i = 1; $i <= 10; $i++) {
             if ($currentLevelReferrals->isEmpty()) break;
+            
+            $currentLevelReferrals = $currentLevelReferrals->whereNotIn('id', $visitedUserIds);
+            if ($currentLevelReferrals->isEmpty()) break;
+            
             $teamSize += $currentLevelReferrals->count();
-            $userIds = $currentLevelReferrals->pluck('id');
+            $userIds = $currentLevelReferrals->pluck('id')->toArray();
+            $visitedUserIds = array_merge($visitedUserIds, $userIds);
+            
             $teamVolume += \App\Models\Investment::whereIn('user_id', $userIds)->where('status', 'active')->sum('amount');
             $currentLevelReferrals = \App\Models\User::whereIn('referred_by', $userIds)->get();
         }
@@ -142,10 +151,13 @@ class DashboardController extends Controller
         
         $levelsData = [];
         $currentLevelUserIds = [$user->id];
+        $visitedUserIds = [$user->id];
         $allDownlineUserIds = [];
 
         for ($i = 1; $i <= 10; $i++) {
-            $levelUsers = \App\Models\User::whereIn('referred_by', $currentLevelUserIds)->get();
+            $levelUsers = \App\Models\User::whereIn('referred_by', $currentLevelUserIds)
+                ->whereNotIn('id', $visitedUserIds)
+                ->get();
             
             if ($levelUsers->isEmpty()) {
                 $levelsData[$i] = [
@@ -165,6 +177,7 @@ class DashboardController extends Controller
             }
 
             $levelUserIds = $levelUsers->pluck('id')->toArray();
+            $visitedUserIds = array_merge($visitedUserIds, $levelUserIds);
             $allDownlineUserIds = array_merge($allDownlineUserIds, $levelUserIds);
             
             $activeUserIds = \App\Models\Investment::whereIn('user_id', $levelUserIds)
@@ -294,5 +307,57 @@ class DashboardController extends Controller
         ]);
 
         return back()->with('success', 'Support ticket submitted successfully. We will reply soon.');
+    }
+
+    private function distributeUserROI(\App\Models\User $user)
+    {
+        $investments = \App\Models\Investment::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('last_roi_at')
+                      ->orWhere('last_roi_at', '<=', now()->subHours(24));
+            })->get();
+
+        if ($investments->isEmpty()) {
+            return;
+        }
+
+        $enableMultiplier = setting('enable_return_multiplier', true);
+        $multiplier = setting('investment_return_multiplier', 3);
+
+        foreach ($investments as $inv) {
+            $roiAmount = ($inv->amount * $inv->daily_roi_percent) / 100;
+            
+            if ($enableMultiplier) {
+                $maxReturn = $inv->amount * $multiplier;
+                $remainingCapacity = $maxReturn - $inv->total_earned;
+
+                if ($roiAmount >= $remainingCapacity) {
+                    $roiAmount = $remainingCapacity;
+                    $inv->status = 'completed';
+                }
+            }
+            
+            if ($roiAmount > 0) {
+                $wallet = $user->wallet;
+                $wallet->roi_balance += $roiAmount;
+                $wallet->save();
+
+                \App\Models\Transaction::create([
+                    'user_id' => $inv->user_id,
+                    'type' => 'roi',
+                    'amount' => $roiAmount,
+                    'wallet_type' => 'roi_balance',
+                    'status' => 'completed',
+                    'description' => "Daily ROI for Investment #" . $inv->id,
+                    'reference_id' => $inv->id
+                ]);
+
+                $inv->total_earned += $roiAmount;
+            }
+
+            $inv->last_roi_at = now();
+            $inv->save();
+        }
     }
 }

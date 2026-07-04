@@ -405,13 +405,19 @@ class AdminController extends Controller
 
         // Build 10 levels downline tree
         $referralTree = [];
+        $visitedUserIds = [$user->id];
         $currentLevelReferrals = \App\Models\User::where('referred_by', $user->id)->get();
         $teamSize = 0;
         for ($i = 1; $i <= 10; $i++) {
             if ($currentLevelReferrals->isEmpty()) break;
+            
+            $currentLevelReferrals = $currentLevelReferrals->whereNotIn('id', $visitedUserIds);
+            if ($currentLevelReferrals->isEmpty()) break;
+            
             $referralTree[$i] = $currentLevelReferrals;
             $teamSize += $currentLevelReferrals->count();
-            $userIds = $currentLevelReferrals->pluck('id');
+            $userIds = $currentLevelReferrals->pluck('id')->toArray();
+            $visitedUserIds = array_merge($visitedUserIds, $userIds);
             $currentLevelReferrals = \App\Models\User::whereIn('referred_by', $userIds)->get();
         }
 
@@ -982,15 +988,6 @@ class AdminController extends Controller
         }
         $wallet->save();
 
-        \App\Models\Transaction::create([
-            'user_id' => $user->id,
-            'type' => 'bonus',
-            'amount' => $amount,
-            'wallet_type' => $balType,
-            'status' => 'completed',
-            'description' => $request->description . ' (' . $msg . ')'
-        ]);
-
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => $msg . ' for User ID ' . $user->id,
@@ -1289,8 +1286,11 @@ class AdminController extends Controller
             $selectedUser = User::findOrFail($userId);
             
             $currentLevelUserIds = [$selectedUser->id];
+            $visitedUserIds = [$selectedUser->id];
             for ($i = 1; $i <= 10; $i++) {
-                $levelUsers = User::whereIn('referred_by', $currentLevelUserIds)->get();
+                $levelUsers = User::whereIn('referred_by', $currentLevelUserIds)
+                    ->whereNotIn('id', $visitedUserIds)
+                    ->get();
                 if ($levelUsers->isEmpty()) {
                     $levelsData[$i] = [
                         'users' => collect(),
@@ -1304,6 +1304,7 @@ class AdminController extends Controller
                 }
 
                 $levelUserIds = $levelUsers->pluck('id')->toArray();
+                $visitedUserIds = array_merge($visitedUserIds, $levelUserIds);
                 
                 $totalDeposits = Deposit::whereIn('user_id', $levelUserIds)->where('status', 'approved')->sum('amount');
                 $totalInvestments = \App\Models\Investment::whereIn('user_id', $levelUserIds)->sum('amount');
