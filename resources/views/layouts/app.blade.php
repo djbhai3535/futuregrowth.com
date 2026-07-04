@@ -234,8 +234,10 @@
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-premium sticky-top">
         <div class="container">
-            <a class="navbar-brand fs-4" href="{{ route('dashboard') }}">
-                @if(setting('site_logo'))
+            <a class="navbar-brand fs-4" href="{{ (request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*')) ? route('admin.dashboard') : route('dashboard') }}">
+                @if(request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*'))
+                    <i class="bi bi-shield-check text-warning"></i> <span class="fw-bold text-warning">ADMIN</span><span class="fw-light text-muted">PANEL</span>
+                @elseif(setting('site_logo'))
                     <img src="{{ Storage::url(setting('site_logo')) }}" alt="{{ setting('site_name', 'Logo') }}" style="height: 35px;">
                 @else
                     <i class="bi bi-layers-fill text-primary"></i> <span class="fw-bold">CRYPTO</span><span class="fw-light">INVEST</span>
@@ -249,52 +251,64 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto navbar-desktop-links">
                     @auth
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard.profile') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.profile') }}">My Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard.investments') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.investments') }}">Investments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard.deposits') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.deposits') }}">Deposit</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard.withdrawals') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.withdrawals') }}">Withdraw</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard.history') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.history') }}">Earnings</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard.team') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.team') }}">Team</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#helpCenterModal">Support</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard.settings') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.settings') }}">Settings</a>
-                    </li>
-                    @if(auth()->user()->is_admin)
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-warning fw-bold {{ request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*') ? 'active' : '' }}" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-shield-lock me-1"></i> Admin Panel
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark glass-card border-warning border-opacity-25 shadow-lg mt-2" aria-labelledby="adminDropdown">
-                            <li><a class="dropdown-item py-2" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 text-info me-2"></i> Dashboard</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('admin.users') }}"><i class="bi bi-people text-warning me-2"></i> Users Directory</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('admin.referrals') }}"><i class="bi bi-diagram-3 text-warning me-2"></i> Referral Tree Explorer</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('admin.deposits') }}"><i class="bi bi-arrow-down-circle text-success me-2"></i> Deposits</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('admin.withdrawals') }}"><i class="bi bi-arrow-up-circle text-danger me-2"></i> Withdrawals</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('admin.plans') }}"><i class="bi bi-box text-info me-2"></i> Investment Plans</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('admin.tickets') }}"><i class="bi bi-headset text-primary me-2"></i> Support Tickets</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('admin.audit-logs') }}"><i class="bi bi-journal-text text-light me-2"></i> Audit Logs</a></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('admin.reports') }}"><i class="bi bi-file-earmark-bar-graph text-success me-2"></i> Reports & Export</a></li>
-                            <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-                            <li><a class="dropdown-item py-2" href="{{ route('admin.settings') }}"><i class="bi bi-gear text-warning me-2"></i> Platform Settings</a></li>
-                        </ul>
-                    </li>
+                    @if(request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*'))
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active text-warning fw-bold' : '' }}" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.users*') ? 'active text-warning fw-bold' : '' }}" href="{{ route('admin.users') }}"><i class="bi bi-people me-1"></i> Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.referrals*') ? 'active text-warning fw-bold' : '' }}" href="{{ route('admin.referrals') }}"><i class="bi bi-diagram-3 me-1"></i> Referrals</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.deposits*') ? 'active text-warning fw-bold' : '' }}" href="{{ route('admin.deposits') }}"><i class="bi bi-arrow-down-circle me-1"></i> Deposits</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.withdrawals*') ? 'active text-warning fw-bold' : '' }}" href="{{ route('admin.withdrawals') }}"><i class="bi bi-arrow-up-circle me-1"></i> Withdrawals</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.plans*') ? 'active text-warning fw-bold' : '' }}" href="{{ route('admin.plans') }}"><i class="bi bi-box me-1"></i> Plans</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.tickets*') ? 'active text-warning fw-bold' : '' }}" href="{{ route('admin.tickets') }}"><i class="bi bi-headset me-1"></i> Tickets</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.settings*') ? 'active text-warning fw-bold' : '' }}" href="{{ route('admin.settings') }}"><i class="bi bi-gear me-1"></i> Settings</a>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard.profile') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.profile') }}">My Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard.investments') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.investments') }}">Investments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard.deposits') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.deposits') }}">Deposit</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard.withdrawals') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.withdrawals') }}">Withdraw</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard.history') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.history') }}">Earnings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard.team') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.team') }}">Team</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#helpCenterModal">Support</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard.settings') ? 'active text-primary fw-bold' : '' }}" href="{{ route('dashboard.settings') }}">Settings</a>
+                        </li>
+                        @if(auth()->user()->is_admin)
+                        <li class="nav-item">
+                            <a class="nav-link text-warning fw-bold" href="{{ route('admin.dashboard') }}"><i class="bi bi-shield-lock me-1"></i> Admin Panel</a>
+                        </li>
+                        @endif
                     @endif
                     @endauth
                 </ul>
@@ -303,17 +317,19 @@
                         <li class="nav-item"><a href="{{ route('login') }}" class="nav-link fw-bold">Login</a></li>
                         <li class="nav-item"><a href="{{ route('register') }}" class="btn btn-premium ms-3">Get Started</a></li>
                     @else
-                        <li class="nav-item me-2 d-none d-lg-block">
-                            <a class="btn btn-outline-primary rounded-pill btn-sm px-3 fw-bold btn-pulse" href="#" onclick="copyToClipboard('{{ url('/register?ref='.auth()->user()->referral_code) }}', this)">
-                                <i class="bi bi-person-plus-fill"></i> Invite Friends
-                            </a>
-                        </li>
-                        @if(setting('whatsapp_button_enabled', '1') && setting('whatsapp_community_link'))
-                            <li class="nav-item me-3 d-none d-lg-block">
-                                <a class="btn btn-whatsapp rounded-pill btn-sm px-3 fw-bold whatsapp-glow" href="{{ setting('whatsapp_community_link') }}" target="_blank">
-                                    <i class="bi bi-whatsapp"></i> Community
+                        @if(!(request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*')))
+                            <li class="nav-item me-2 d-none d-lg-block">
+                                <a class="btn btn-outline-primary rounded-pill btn-sm px-3 fw-bold btn-pulse" href="#" onclick="copyToClipboard('{{ url('/register?ref='.auth()->user()->referral_code) }}', this)">
+                                    <i class="bi bi-person-plus-fill"></i> Invite Friends
                                 </a>
                             </li>
+                            @if(setting('whatsapp_button_enabled', '1') && setting('whatsapp_community_link'))
+                                <li class="nav-item me-3 d-none d-lg-block">
+                                    <a class="btn btn-whatsapp rounded-pill btn-sm px-3 fw-bold whatsapp-glow" href="{{ setting('whatsapp_community_link') }}" target="_blank">
+                                        <i class="bi bi-whatsapp"></i> Community
+                                    </a>
+                                </li>
+                            @endif
                         @endif
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 px-3 py-2 rounded-pill neon-glow-primary bg-dark border border-secondary" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" style="transition: 0.3s;">
@@ -328,23 +344,38 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end glass-card border-primary border-opacity-50 shadow-lg rounded-4 mt-3 p-2" style="min-width: 260px; animation: slideDown 0.3s ease;">
                                 <!-- User Status & Balance Preview -->
-                                <li class="px-3 py-3 text-center border-bottom border-secondary border-opacity-25 mb-2 position-relative overflow-hidden rounded-3 bg-dark">
-                                    <div class="tech-grid-overlay" style="opacity: 0.1;"></div>
-                                    <div class="mb-2">
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3"><i class="bi bi-shield-check me-1"></i> Active Account</span>
-                                    </div>
-                                    @php
-                                        $headerWallet = \App\Models\Wallet::where('user_id', auth()->id())->first();
-                                        $headerTotal = $headerWallet ? ($headerWallet->deposit_balance + $headerWallet->roi_balance + $headerWallet->referral_balance + $headerWallet->bonus_balance) : 0;
-                                    @endphp
-                                    <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Total Portfolio Value</small>
-                                    <h4 class="text-white fw-bold mb-0 mt-1">$<span class="text-gradient">{{ number_format($headerTotal, 2) }}</span></h4>
-                                </li>
-                                
-                                <li><a class="dropdown-item text-white rounded-3 py-2 custom-hover d-flex align-items-center" href="{{ route('dashboard.profile') }}"><div class="bg-primary bg-opacity-10 p-2 rounded me-3"><i class="bi bi-person-circle text-primary"></i></div> <span class="fw-bold small">My Profile</span></a></li>
-                                <li><a class="dropdown-item text-white rounded-3 py-2 custom-hover d-flex align-items-center" href="{{ route('dashboard.settings') }}"><div class="bg-success bg-opacity-10 p-2 rounded me-3"><i class="bi bi-shield-lock text-success"></i></div> <span class="fw-bold small">Security Settings</span></a></li>
-                                <li><a class="dropdown-item text-white rounded-3 py-2 custom-hover d-flex align-items-center" href="{{ route('dashboard.team') }}"><div class="bg-info bg-opacity-10 p-2 rounded me-3"><i class="bi bi-people text-info"></i></div> <span class="fw-bold small">Referral Center</span></a></li>
-                                <li><a class="dropdown-item text-white rounded-3 py-2 custom-hover d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#helpCenterModal"><div class="bg-warning bg-opacity-10 p-2 rounded me-3"><i class="bi bi-headset text-warning"></i></div> <span class="fw-bold small">Support Center</span></a></li>
+                                @if(request()->is('admin*') || request()->is(setting('admin_secret_path', 'admin-fg-secure') . '*'))
+                                    <li class="px-3 py-3 text-center border-bottom border-secondary border-opacity-25 mb-2 position-relative overflow-hidden rounded-3 bg-dark">
+                                        <div class="tech-grid-overlay" style="opacity: 0.1;"></div>
+                                        <div class="mb-2">
+                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3"><i class="bi bi-shield-check me-1"></i> Administrator</span>
+                                        </div>
+                                        @php
+                                            $headerPlatformTotal = \App\Models\Wallet::sum(\DB::raw('deposit_balance + roi_balance + referral_balance + bonus_balance'));
+                                        @endphp
+                                        <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Platform Wallet Balance</small>
+                                        <h4 class="text-warning fw-bold mb-0 mt-1">$<span class="text-gradient">{{ number_format($headerPlatformTotal, 2) }}</span></h4>
+                                    </li>
+                                    <li><a class="dropdown-item text-white rounded-3 py-2 custom-hover d-flex align-items-center" href="{{ route('admin.dashboard') }}"><div class="bg-warning bg-opacity-10 p-2 rounded me-3"><i class="bi bi-speedometer2 text-warning"></i></div> <span class="fw-bold small">Admin Dashboard</span></a></li>
+                                    <li><a class="dropdown-item text-white rounded-3 py-2 custom-hover d-flex align-items-center" href="{{ route('admin.settings') }}"><div class="bg-secondary bg-opacity-10 p-2 rounded me-3"><i class="bi bi-gear text-light"></i></div> <span class="fw-bold small">Platform Settings</span></a></li>
+                                @else
+                                    <li class="px-3 py-3 text-center border-bottom border-secondary border-opacity-25 mb-2 position-relative overflow-hidden rounded-3 bg-dark">
+                                        <div class="tech-grid-overlay" style="opacity: 0.1;"></div>
+                                        <div class="mb-2">
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3"><i class="bi bi-shield-check me-1"></i> Active Account</span>
+                                        </div>
+                                        @php
+                                            $headerWallet = \App\Models\Wallet::where('user_id', auth()->id())->first();
+                                            $headerTotal = $headerWallet ? ($headerWallet->deposit_balance + $headerWallet->roi_balance + $headerWallet->referral_balance + $headerWallet->bonus_balance) : 0;
+                                        @endphp
+                                        <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">Total Portfolio Value</small>
+                                        <h4 class="text-white fw-bold mb-0 mt-1">$<span class="text-gradient">{{ number_format($headerTotal, 2) }}</span></h4>
+                                    </li>
+                                    <li><a class="dropdown-item text-white rounded-3 py-2 custom-hover d-flex align-items-center" href="{{ route('dashboard.profile') }}"><div class="bg-primary bg-opacity-10 p-2 rounded me-3"><i class="bi bi-person-circle text-primary"></i></div> <span class="fw-bold small">My Profile</span></a></li>
+                                    <li><a class="dropdown-item text-white rounded-3 py-2 custom-hover d-flex align-items-center" href="{{ route('dashboard.settings') }}"><div class="bg-success bg-opacity-10 p-2 rounded me-3"><i class="bi bi-shield-lock text-success"></i></div> <span class="fw-bold small">Security Settings</span></a></li>
+                                    <li><a class="dropdown-item text-white rounded-3 py-2 custom-hover d-flex align-items-center" href="{{ route('dashboard.team') }}"><div class="bg-info bg-opacity-10 p-2 rounded me-3"><i class="bi bi-people text-info"></i></div> <span class="fw-bold small">Referral Center</span></a></li>
+                                    <li><a class="dropdown-item text-white rounded-3 py-2 custom-hover d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#helpCenterModal"><div class="bg-warning bg-opacity-10 p-2 rounded me-3"><i class="bi bi-headset text-warning"></i></div> <span class="fw-bold small">Support Center</span></a></li>
+                                @endif
                                 
                                 <li><hr class="dropdown-divider border-secondary border-opacity-25 my-2"></li>
                                 <li>
