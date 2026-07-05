@@ -59,6 +59,20 @@ class User extends Authenticatable
         return $this->hasOne(Wallet::class);
     }
 
+    public function getWalletAttribute()
+    {
+        if (!$this->relationLoaded('wallet') || is_null($this->getRelationValue('wallet'))) {
+            $wallet = $this->wallet()->firstOrCreate([], [
+                'deposit_balance' => 0.00,
+                'roi_balance' => 0.00,
+                'referral_balance' => 0.00,
+                'bonus_balance' => 0.00
+            ]);
+            $this->setRelation('wallet', $wallet);
+        }
+        return $this->getRelationValue('wallet');
+    }
+
     public function investments()
     {
         return $this->hasMany(Investment::class);
