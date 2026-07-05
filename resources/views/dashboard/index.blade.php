@@ -485,12 +485,12 @@
         countElements.forEach(el => {
             const val = parseFloat(el.getAttribute('data-val'));
             const decimals = val % 1 !== 0 ? 2 : 0;
-            const countUp = new countUp.CountUp(el, val, {
+            const countUpInst = new countUp.CountUp(el, val, {
                 decimalPlaces: decimals,
                 duration: 2,
                 useEasing: true,
             });
-            if (!countUp.error) countUp.start();
+            if (!countUpInst.error) countUpInst.start();
         });
 
         // Initialize user chart

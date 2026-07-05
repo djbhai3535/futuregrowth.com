@@ -212,8 +212,8 @@
     document.addEventListener('DOMContentLoaded', async function() {
         document.querySelectorAll('.countup').forEach(el => {
             const val = parseFloat(el.getAttribute('data-val'));
-            const countUp = new countUp.CountUp(el, val, { duration: 2.5 });
-            if (!countUp.error) countUp.start();
+            const countUpInst = new countUp.CountUp(el, val, { duration: 2.5 });
+            if (!countUpInst.error) countUpInst.start();
         });
 
         // tsParticles
