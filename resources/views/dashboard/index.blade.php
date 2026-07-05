@@ -105,28 +105,28 @@
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
         <div class="glass-card p-3 position-relative neon-glow-primary overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total Wallet Balance</p>
-            <h3 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalBalance }}">0</span></h3>
+            <h3 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalBalance }}">{{ number_format($totalBalance, 2) }}</span></h3>
             <i class="bi bi-wallet2 position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-primary opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
         <div class="glass-card p-3 position-relative overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total Deposits</p>
-            <h3 class="text-success fw-bold mb-0">$<span class="countup" data-val="{{ $totalDeposits }}">0</span></h3>
+            <h3 class="text-success fw-bold mb-0">$<span class="countup" data-val="{{ $totalDeposits }}">{{ number_format($totalDeposits, 2) }}</span></h3>
             <i class="bi bi-arrow-down-circle position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-success opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
         <div class="glass-card p-3 position-relative overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total Withdrawals</p>
-            <h3 class="text-danger fw-bold mb-0">$<span class="countup" data-val="{{ $totalWithdrawals }}">0</span></h3>
+            <h3 class="text-danger fw-bold mb-0">$<span class="countup" data-val="{{ $totalWithdrawals }}">{{ number_format($totalWithdrawals, 2) }}</span></h3>
             <i class="bi bi-arrow-up-circle position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-danger opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
         <div class="glass-card p-3 position-relative overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total Earnings</p>
-            <h3 class="text-warning fw-bold mb-0">$<span class="countup" data-val="{{ $totalEarnings }}">0</span></h3>
+            <h3 class="text-warning fw-bold mb-0">$<span class="countup" data-val="{{ $totalEarnings }}">{{ number_format($totalEarnings, 2) }}</span></h3>
             <i class="bi bi-cash-stack position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-warning opacity-25"></i>
         </div>
     </div>
@@ -137,28 +137,28 @@
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
         <div class="glass-card p-3 position-relative overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Active Investments</p>
-            <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $activeInvestmentsSum }}">0</span></h4>
+            <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $activeInvestmentsSum }}">{{ number_format($activeInvestmentsSum, 2) }}</span></h4>
             <i class="bi bi-activity position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-info opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
         <div class="glass-card p-3 position-relative overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Completed Investments</p>
-            <h4 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $completedInvestmentsCount }}">0</span> <span class="fs-6 text-muted">(${{ number_format($completedInvestmentsSum, 0) }})</span></h4>
+            <h4 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $completedInvestmentsCount }}">{{ number_format($completedInvestmentsCount, 0) }}</span> <span class="fs-6 text-muted">(${{ number_format($completedInvestmentsSum, 0) }})</span></h4>
             <i class="bi bi-patch-check position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-success opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
         <div class="glass-card p-3 position-relative overflow-hidden">
             <p class="text-muted small fw-bold mb-1">ROI Earned</p>
-            <h4 class="text-warning fw-bold mb-0">$<span class="countup" data-val="{{ $roiEarned }}">0</span></h4>
+            <h4 class="text-warning fw-bold mb-0">$<span class="countup" data-val="{{ $roiEarned }}">{{ number_format($roiEarned, 2) }}</span></h4>
             <i class="bi bi-graph-up-arrow position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-warning opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
         <div class="glass-card p-3 position-relative overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Referral Commission</p>
-            <h4 class="text-primary fw-bold mb-0">$<span class="countup" data-val="{{ $referralCommission }}">0</span></h4>
+            <h4 class="text-primary fw-bold mb-0">$<span class="countup" data-val="{{ $referralCommission }}">{{ number_format($referralCommission, 2) }}</span></h4>
             <i class="bi bi-diagram-3 position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-primary opacity-25"></i>
         </div>
     </div>
@@ -169,14 +169,14 @@
     <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
         <div class="glass-card p-3 position-relative overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Direct Referrals</p>
-            <h4 class="text-white fw-bold mb-0"><span class="countup" data-val="{{ $directReferralsCount }}">0</span></h4>
+            <h4 class="text-white fw-bold mb-0"><span class="countup" data-val="{{ $directReferralsCount }}">{{ number_format($directReferralsCount, 0) }}</span></h4>
             <i class="bi bi-person-plus position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-info opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
         <div class="glass-card p-3 position-relative overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total Team Size (10 Levels)</p>
-            <h4 class="text-white fw-bold mb-0"><span class="countup" data-val="{{ $teamSize }}">0</span></h4>
+            <h4 class="text-white fw-bold mb-0"><span class="countup" data-val="{{ $teamSize }}">{{ number_format($teamSize, 0) }}</span></h4>
             <i class="bi bi-people position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-warning opacity-25"></i>
         </div>
     </div>
@@ -217,7 +217,7 @@
             </div>
             <div class="p-3 mt-3 rounded bg-dark border border-success border-opacity-25">
                 <p class="text-success small fw-bold mb-1"><i class="bi bi-graph-up-arrow me-1"></i> Total ROI Earned</p>
-                <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $roiEarned }}">0</span></h4>
+                <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $roiEarned }}">{{ number_format($roiEarned, 2) }}</span></h4>
             </div>
         </div>
     </div>
@@ -241,7 +241,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-muted small mb-1">Deposit Wallet</p>
-                                <h4 class="mb-0 fw-bold text-white">$<span class="countup" data-val="{{ $wallet->deposit_balance }}">0</span></h4>
+                                <h4 class="mb-0 fw-bold text-white">$<span class="countup" data-val="{{ $wallet->deposit_balance }}">{{ number_format($wallet->deposit_balance, 2) }}</span></h4>
                             </div>
                             <i class="bi bi-box-arrow-in-down fs-1 text-muted opacity-50"></i>
                         </div>
@@ -252,7 +252,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-success small mb-1">ROI Wallet</p>
-                                <h4 class="text-success mb-0 fw-bold">$<span class="countup" data-val="{{ $wallet->roi_balance }}">0</span></h4>
+                                <h4 class="text-success mb-0 fw-bold">$<span class="countup" data-val="{{ $wallet->roi_balance }}">{{ number_format($wallet->roi_balance, 2) }}</span></h4>
                             </div>
                             <i class="bi bi-graph-up fs-1 text-success opacity-50"></i>
                         </div>
@@ -263,7 +263,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-primary small mb-1">Referral Wallet</p>
-                                <h4 class="text-primary mb-0 fw-bold">$<span class="countup" data-val="{{ $wallet->referral_balance }}">0</span></h4>
+                                <h4 class="text-primary mb-0 fw-bold">$<span class="countup" data-val="{{ $wallet->referral_balance }}">{{ number_format($wallet->referral_balance, 2) }}</span></h4>
                             </div>
                             <i class="bi bi-people fs-1 text-primary opacity-50"></i>
                         </div>
@@ -274,7 +274,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="text-warning small mb-1">Bonus Wallet (Locked)</p>
-                                <h4 class="text-warning mb-0 fw-bold">$<span class="countup" data-val="{{ $wallet->bonus_balance }}">0</span></h4>
+                                <h4 class="text-warning mb-0 fw-bold">$<span class="countup" data-val="{{ $wallet->bonus_balance }}">{{ number_format($wallet->bonus_balance, 2) }}</span></h4>
                             </div>
                             <i class="bi bi-lock fs-1 text-warning opacity-50"></i>
                         </div>

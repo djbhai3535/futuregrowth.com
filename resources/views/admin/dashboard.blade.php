@@ -47,28 +47,28 @@
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
         <div class="glass-card p-3 position-relative border-primary border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total Users</p>
-            <h3 class="text-white fw-bold mb-0"><span class="countup" data-val="{{ $totalUsers }}">0</span></h3>
+            <h3 class="text-white fw-bold mb-0"><span class="countup" data-val="{{ $totalUsers }}">{{ number_format($totalUsers, 0) }}</span></h3>
             <i class="bi bi-people position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-primary opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
         <div class="glass-card p-3 position-relative border-success border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Active Users</p>
-            <h3 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $activeUsers }}">0</span></h3>
+            <h3 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $activeUsers }}">{{ number_format($activeUsers, 0) }}</span></h3>
             <i class="bi bi-person-check position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-success opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
         <div class="glass-card p-3 position-relative border-danger border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Suspended Users</p>
-            <h3 class="text-danger fw-bold mb-0"><span class="countup" data-val="{{ $suspendedUsers }}">0</span></h3>
+            <h3 class="text-danger fw-bold mb-0"><span class="countup" data-val="{{ $suspendedUsers }}">{{ number_format($suspendedUsers, 0) }}</span></h3>
             <i class="bi bi-person-x position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-danger opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
         <div class="glass-card p-3 position-relative border-info border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Verified Emails</p>
-            <h3 class="text-info fw-bold mb-0"><span class="countup" data-val="{{ $emailVerifiedUsers }}">0</span></h3>
+            <h3 class="text-info fw-bold mb-0"><span class="countup" data-val="{{ $emailVerifiedUsers }}">{{ number_format($emailVerifiedUsers, 0) }}</span></h3>
             <i class="bi bi-shield-check position-absolute top-50 end-0 translate-middle-y me-3 fs-1 text-info opacity-25"></i>
         </div>
     </div>
@@ -80,14 +80,14 @@
     <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
         <div class="glass-card p-4 position-relative border-warning border-opacity-25 overflow-hidden neon-glow-primary">
             <p class="text-muted small fw-bold mb-1 text-uppercase">Total Platform Wallet Balance</p>
-            <h2 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalPlatformWalletBalance }}">0</span></h2>
+            <h2 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalPlatformWalletBalance }}">{{ number_format($totalPlatformWalletBalance, 2) }}</span></h2>
             <i class="bi bi-wallet2 position-absolute top-50 end-0 translate-middle-y me-4 display-4 text-warning opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
         <div class="glass-card p-4 position-relative border-success border-opacity-25 overflow-hidden neon-glow-success">
             <p class="text-muted small fw-bold mb-1 text-uppercase">Total Net Platform Earnings (Fees)</p>
-            <h2 class="text-success fw-bold mb-0">$<span class="countup" data-val="{{ $totalPlatformEarnings }}">0</span></h2>
+            <h2 class="text-success fw-bold mb-0">$<span class="countup" data-val="{{ $totalPlatformEarnings }}">{{ number_format($totalPlatformEarnings, 2) }}</span></h2>
             <i class="bi bi-piggy-bank position-absolute top-50 end-0 translate-middle-y me-4 display-4 text-success opacity-25"></i>
         </div>
     </div>
@@ -99,28 +99,28 @@
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
         <div class="glass-card p-3 position-relative border-secondary border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total Deposits Sum</p>
-            <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalPlatformDeposits }}">0</span></h4>
+            <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalPlatformDeposits }}">{{ number_format($totalPlatformDeposits, 2) }}</span></h4>
             <i class="bi bi-arrow-down-circle position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-muted opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
         <div class="glass-card p-3 position-relative border-warning border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Pending Deposits</p>
-            <h4 class="text-warning fw-bold mb-0"><span class="countup" data-val="{{ $pendingDeposits }}">0</span></h4>
+            <h4 class="text-warning fw-bold mb-0"><span class="countup" data-val="{{ $pendingDeposits }}">{{ number_format($pendingDeposits, 0) }}</span></h4>
             <i class="bi bi-clock-history position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-warning opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
         <div class="glass-card p-3 position-relative border-success border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Approved Deposits</p>
-            <h4 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $approvedDepositsCount }}">0</span> <span class="fs-6 text-muted">(${{ number_format($approvedDepositsSum, 0) }})</span></h4>
+            <h4 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $approvedDepositsCount }}">{{ number_format($approvedDepositsCount, 0) }}</span> <span class="fs-6 text-muted">(${{ number_format($approvedDepositsSum, 0) }})</span></h4>
             <i class="bi bi-check-circle position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-success opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
         <div class="glass-card p-3 position-relative border-danger border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Failed/Rejected Deposits</p>
-            <h4 class="text-danger fw-bold mb-0"><span class="countup" data-val="{{ $failedDeposits }}">0</span></h4>
+            <h4 class="text-danger fw-bold mb-0"><span class="countup" data-val="{{ $failedDeposits }}">{{ number_format($failedDeposits, 0) }}</span></h4>
             <i class="bi bi-x-circle position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-danger opacity-25"></i>
         </div>
     </div>
@@ -132,21 +132,21 @@
     <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
         <div class="glass-card p-3 position-relative border-secondary border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total Withdrawals Sum</p>
-            <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalWithdrawals }}">0</span></h4>
+            <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalWithdrawals }}">{{ number_format($totalWithdrawals, 2) }}</span></h4>
             <i class="bi bi-arrow-up-circle position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-muted opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
         <div class="glass-card p-3 position-relative border-warning border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Pending Withdrawals</p>
-            <h4 class="text-warning fw-bold mb-0"><span class="countup" data-val="{{ $pendingWithdrawals }}">0</span></h4>
+            <h4 class="text-warning fw-bold mb-0"><span class="countup" data-val="{{ $pendingWithdrawals }}">{{ number_format($pendingWithdrawals, 0) }}</span></h4>
             <i class="bi bi-hourglass-split position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-warning opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
         <div class="glass-card p-3 position-relative border-success border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Approved Withdrawals</p>
-            <h4 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $approvedWithdrawalsCount }}">0</span> <span class="fs-6 text-muted">(${{ number_format($approvedWithdrawalsSum, 0) }})</span></h4>
+            <h4 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $approvedWithdrawalsCount }}">{{ number_format($approvedWithdrawalsCount, 0) }}</span> <span class="fs-6 text-muted">(${{ number_format($approvedWithdrawalsSum, 0) }})</span></h4>
             <i class="bi bi-wallet2 position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-success opacity-25"></i>
         </div>
     </div>
@@ -158,28 +158,28 @@
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
         <div class="glass-card p-3 position-relative border-info border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total Active Investments</p>
-            <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalActiveInvestments }}">0</span></h4>
+            <h4 class="text-white fw-bold mb-0">$<span class="countup" data-val="{{ $totalActiveInvestments }}">{{ number_format($totalActiveInvestments, 2) }}</span></h4>
             <i class="bi bi-activity position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-info opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
         <div class="glass-card p-3 position-relative border-success border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Completed Investments</p>
-            <h4 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $completedInvestments }}">0</span></h4>
+            <h4 class="text-success fw-bold mb-0"><span class="countup" data-val="{{ $completedInvestments }}">{{ number_format($completedInvestments, 0) }}</span></h4>
             <i class="bi bi-patch-check-fill position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-success opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
         <div class="glass-card p-3 position-relative border-warning border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total ROI Paid</p>
-            <h4 class="text-warning fw-bold mb-0">$<span class="countup" data-val="{{ $totalRoiPaid }}">0</span></h4>
+            <h4 class="text-warning fw-bold mb-0">$<span class="countup" data-val="{{ $totalRoiPaid }}">{{ number_format($totalRoiPaid, 2) }}</span></h4>
             <i class="bi bi-graph-up-arrow position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-warning opacity-25"></i>
         </div>
     </div>
     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
         <div class="glass-card p-3 position-relative border-primary border-opacity-25 overflow-hidden">
             <p class="text-muted small fw-bold mb-1">Total Referral Commissions</p>
-            <h4 class="text-primary fw-bold mb-0">$<span class="countup" data-val="{{ $totalReferralCommissionPaid }}">0</span></h4>
+            <h4 class="text-primary fw-bold mb-0">$<span class="countup" data-val="{{ $totalReferralCommissionPaid }}">{{ number_format($totalReferralCommissionPaid, 2) }}</span></h4>
             <i class="bi bi-diagram-3 position-absolute top-50 end-0 translate-middle-y me-3 fs-2 text-primary opacity-25"></i>
         </div>
     </div>
