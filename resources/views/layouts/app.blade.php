@@ -227,8 +227,10 @@
 </head>
 <body>
     @if(setting('announcement_bar'))
-        <div class="bg-warning text-dark text-center py-2 fw-bold small" style="letter-spacing: 0.5px; z-index: 1040; position: relative;">
-            <i class="bi bi-megaphone-fill me-2"></i> {{ setting('announcement_bar') }}
+        <div class="bg-warning text-dark py-2 fw-bold small" style="letter-spacing: 0.5px; z-index: 1040; position: relative; overflow: hidden; height: 38px;">
+            <marquee behavior="scroll" direction="left" scrollamount="5" onmouseover="this.stop();" onmouseout="this.start();" style="vertical-align: middle;">
+                <i class="bi bi-megaphone-fill me-2"></i> {{ setting('announcement_bar') }}
+            </marquee>
         </div>
     @endif
     <!-- Top Navbar -->

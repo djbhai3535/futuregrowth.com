@@ -91,6 +91,36 @@ class DatabaseSeeder extends Seeder
             'enable_recaptcha' => ['value' => '0', 'type' => 'boolean'],
             'recaptcha_site_key' => ['value' => 'site_key_here', 'type' => 'string'],
             'recaptcha_secret_key' => ['value' => 'secret_key_here', 'type' => 'string'],
+
+            // Global Daily ROI Setting
+            'daily_roi_percent' => ['value' => '1.0', 'type' => 'decimal'],
+
+            // Enable Admin 2FA
+            'enable_admin_2fa' => ['value' => '0', 'type' => 'boolean'],
+
+            // CMS & Page content additions
+            'homepage_about_text' => ['value' => 'Earn secure daily profits, build a massive 10-level referral team, and achieve up to a 300% (3X) return on your investments automatically.', 'type' => 'string'],
+            'trust_section_text' => ['value' => 'FutureGrowth.tech is engineered to deliver institutional-grade security, lightning-fast execution, and complete platform transparency.', 'type' => 'string'],
+            'terms_content' => ['value' => '1. All investments are subject to a strict 300% (3X) return multiplier protocol. Once reached, plans are marked complete.\n2. Withdrawals are processed promptly in accordance with our 3-business-days protocol.\n3. Account duplication or fraudulent self-referrals will lead to instant account suspension.', 'type' => 'string'],
+            'privacy_content' => ['value' => '1. We collect email, phone, and IP addresses solely for platform operation, security audits, and support ticket validation.\n2. All user data is secured using AES-256 standard encryption.\n3. We never distribute user details to third-party services.', 'type' => 'string'],
+            'risk_content' => ['value' => 'Cryptocurrency asset trading and automated yield investing carry high risks of price volatility. Clients should perform due diligence and invest responsibly.', 'type' => 'string'],
+            'contact_content' => ['value' => 'For general enquiries, partnership proposals, or technical support, please contact us through any of the channels below.', 'type' => 'string'],
+            'company_email' => ['value' => 'hello@futuregrowth.tech', 'type' => 'string'],
+            'office_address' => ['value' => '123 Wall Street, New York, NY, USA', 'type' => 'string'],
+            'business_hours' => ['value' => 'Monday - Friday: 09:00 - 18:00 UTC', 'type' => 'string'],
+            'seo_meta_title' => ['value' => 'FutureGrowth.tech | Premium AI Crypto Investments', 'type' => 'string'],
+            'seo_meta_description' => ['value' => 'FutureGrowth.tech is a premier AI-powered investment ecosystem providing sustainable automated daily returns.', 'type' => 'string'],
+
+            // About Us Detail Blocks
+            'about_us_intro' => ['value' => 'FutureGrowth.tech is a globally recognized decentralized investment ecosystem designed to leverage next-generation artificial intelligence algorithms. By automating asset allocation and digital arbitrage, we bridge the gap between traditional finance and blockchain economies, enabling sustainable, low-risk capital appreciation for retail and institutional clients alike.', 'type' => 'string'],
+            'about_us_mission' => ['value' => 'To democratize access to high-yield cryptocurrency assets and provide a secure, automated passive income engine. We strive to maintain absolute computational transparency and long-term liquidity reserves, ensuring every participant benefits from the digital economy.', 'type' => 'string'],
+            'about_us_vision' => ['value' => 'To establish FutureGrowth.tech as the global standard for smart wealth generation, setting the benchmark for decentralized finance protocols with multi-level networking, secure cold storage vaults, and an uncompromisable 3X return sustainability model.', 'type' => 'string'],
+            'about_us_why_choose_us' => ['value' => 'We stand out through our fully automated daily ROI model, verified secure smart contracts, dynamic SMTPS email delivery systems, instant USDT deposit confirmations, and a multi-level referral network matrix. Our users enjoy reliable returns without manual interference or hidden operational fees.', 'type' => 'string'],
+            'about_us_philosophy' => ['value' => 'Our philosophy is rooted in risk mitigation and community-oriented growth. Rather than chasing volatile, speculative spikes, our platform focuses on consistent daily yields, secure liquidity backing, and referral-driven network expansion to secure multi-generational wealth.', 'type' => 'string'],
+            'about_us_technology' => ['value' => 'We integrate advanced machine learning models, real-time blockchain analytics APIs, and automatic yield farming algorithms to achieve optimized return distribution on stablecoin assets.', 'type' => 'string'],
+            'about_us_security_policy' => ['value' => 'All client balances are backed 1:1, smart audits are performed continuously, and manual wallets remain strictly managed under offline activity logs.', 'type' => 'string'],
+            'about_us_community_desc' => ['value' => 'Our users connect via real-time WhatsApp and Telegram channels, creating an active peer-to-peer network that supports and validates referral growth.', 'type' => 'string'],
+            'about_us_future_goals' => ['value' => 'As we progress along our roadmap, we aim to integrate cross-chain asset swaps, expand downline support to 15 levels, and launch local language support centers globally. We are committed to building the future of automated investment together with you.', 'type' => 'string'],
         ];
 
         foreach ($settings as $key => $data) {

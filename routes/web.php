@@ -44,6 +44,7 @@ Route::get('/terms', [\App\Http\Controllers\PageController::class, 'terms'])->na
 Route::get('/privacy', [\App\Http\Controllers\PageController::class, 'privacy'])->name('privacy');
 Route::get('/risk', [\App\Http\Controllers\PageController::class, 'risk'])->name('risk');
 Route::get('/contact', [\App\Http\Controllers\PageController::class, 'contact'])->name('contact');
+Route::get('/deposit-instructions', [\App\Http\Controllers\PageController::class, 'depositInstructions'])->name('deposit-instructions');
 
 Route::middleware(['auth', \App\Http\Middleware\EnsureEmailIsVerified::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

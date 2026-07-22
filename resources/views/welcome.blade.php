@@ -78,6 +78,14 @@
 </head>
 <body>
 
+    @if(setting('announcement_bar'))
+        <div class="bg-warning text-dark py-2 fw-bold small" style="letter-spacing: 0.5px; z-index: 1040; position: relative; overflow: hidden; height: 38px;">
+            <marquee behavior="scroll" direction="left" scrollamount="5" onmouseover="this.stop();" onmouseout="this.start();" style="vertical-align: middle;">
+                <i class="bi bi-megaphone-fill me-2"></i> {{ setting('announcement_bar') }}
+            </marquee>
+        </div>
+    @endif
+
     <!-- Promotional Marquee -->
     <div class="promo-banner text-white">
         <div class="marquee-content">
@@ -105,8 +113,10 @@
                 <ul class="navbar-nav mx-auto fw-bold">
                     <li class="nav-item"><a class="nav-link text-white" href="{{ route('about') }}">About</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="#plans">Investment Plans</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ route('deposit-instructions') }}">Deposit Guide</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="#referral">Referral Program</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="#faq">FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{{ route('contact') }}">Contact</a></li>
                 </ul>
                 <div class="d-flex gap-3">
                     @auth
@@ -236,6 +246,111 @@
                 </div>
                 @endforeach
             </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Section -->
+    <section id="trust" class="py-5" style="background: linear-gradient(180deg, rgba(9, 9, 11, 0.6) 0%, rgba(24, 24, 27, 0.4) 100%);">
+        <div class="container py-5">
+            <div class="text-center mb-5" data-aos="fade-down">
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 mb-3 fw-bold">
+                    <i class="bi bi-shield-check-fill me-1"></i> Certified Security & Reliability
+                </span>
+                <h2 class="fw-bold display-5 text-white">Why Investors <span class="text-gradient">Trust Us</span></h2>
+                <p class="text-muted mx-auto mt-3" style="max-width: 700px;">
+                    {{ setting('trust_section_text', 'FutureGrowth.tech is engineered to deliver institutional-grade security, lightning-fast execution, and complete platform transparency.') }}
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <!-- 1. Secure Platform -->
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="glass-card p-4 h-100 border-success border-opacity-25 neon-glow-success hover-scale text-center">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
+                            <i class="bi bi-shield-lock-fill fs-3 text-success"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Secure Platform</h5>
+                        <p class="text-muted small mb-0">End-to-end data encryption and strict access protocols protect all client data and funds.</p>
+                    </div>
+                </div>
+
+                <!-- 2. SSL Protected -->
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="glass-card p-4 h-100 border-primary border-opacity-25 neon-glow-primary hover-scale text-center">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
+                            <i class="bi bi-file-earmark-lock2-fill fs-3 text-primary"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">SSL Protected</h5>
+                        <p class="text-muted small mb-0">Encrypted transmission via high-grade SSL certificates ensures safe browser communication.</p>
+                    </div>
+                </div>
+
+                <!-- 3. Automated Investment Engine -->
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="glass-card p-4 h-100 border-info border-opacity-25 hover-scale text-center" style="box-shadow: 0 0 20px rgba(14, 165, 233, 0.05);">
+                        <div class="bg-info bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
+                            <i class="bi bi-cpu-fill fs-3 text-info"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Automated Engine</h5>
+                        <p class="text-muted small mb-0">AI-driven investment routing automatically registers active plans and triggers returns.</p>
+                    </div>
+                </div>
+
+                <!-- 4. Fast Withdrawals -->
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="glass-card p-4 h-100 border-warning border-opacity-25 hover-scale text-center" style="box-shadow: 0 0 20px rgba(234, 179, 8, 0.05);">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
+                            <i class="bi bi-lightning-charge-fill fs-3 text-warning"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Fast Withdrawals</h5>
+                        <p class="text-muted small mb-0">Withdrawal requests are processed promptly within the estimated 3-business-days policy.</p>
+                    </div>
+                </div>
+
+                <!-- 5. Reliable Referral System -->
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="glass-card p-4 h-100 border-primary border-opacity-25 hover-scale text-center" style="box-shadow: 0 0 20px rgba(59, 130, 246, 0.05);">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
+                            <i class="bi bi-diagram-3-fill fs-3 text-primary"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Reliable Referrals</h5>
+                        <p class="text-muted small mb-0">Our 10-level deep network matrix distributes downline rewards instantly and without error.</p>
+                    </div>
+                </div>
+
+                <!-- 6. Professional Support -->
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="glass-card p-4 h-100 border-success border-opacity-25 hover-scale text-center" style="box-shadow: 0 0 20px rgba(16, 185, 129, 0.05);">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
+                            <i class="bi bi-chat-right-heart-fill fs-3 text-success"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Professional Support</h5>
+                        <p class="text-muted small mb-0">Dedicated support ticketing system and instant WhatsApp/Telegram community access.</p>
+                    </div>
+                </div>
+
+                <!-- 7. Transparent Tracking -->
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="glass-card p-4 h-100 border-info border-opacity-25 hover-scale text-center" style="box-shadow: 0 0 20px rgba(14, 165, 233, 0.05);">
+                        <div class="bg-info bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
+                            <i class="bi bi-graph-up-arrow fs-3 text-info"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Transparent Tracking</h5>
+                        <p class="text-muted small mb-0">Detailed transaction ledgers, analytics matrices, and ROI logs for all investments.</p>
+                    </div>
+                </div>
+
+                <!-- 8. Modern Technology -->
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="glass-card p-4 h-100 border-warning border-opacity-25 hover-scale text-center" style="box-shadow: 0 0 20px rgba(234, 179, 8, 0.05);">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-circle d-inline-flex mb-3">
+                            <i class="bi bi-layers-fill fs-3 text-warning"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-2">Modern Technology</h5>
+                        <p class="text-muted small mb-0">Responsive dashboard panels, premium design aesthetics, and live animation counters.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

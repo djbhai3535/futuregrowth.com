@@ -128,6 +128,94 @@
         </div>
     </div>
 
+    <!-- Detailed Company Profile & Philosophy -->
+    <div class="row g-4 mb-5 border-top border-secondary border-opacity-25 pt-5" data-aos="fade-up">
+        <!-- Company Introduction -->
+        <div class="col-lg-12 mb-4">
+            <div class="glass-card p-5">
+                <h3 class="fw-bold text-white mb-3"><i class="bi bi-building-fill text-primary me-2"></i> Company Introduction</h3>
+                <p class="text-muted leading-relaxed mb-0">
+                    {{ setting('about_us_intro', 'FutureGrowth.tech is a globally recognized decentralized investment ecosystem designed to leverage next-generation artificial intelligence algorithms. By automating asset allocation and digital arbitrage, we bridge the gap between traditional finance and blockchain economies, enabling sustainable, low-risk capital appreciation for retail and institutional clients alike.') }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Mission & Vision -->
+        <div class="col-md-6 mb-4">
+            <div class="glass-card p-4 h-100 border-primary border-opacity-25">
+                <h4 class="fw-bold text-white mb-3"><i class="bi bi-compass-fill text-primary me-2"></i> Our Mission</h4>
+                <p class="text-muted small leading-relaxed mb-0">
+                    {{ setting('about_us_mission', 'To democratize access to high-yield cryptocurrency assets and provide a secure, automated passive income engine. We strive to maintain absolute computational transparency and long-term liquidity reserves, ensuring every participant benefits from the digital economy.') }}
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="glass-card p-4 h-100 border-success border-opacity-25">
+                <h4 class="fw-bold text-white mb-3"><i class="bi bi-eye-fill text-success me-2"></i> Our Vision</h4>
+                <p class="text-muted small leading-relaxed mb-0">
+                    {{ setting('about_us_vision', 'To establish FutureGrowth.tech as the global standard for smart wealth generation, setting the benchmark for decentralized finance protocols with multi-level networking, secure cold storage vaults, and an uncompromisable 3X return sustainability model.') }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Why Choose Us & Investment Philosophy -->
+        <div class="col-md-6 mb-4">
+            <div class="glass-card p-4 h-100 border-warning border-opacity-25">
+                <h4 class="fw-bold text-white mb-3"><i class="bi bi-patch-check-fill text-warning me-2"></i> Why Choose Us</h4>
+                <p class="text-muted small leading-relaxed mb-0">
+                    {{ setting('about_us_why_choose_us', 'We stand out through our fully automated daily ROI model, verified secure smart contracts, dynamic SMTPS email delivery systems, instant USDT deposit confirmations, and a multi-level referral network matrix. Our users enjoy reliable returns without manual interference or hidden operational fees.') }}
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="glass-card p-4 h-100 border-info border-opacity-25">
+                <h4 class="fw-bold text-white mb-3"><i class="bi bi-graph-up-arrow text-info me-2"></i> Investment Philosophy</h4>
+                <p class="text-muted small leading-relaxed mb-0">
+                    {{ setting('about_us_philosophy', 'Our philosophy is rooted in risk mitigation and community-oriented growth. Rather than chasing volatile, speculative spikes, our platform focuses on consistent daily yields, secure liquidity backing, and referral-driven network expansion to secure multi-generational wealth.') }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Technology, Security, Community, Future Goals -->
+        <div class="col-md-4 mb-4">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3"><i class="bi bi-cpu-fill text-primary me-2"></i> Core Technology</h5>
+                <p class="text-muted small leading-relaxed mb-0">
+                    {{ setting('about_us_technology', 'We integrate advanced machine learning models, real-time blockchain analytics APIs, and automatic yield farming algorithms to achieve optimized return distribution on stablecoin assets.') }}
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3"><i class="bi bi-shield-fill-check text-success me-2"></i> Security First</h5>
+                <p class="text-muted small leading-relaxed mb-0">
+                    {{ setting('about_us_security_policy', 'All client balances are backed 1:1, smart audits are performed continuously, and manual wallets remain strictly managed under offline activity logs.') }}
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3"><i class="bi bi-people-fill text-info me-2"></i> Global Community</h5>
+                <p class="text-muted small leading-relaxed mb-0">
+                    {{ setting('about_us_community_desc', 'Our users connect via real-time WhatsApp and Telegram channels, creating an active peer-to-peer network that supports and validates referral growth.') }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Future Goals & Closing -->
+        <div class="col-lg-12 mb-4">
+            <div class="glass-card p-5 border-info border-opacity-25">
+                <h4 class="fw-bold text-info mb-3"><i class="bi bi-flag-fill me-2"></i> Future Goals & Closing</h4>
+                <p class="text-muted leading-relaxed mb-3">
+                    {{ setting('about_us_future_goals', 'As we progress along our roadmap, we aim to integrate cross-chain asset swaps, expand downline support to 15 levels, and launch local language support centers globally. We are committed to building the future of automated investment together with you.') }}
+                </p>
+                <div class="text-end">
+                    <span class="fst-italic text-muted small">— The FutureGrowth.tech Executive Leadership Team</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Document Center -->
     <div class="row justify-content-center mb-5 border-top border-secondary border-opacity-25 pt-5" data-aos="fade-up">
         <div class="col-lg-10">

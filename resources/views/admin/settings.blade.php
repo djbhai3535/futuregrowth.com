@@ -47,6 +47,12 @@
                         <input type="number" name="max_bonus_users" value="{{ setting('max_bonus_users', 1000) }}" class="form-control bg-transparent border-secondary text-white">
                     </div>
                 </div>
+                
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-bold">Global Daily ROI Percentage (%)</label>
+                    <input type="number" step="0.01" name="daily_roi_percent" class="form-control bg-dark border-secondary text-white" value="{{ setting('daily_roi_percent', 1.0) }}">
+                    <div class="form-text text-muted small">Overrides all plan rates (e.g. 1.0 = 1% per day). Leave 0 or blank to use plan default ranges.</div>
+                </div>
 
                 <h5 class="fw-bold mb-3 border-bottom border-secondary pb-2">Platform Features</h5>
                 <div class="row g-3 mb-4">
@@ -163,8 +169,76 @@
                     <textarea name="risk_content" class="form-control bg-dark border-secondary text-white" rows="4">{{ setting('risk_content', '') }}</textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">Contact Us Info</label>
-                    <textarea name="contact_content" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('contact_content', '') }}</textarea>
+                    <label class="form-label text-muted small fw-bold">Contact Us Info Description</label>
+                    <textarea name="contact_content" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('contact_content', 'For general enquiries, partnership proposals, or technical support, please contact us through any of the channels below.') }}</textarea>
+                </div>
+                
+                <h5 class="fw-bold mb-3 mt-4 text-warning border-bottom border-secondary pb-2">About Us Detailed Content Blocks</h5>
+                <div class="row g-3">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-muted small fw-bold">Company Introduction</label>
+                        <textarea name="about_us_intro" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('about_us_intro', 'FutureGrowth.tech is a globally recognized decentralized investment ecosystem designed to leverage next-generation artificial intelligence algorithms. By automating asset allocation and digital arbitrage, we bridge the gap between traditional finance and blockchain economies, enabling sustainable, low-risk capital appreciation for retail and institutional clients alike.') }}</textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small fw-bold">Our Mission</label>
+                        <textarea name="about_us_mission" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('about_us_mission', 'To democratize access to high-yield cryptocurrency assets and provide a secure, automated passive income engine. We strive to maintain absolute computational transparency and long-term liquidity reserves, ensuring every participant benefits from the digital economy.') }}</textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small fw-bold">Our Vision</label>
+                        <textarea name="about_us_vision" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('about_us_vision', 'To establish FutureGrowth.tech as the global standard for smart wealth generation, setting the benchmark for decentralized finance protocols with multi-level networking, secure cold storage vaults, and an uncompromisable 3X return sustainability model.') }}</textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small fw-bold">Why Choose Us</label>
+                        <textarea name="about_us_why_choose_us" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('about_us_why_choose_us', 'We stand out through our fully automated daily ROI model, verified secure smart contracts, dynamic SMTPS email delivery systems, instant USDT deposit confirmations, and a multi-level referral network matrix. Our users enjoy reliable returns without manual interference or hidden operational fees.') }}</textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small fw-bold">Investment Philosophy</label>
+                        <textarea name="about_us_philosophy" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('about_us_philosophy', 'Our philosophy is rooted in risk mitigation and community-oriented growth. Rather than chasing volatile, speculative spikes, our platform focuses on consistent daily yields, secure liquidity backing, and referral-driven network expansion to secure multi-generational wealth.') }}</textarea>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-muted small fw-bold">Core Technology Description</label>
+                        <textarea name="about_us_technology" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('about_us_technology', 'We integrate advanced machine learning models, real-time blockchain analytics APIs, and automatic yield farming algorithms to achieve optimized return distribution on stablecoin assets.') }}</textarea>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-muted small fw-bold">Security First Policy Description</label>
+                        <textarea name="about_us_security_policy" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('about_us_security_policy', 'All client balances are backed 1:1, smart audits are performed continuously, and manual wallets remain strictly managed under offline activity logs.') }}</textarea>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-muted small fw-bold">Global Community Description</label>
+                        <textarea name="about_us_community_desc" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('about_us_community_desc', 'Our users connect via real-time WhatsApp and Telegram channels, creating an active peer-to-peer network that supports and validates referral growth.') }}</textarea>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-muted small fw-bold">Future Goals & Closing Statement</label>
+                        <textarea name="about_us_future_goals" class="form-control bg-dark border-secondary text-white" rows="3">{{ setting('about_us_future_goals', 'As we progress along our roadmap, we aim to integrate cross-chain asset swaps, expand downline support to 15 levels, and launch local language support centers globally. We are committed to building the future of automated investment together with you.') }}</textarea>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mb-3 mt-4 text-warning border-bottom border-secondary pb-2">Contact Details & Location</h5>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small fw-bold">Company Corporate Email</label>
+                        <input type="email" name="company_email" class="form-control bg-dark border-secondary text-white" value="{{ setting('company_email', 'hello@futuregrowth.tech') }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small fw-bold">Support Desk Email</label>
+                        <input type="email" name="support_email" class="form-control bg-dark border-secondary text-white" value="{{ setting('support_email', 'support@futuregrowth.tech') }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small fw-bold">Support WhatsApp Number</label>
+                        <input type="text" name="support_whatsapp" class="form-control bg-dark border-secondary text-white" value="{{ setting('support_whatsapp', '+1234567890') }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small fw-bold">Telegram Link</label>
+                        <input type="text" name="telegram_link" class="form-control bg-dark border-secondary text-white" value="{{ setting('telegram_link', 'https://t.me/futuregrowthtech') }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small fw-bold">Office Address</label>
+                        <input type="text" name="office_address" class="form-control bg-dark border-secondary text-white" value="{{ setting('office_address', '123 Wall Street, New York, NY, USA') }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted small fw-bold">Business Hours</label>
+                        <input type="text" name="business_hours" class="form-control bg-dark border-secondary text-white" value="{{ setting('business_hours', 'Monday - Friday: 09:00 - 18:00 UTC') }}">
+                    </div>
                 </div>
             </div>
         </div>
@@ -317,6 +391,13 @@
                     <div class="col-md-4">
                         <label class="form-label text-muted small fw-bold">reCAPTCHA Secret Key</label>
                         <input type="password" name="recaptcha_secret_key" class="form-control bg-dark border-secondary text-white" placeholder="Leave empty to keep existing key">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-bold">Admin Two-Factor Auth (2FA)</label>
+                        <select name="enable_admin_2fa" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('enable_admin_2fa', 0) == 1 ? 'selected' : '' }}>Enabled (SMTP Required)</option>
+                            <option value="0" {{ setting('enable_admin_2fa', 0) == 0 ? 'selected' : '' }}>Disabled (Bypass for Testing)</option>
+                        </select>
                     </div>
                 </div>
 

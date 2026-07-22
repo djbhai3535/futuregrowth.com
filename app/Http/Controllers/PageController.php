@@ -51,7 +51,30 @@ class PageController extends Controller
     public function contact()
     {
         $title = "Contact Us";
-        $content = setting('contact_content', 'Contact Information. Please update in Admin Settings.');
-        return view('pages.legal', compact('title', 'content'));
+        $companyEmail = setting('company_email', 'hello@futuregrowth.tech');
+        $supportEmail = setting('support_email', 'support@futuregrowth.tech');
+        $whatsappNumber = setting('support_whatsapp', '+1234567890');
+        $telegramLink = setting('telegram_link', 'https://t.me/futuregrowthtech');
+        $officeAddress = setting('office_address', '123 Wall Street, New York, NY, USA');
+        $businessHours = setting('business_hours', 'Monday - Friday: 09:00 - 18:00 UTC');
+        $contactContent = setting('contact_content', 'For general enquiries, partnership proposals, or technical support, please contact us through any of the channels below.');
+
+        return view('pages.contact', compact(
+            'title',
+            'companyEmail',
+            'supportEmail',
+            'whatsappNumber',
+            'telegramLink',
+            'officeAddress',
+            'businessHours',
+            'contactContent'
+        ));
+    }
+
+    public function depositInstructions()
+    {
+        $title = "Deposit Instructions";
+        $content = setting('deposit_instructions', 'Only send USDT (TRC20) to this address. Send screenshot/TXID for manual approval.');
+        return view('pages.deposit_instructions', compact('title', 'content'));
     }
 }

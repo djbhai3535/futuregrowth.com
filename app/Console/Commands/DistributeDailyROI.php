@@ -24,7 +24,11 @@ class DistributeDailyROI extends Command
         $multiplier = setting('investment_return_multiplier', 3);
 
         foreach ($investments as $inv) {
-            $roiAmount = ($inv->amount * $inv->daily_roi_percent) / 100;
+            $roiPercent = (float) setting('daily_roi_percent', $inv->daily_roi_percent ?? 1.0);
+            if ($roiPercent <= 0) {
+                $roiPercent = (float) ($inv->daily_roi_percent ?? 1.0);
+            }
+            $roiAmount = ($inv->amount * $roiPercent) / 100;
             
             if ($enableMultiplier) {
                 $maxReturn = $inv->amount * $multiplier;
