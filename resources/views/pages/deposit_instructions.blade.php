@@ -40,7 +40,7 @@
                     <div class="position-relative pb-4">
                         <div class="position-absolute bg-warning rounded-circle d-flex align-items-center justify-content-center fw-bold text-dark" style="width: 28px; height: 28px; left: -38px; top: 0; box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);">3</div>
                         <h5 class="text-white fw-bold mb-1">Generate Deposit</h5>
-                        <p class="text-muted small">Input deposit amount from the Deposit panel on your dashboard. Use either our automatic NOWPayments gateway or manual wallet options.</p>
+                        <p class="text-muted small">Input deposit amount from the Deposit panel on your dashboard. Choose your preferred network (TRC20 or BEP20) and send USDT to the displayed company wallet address.</p>
                     </div>
 
                     <!-- Step 4 -->

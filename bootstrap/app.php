@@ -12,9 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(\App\Http\Middleware\MaintenanceModeMiddleware::class);
-        $middleware->validateCsrfTokens(except: [
-            'payment/nowpayments/webhook',
-        ]);
+        // CSRF exclusions (webhook endpoint removed — manual deposit workflow is now used)
+        $middleware->validateCsrfTokens(except: []);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

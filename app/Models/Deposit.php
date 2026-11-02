@@ -10,7 +10,14 @@ class Deposit extends Model
         'user_id',
         'amount',
         'txid',
-        'status'
+        'network',
+        'credited',
+        'status',
+    ];
+
+    protected $casts = [
+        'credited' => 'boolean',
+        'amount'   => 'decimal:2',
     ];
 
     public function user()

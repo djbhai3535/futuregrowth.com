@@ -275,8 +275,23 @@ class DashboardController extends Controller
 
     public function history()
     {
-        $transactions = Auth::user()->transactions()->latest()->paginate(20);
-        return view('dashboard.history', compact('transactions'));
+        $user         = Auth::user();
+        $transactions = $user->transactions()->latest()->paginate(20);
+
+        // Pending deposit requests (not yet approved/rejected)
+        $pendingDeposits = \App\Models\Deposit::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
+
+        // Recent deposit history (approved + rejected)
+        $depositHistory = \App\Models\Deposit::where('user_id', $user->id)
+            ->whereIn('status', ['approved', 'rejected'])
+            ->latest()
+            ->take(20)
+            ->get();
+
+        return view('dashboard.history', compact('transactions', 'pendingDeposits', 'depositHistory'));
     }
 
     public function storeTicket(Request $request)

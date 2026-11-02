@@ -155,12 +155,6 @@ class AdminController extends Controller
         if (empty($data['recaptcha_secret_key'])) {
             unset($data['recaptcha_secret_key']);
         }
-        if (empty($data['nowpayments_api_key'])) {
-            unset($data['nowpayments_api_key']);
-        }
-        if (empty($data['nowpayments_ipn_secret'])) {
-            unset($data['nowpayments_ipn_secret']);
-        }
 
         // Handle File Uploads
         $fileKeys = ['site_logo', 'site_favicon', 'footer_logo', 'site_og_image'];
@@ -214,6 +208,10 @@ class AdminController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('network')) {
+            $query->where('network', $request->network);
+        }
+
         $deposits = $query->latest()->paginate(20)->withQueryString();
         return view('admin.deposits', compact('deposits'));
     }
@@ -221,9 +219,20 @@ class AdminController extends Controller
     public function approveDeposit($id)
     {
         $deposit = Deposit::findOrFail($id);
-        if ($deposit->status !== 'pending') return back();
-        
-        $deposit->status = 'approved';
+
+        // Guard 1: only pending deposits can be approved
+        if ($deposit->status !== 'pending') {
+            return back()->with('error', 'This deposit cannot be approved — it is already ' . $deposit->status . '.');
+        }
+
+        // Guard 2: idempotency — never credit twice
+        if ($deposit->credited) {
+            return back()->with('error', 'This deposit has already been credited. Duplicate approval blocked.');
+        }
+
+        // Mark credited FIRST before touching the wallet (prevents double-credit if save() throws)
+        $deposit->status   = 'approved';
+        $deposit->credited = true;
         $deposit->save();
 
         $wallet = $deposit->user->wallet;
@@ -231,39 +240,45 @@ class AdminController extends Controller
         $wallet->save();
 
         ActivityLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'Approved deposit ID ' . $deposit->id . ' for user ' . $deposit->user->name,
+            'user_id'    => Auth::id(),
+            'action'     => 'Approved deposit ID ' . $deposit->id . ' (' . strtoupper($deposit->network ?? 'trc20') . ') for user ' . $deposit->user->name . ' | Amount: $' . number_format($deposit->amount, 2),
             'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent()
+            'user_agent' => request()->userAgent(),
         ]);
 
         \App\Models\Transaction::create([
-            'user_id' => $deposit->user_id,
-            'type' => 'deposit',
-            'amount' => $deposit->amount,
-            'wallet_type' => 'deposit_balance',
-            'status' => 'completed',
-            'description' => 'Deposit Approved. TXID: ' . $deposit->txid,
-            'reference_id' => $deposit->id
+            'user_id'      => $deposit->user_id,
+            'type'         => 'deposit',
+            'amount'       => $deposit->amount,
+            'wallet_type'  => 'deposit_balance',
+            'status'       => 'completed',
+            'description'  => 'Manual USDT (' . strtoupper($deposit->network ?? 'TRC20') . ') Deposit Approved. TXID: ' . $deposit->txid,
+            'reference_id' => $deposit->id,
         ]);
 
-        return back()->with('success', 'Deposit approved successfully.');
+        return back()->with('success', 'Deposit approved and $' . number_format($deposit->amount, 2) . ' credited to user wallet.');
     }
 
     public function rejectDeposit($id)
     {
         $deposit = Deposit::findOrFail($id);
+
+        // Guard: only pending deposits can be rejected; never touch approved/already-credited deposits
+        if ($deposit->status !== 'pending') {
+            return back()->with('error', 'This deposit cannot be rejected — it is already ' . $deposit->status . '.');
+        }
+
         $deposit->status = 'rejected';
         $deposit->save();
 
         ActivityLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'Rejected deposit ID ' . $deposit->id . ' for user ' . $deposit->user->name,
+            'user_id'    => Auth::id(),
+            'action'     => 'Rejected deposit ID ' . $deposit->id . ' for user ' . ($deposit->user->name ?? 'unknown') . ' | TXID: ' . $deposit->txid,
             'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent()
+            'user_agent' => request()->userAgent(),
         ]);
 
-        return back()->with('success', 'Deposit rejected.');
+        return back()->with('success', 'Deposit rejected. No balance has been credited.');
     }
 
     public function withdrawals(Request $request)

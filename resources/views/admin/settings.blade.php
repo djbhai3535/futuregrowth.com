@@ -298,62 +298,43 @@
                         <label class="form-label text-muted small fw-bold">SMTP Password</label>
                         <input type="password" name="smtp_password" class="form-control bg-dark border-secondary text-white" placeholder="Leave empty to keep existing password">
                     </div>
-                <h5 class="fw-bold mb-3 text-info border-bottom border-secondary pb-2">Payment Gateway Settings (NOWPayments)</h5>
+                <h5 class="fw-bold mb-3 text-info border-bottom border-secondary pb-2"><i class="bi bi-currency-dollar me-2"></i>Manual USDT Deposit Settings</h5>
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
-                        <label class="form-label text-muted small fw-bold">Enable / Disable Gateway</label>
-                        <select name="nowpayments_enabled" class="form-control bg-dark border-secondary text-white">
-                            <option value="1" {{ setting('nowpayments_enabled', 1) == 1 ? 'selected' : '' }}>Enabled</option>
-                            <option value="0" {{ setting('nowpayments_enabled', 1) == 0 ? 'selected' : '' }}>Disabled</option>
+                        <label class="form-label text-muted small fw-bold">Enable TRC20 Deposits</label>
+                        <select name="enable_trc20_deposits" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('enable_trc20_deposits', 1) == 1 ? 'selected' : '' }}>Enabled</option>
+                            <option value="0" {{ setting('enable_trc20_deposits', 1) == 0 ? 'selected' : '' }}>Disabled</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-muted small fw-bold">Sandbox / Live Mode</label>
-                        <select name="nowpayments_sandbox_mode" class="form-control bg-dark border-secondary text-white">
-                            <option value="1" {{ setting('nowpayments_sandbox_mode', 0) == 1 ? 'selected' : '' }}>Sandbox Mode (Testing)</option>
-                            <option value="0" {{ setting('nowpayments_sandbox_mode', 0) == 0 ? 'selected' : '' }}>Live Mode (Production)</option>
+                        <label class="form-label text-muted small fw-bold">Enable BEP20 Deposits</label>
+                        <select name="enable_bep20_deposits" class="form-control bg-dark border-secondary text-white">
+                            <option value="1" {{ setting('enable_bep20_deposits', 1) == 1 ? 'selected' : '' }}>Enabled</option>
+                            <option value="0" {{ setting('enable_bep20_deposits', 1) == 0 ? 'selected' : '' }}>Disabled</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label text-muted small fw-bold">Default Coin</label>
-                        <input type="text" name="nowpayments_default_coin" class="form-control bg-dark border-secondary text-white" value="{{ setting('nowpayments_default_coin', 'usdt') }}" placeholder="e.g. usdt">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label text-muted small fw-bold">Enable TRC20 Network</label>
-                        <select name="nowpayments_enable_trc20" class="form-control bg-dark border-secondary text-white">
-                            <option value="1" {{ setting('nowpayments_enable_trc20', 1) == 1 ? 'selected' : '' }}>Yes</option>
-                            <option value="0" {{ setting('nowpayments_enable_trc20', 1) == 0 ? 'selected' : '' }}>No</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label text-muted small fw-bold">Enable BEP20 Network</label>
-                        <select name="nowpayments_enable_bep20" class="form-control bg-dark border-secondary text-white">
-                            <option value="1" {{ setting('nowpayments_enable_bep20', 1) == 1 ? 'selected' : '' }}>Yes</option>
-                            <option value="0" {{ setting('nowpayments_enable_bep20', 1) == 0 ? 'selected' : '' }}>No</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label text-muted small fw-bold">Default Selected Network</label>
-                        <select name="nowpayments_default_network" class="form-control bg-dark border-secondary text-white">
-                            <option value="trc20" {{ setting('nowpayments_default_network', 'trc20') === 'trc20' ? 'selected' : '' }}>USDT (TRC20)</option>
-                            <option value="bep20" {{ setting('nowpayments_default_network', 'trc20') === 'bep20' ? 'selected' : '' }}>USDT (BEP20)</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small fw-bold">NOWPayments API Key</label>
-                        <input type="password" name="nowpayments_api_key" class="form-control bg-dark border-secondary text-white" placeholder="Leave empty to keep existing key">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small fw-bold">IPN Secret</label>
-                        <input type="password" name="nowpayments_ipn_secret" class="form-control bg-dark border-secondary text-white" placeholder="Leave empty to keep existing secret">
-                    </div>
-                    <div class="col-md-6">
                         <label class="form-label text-muted small fw-bold">Minimum Deposit ($)</label>
-                        <input type="number" step="0.01" name="nowpayments_min_deposit" class="form-control bg-dark border-secondary text-white" value="{{ setting('nowpayments_min_deposit', 25) }}">
+                        <input type="number" step="0.01" name="min_deposit" class="form-control bg-dark border-secondary text-white" value="{{ setting('min_deposit', 25) }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">Maximum Deposit ($)</label>
+                        <input type="number" step="0.01" name="max_deposit" class="form-control bg-dark border-secondary text-white" value="{{ setting('max_deposit', 50000) }}">
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label text-muted small fw-bold">Maximum Deposit ($)</label>
-                        <input type="number" step="0.01" name="nowpayments_max_deposit" class="form-control bg-dark border-secondary text-white" value="{{ setting('nowpayments_max_deposit', 50000) }}">
+                        <label class="form-label text-muted small fw-bold">Company USDT Address (TRC20)</label>
+                        <input type="text" name="admin_usdt_trc20_address" class="form-control bg-dark border-secondary text-white font-monospace"
+                               value="{{ setting('admin_usdt_trc20_address', setting('admin_usdt_address', '')) }}"
+                               placeholder="TRC20 wallet address">
+                        <small class="text-muted">Users will send USDT here via TRC20 network.</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Company USDT Address (BEP20)</label>
+                        <input type="text" name="admin_usdt_bep20_address" class="form-control bg-dark border-secondary text-white font-monospace"
+                               value="{{ setting('admin_usdt_bep20_address', setting('admin_usdt_address', '')) }}"
+                               placeholder="BEP20 (BSC) wallet address">
+                        <small class="text-muted">Users will send USDT here via BEP20 (BSC) network.</small>
                     </div>
                 </div>
 

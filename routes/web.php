@@ -53,7 +53,6 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureEmailIsVerified::class])->
     
     Route::get('/dashboard/deposits', [\App\Http\Controllers\DepositController::class, 'create'])->name('dashboard.deposits');
     Route::post('/dashboard/deposits', [\App\Http\Controllers\DepositController::class, 'store'])->name('dashboard.deposits.store');
-    Route::post('/dashboard/deposits/nowpayments', [\App\Http\Controllers\NOWPaymentsController::class, 'initiatePayment'])->name('dashboard.deposits.nowpayments');
     
     Route::get('/dashboard/withdrawals', [\App\Http\Controllers\WithdrawalController::class, 'create'])->name('dashboard.withdrawals');
     Route::post('/dashboard/withdrawals', [\App\Http\Controllers\WithdrawalController::class, 'store'])->name('dashboard.withdrawals.store');
@@ -149,4 +148,4 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix($adminSecret)->name(
     Route::post('/documents/{id}/destroy', [\App\Http\Controllers\AdminController::class, 'destroyDocument'])->name('documents.destroy');
 });
 
-Route::post('/payment/nowpayments/webhook', [\App\Http\Controllers\NOWPaymentsController::class, 'ipnCallback'])->name('nowpayments.webhook');
+// NOWPayments webhook removed — manual deposit workflow is now used exclusively.

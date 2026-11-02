@@ -244,9 +244,9 @@
                     </a>
                 </div>
                 <div class="col-6">
-                    <a href="{{ route('admin.settings') }}?tab=nowpayments" class="btn quick-action-btn w-100 py-3 text-center text-white rounded d-flex flex-column align-items-center">
+                    <a href="{{ route('admin.settings') }}?tab=deposits" class="btn quick-action-btn w-100 py-3 text-center text-white rounded d-flex flex-column align-items-center">
                         <i class="bi bi-wallet2 text-primary fs-3 mb-1"></i>
-                        <span class="small fw-bold">NOWPayments</span>
+                        <span class="small fw-bold">Deposit Settings</span>
                     </a>
                 </div>
                 <div class="col-6">
